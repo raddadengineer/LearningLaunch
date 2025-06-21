@@ -68,34 +68,34 @@ export class MemStorage implements IStorage {
 
     // Initialize reading words - Level 1: Simple 3-letter CVC words
     const level1Words: ReadingWord[] = [
-      { id: 1, word: "CAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1571566882372-1598d88abd90" },
-      { id: 2, word: "DOG", level: 1, imageUrl: "https://images.unsplash.com/photo-1552053831-71594a27632d" },
+      { id: 1, word: "CAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1574158622682-e40e69881006" },
+      { id: 2, word: "DOG", level: 1, imageUrl: "https://images.unsplash.com/photo-1587300003388-59208cc962cb" },
       { id: 3, word: "SUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
-      { id: 4, word: "BAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7" },
-      { id: 5, word: "HAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1521369909029-2afed882baee" },
-      { id: 6, word: "CAN", level: 1, imageUrl: "https://images.unsplash.com/photo-1610736969072-b5c43d263f00" },
+      { id: 4, word: "BAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae" },
+      { id: 5, word: "HAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62" },
+      { id: 6, word: "CAN", level: 1, imageUrl: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b" },
       { id: 7, word: "RUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b" },
-      { id: 8, word: "FUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f" },
-      { id: 9, word: "BUS", level: 1, imageUrl: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e" },
-      { id: 10, word: "CUP", level: 1, imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b" },
+      { id: 8, word: "FUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9" },
+      { id: 9, word: "BUS", level: 1, imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957" },
+      { id: 10, word: "CUP", level: 1, imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c" },
       { id: 11, word: "PEN", level: 1, imageUrl: "https://images.unsplash.com/photo-1586953208448-b95a79798f07" },
       { id: 12, word: "BED", level: 1, imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85" }
     ];
 
     // Level 2: 4-letter words with blends and digraphs
     const level2Words: ReadingWord[] = [
-      { id: 13, word: "FISH", level: 2, imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5" },
+      { id: 13, word: "FISH", level: 2, imageUrl: "https://images.unsplash.com/photo-1535591273668-578e31182c4f" },
       { id: 14, word: "BIRD", level: 2, imageUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3" },
       { id: 15, word: "TREE", level: 2, imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e" },
       { id: 16, word: "BOOK", level: 2, imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570" },
-      { id: 17, word: "BALL", level: 2, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" },
+      { id: 17, word: "BALL", level: 2, imageUrl: "https://images.unsplash.com/photo-1594736797933-d0bd1aebf67c" },
       { id: 18, word: "PLAY", level: 2, imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9" },
-      { id: 19, word: "JUMP", level: 2, imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b" },
+      { id: 19, word: "JUMP", level: 2, imageUrl: "https://images.unsplash.com/photo-1606889464198-fcae85d024d8" },
       { id: 20, word: "HELP", level: 2, imageUrl: "https://images.unsplash.com/photo-1559027615-cd4628902d4a" },
       { id: 21, word: "CAKE", level: 2, imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13" },
       { id: 22, word: "DUCK", level: 2, imageUrl: "https://images.unsplash.com/photo-1551196007-2b6c0afbc0dd" },
       { id: 23, word: "FROG", level: 2, imageUrl: "https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80" },
-      { id: 24, word: "MILK", level: 2, imageUrl: "https://images.unsplash.com/photo-1550583724-b2692b85b150" },
+      { id: 24, word: "MILK", level: 2, imageUrl: "https://images.unsplash.com/photo-1563636619-e9143da7973b" },
       { id: 25, word: "RAIN", level: 2, imageUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0" },
       { id: 26, word: "STAR", level: 2, imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a" },
       { id: 27, word: "MOON", level: 2, imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b" }
@@ -125,28 +125,28 @@ export class MemStorage implements IStorage {
       { id: 43, word: "BRIDGE", level: 4, imageUrl: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df" },
       { id: 44, word: "MONKEY", level: 4, imageUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" },
       { id: 45, word: "TURTLE", level: 4, imageUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f" },
-      { id: 46, word: "FLOWER", level: 4, imageUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486c946" },
-      { id: 47, word: "PURPLE", level: 4, imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b" },
+      { id: 46, word: "GARDEN", level: 4, imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b" },
+      { id: 47, word: "PURPLE", level: 4, imageUrl: "https://images.unsplash.com/photo-1553982012-39a2abef9cde" },
       { id: 48, word: "ORANGE", level: 4, imageUrl: "https://images.unsplash.com/photo-1557800636-894a64c1696f" },
-      { id: 49, word: "YELLOW", level: 4, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
+      { id: 49, word: "YELLOW", level: 4, imageUrl: "https://images.unsplash.com/photo-1562085180-7fd3d38f8b73" },
       { id: 50, word: "ROCKET", level: 4, imageUrl: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7" },
       { id: 51, word: "PLANET", level: 4, imageUrl: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2" }
     ];
 
     // Level 5: Advanced words and sight words
     const level5Words: ReadingWord[] = [
-      { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7" },
+      { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6" },
       { id: 53, word: "GIRAFFE", level: 5, imageUrl: "https://images.unsplash.com/photo-1547036967-23d11aacaee0" },
       { id: 54, word: "RAINBOW", level: 5, imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a" },
-      { id: 55, word: "BIRTHDAY", level: 5, imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13" },
+      { id: 55, word: "BIRTHDAY", level: 5, imageUrl: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3" },
       { id: 56, word: "COMPUTER", level: 5, imageUrl: "https://images.unsplash.com/photo-1547082299-de196ea013d6" },
       { id: 57, word: "SANDWICH", level: 5, imageUrl: "https://images.unsplash.com/photo-1553909489-cd47e0ef937f" },
-      { id: 58, word: "FOOTBALL", level: 5, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" },
+      { id: 58, word: "FOOTBALL", level: 5, imageUrl: "https://images.unsplash.com/photo-1594736797933-d0bd1aebf67c" },
       { id: 59, word: "BACKPACK", level: 5, imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62" },
       { id: 60, word: "SUNSHINE", level: 5, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
       { id: 61, word: "BUTTERFLY", level: 5, imageUrl: "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0" },
       { id: 62, word: "TREASURE", level: 5, imageUrl: "https://images.unsplash.com/photo-1519452575417-564c1401ecc0" },
-      { id: 63, word: "MONSTER", level: 5, imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b" }
+      { id: 63, word: "PRINCESS", level: 5, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" }
     ];
 
     [level1Words, level2Words, level3Words, level4Words, level5Words].forEach(levelWords => {
