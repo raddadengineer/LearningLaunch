@@ -277,17 +277,6 @@ export default function UserSelection() {
           </div>
         </section>
 
-        {/* Quick Links */}
-        <section className="mt-8 text-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => setLocation("/users")}
-            className="text-gray-500 hover:text-gray-700 text-sm"
-          >
-            User Management
-          </Button>
-        </section>
-
         {/* Guest User Options Dialog */}
         <Dialog open={showGuestOptions} onOpenChange={setShowGuestOptions}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
