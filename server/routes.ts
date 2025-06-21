@@ -72,6 +72,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/reading/words/all", async (req, res) => {
+    try {
+      const words = await storage.getAllReadingWords();
+      res.json(words);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch all reading words" });
+    }
+  });
+
+  app.post("/api/reading/words", async (req, res) => {
+    try {
+      const { word, imageUrl, level } = req.body;
+      if (!word || !imageUrl || !level) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      const newWord = await storage.addReadingWord({ word: word.toUpperCase(), imageUrl, level });
+      res.json(newWord);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to add reading word" });
+    }
+  });
+
+  app.put("/api/reading/words/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { word, imageUrl, level } = req.body;
+      if (!word || !imageUrl || !level) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      const updatedWord = await storage.updateReadingWord(id, { word: word.toUpperCase(), imageUrl, level });
+      res.json(updatedWord);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update reading word" });
+    }
+  });
+
+  app.delete("/api/reading/words/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteReadingWord(id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete reading word" });
+    }
+  });
+
   // Math routes
   app.get("/api/math/activities", async (req, res) => {
     try {
