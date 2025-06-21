@@ -11,7 +11,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Reading() {
-  const [currentLevel] = useState(1);
+  const [currentLevel, setCurrentLevel] = useState(1);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { toast } = useToast();
 
@@ -107,7 +107,15 @@ export default function Reading() {
         </Link>
         
         <div className="text-center">
-          <h2 className="text-2xl font-fredoka text-coral">Level {currentLevel}: Three Letter Words</h2>
+          <h2 className="text-2xl font-fredoka text-coral">
+            Level {currentLevel}: {
+              currentLevel === 1 ? "Three Letter Words" :
+              currentLevel === 2 ? "Four Letter Words" :
+              currentLevel === 3 ? "Five Letter Words" :
+              currentLevel === 4 ? "Complex Words" :
+              "Advanced Words"
+            }
+          </h2>
           <ProgressBar 
             current={currentWordIndex + 1} 
             total={words.length} 
@@ -172,7 +180,7 @@ export default function Reading() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center space-x-4">
+        <div className="flex justify-center space-x-4 mb-8">
           <Button 
             onClick={handlePreviousWord}
             disabled={currentWordIndex === 0}
@@ -187,6 +195,41 @@ export default function Reading() {
           >
             {currentWordIndex === words.length - 1 ? "Finish!" : "Next →"}
           </Button>
+        </div>
+
+        {/* Level Selection */}
+        <div className="bg-white rounded-3xl p-6 kid-shadow max-w-2xl mx-auto">
+          <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Choose Your Level</h3>
+          <div className="grid grid-cols-5 gap-3">
+            {[1, 2, 3, 4, 5].map((level) => (
+              <Button
+                key={level}
+                onClick={() => {
+                  setCurrentLevel(level);
+                  setCurrentWordIndex(0);
+                }}
+                className={`
+                  py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly
+                  ${currentLevel === level 
+                    ? 'bg-coral text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }
+                `}
+              >
+                Level {level}
+              </Button>
+            ))}
+          </div>
+          
+          <div className="mt-4 text-center text-sm text-gray-600">
+            <div className="grid grid-cols-5 gap-3 text-xs">
+              <span>3-letter words</span>
+              <span>4-letter words</span>
+              <span>5-letter words</span>
+              <span>Complex words</span>
+              <span>Advanced words</span>
+            </div>
+          </div>
         </div>
       </main>
     </div>

@@ -66,7 +66,7 @@ export class MemStorage implements IStorage {
     this.users.set(1, defaultUser);
     this.currentUserId = 2;
 
-    // Initialize reading words
+    // Initialize reading words - Level 1: Simple 3-letter CVC words
     const level1Words: ReadingWord[] = [
       { id: 1, word: "CAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1571566882372-1598d88abd90" },
       { id: 2, word: "DOG", level: 1, imageUrl: "https://images.unsplash.com/photo-1552053831-71594a27632d" },
@@ -82,6 +82,7 @@ export class MemStorage implements IStorage {
       { id: 12, word: "BED", level: 1, imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85" }
     ];
 
+    // Level 2: 4-letter words with blends and digraphs
     const level2Words: ReadingWord[] = [
       { id: 13, word: "FISH", level: 2, imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5" },
       { id: 14, word: "BIRD", level: 2, imageUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3" },
@@ -100,9 +101,58 @@ export class MemStorage implements IStorage {
       { id: 27, word: "MOON", level: 2, imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b" }
     ];
 
-    level1Words.forEach(word => this.readingWords.set(word.id, word));
-    level2Words.forEach(word => this.readingWords.set(word.id, word));
-    this.currentWordId = 28;
+    // Level 3: 5-letter words and long vowel sounds
+    const level3Words: ReadingWord[] = [
+      { id: 28, word: "HOUSE", level: 3, imageUrl: "https://images.unsplash.com/photo-1570129477492-45c003edd2be" },
+      { id: 29, word: "APPLE", level: 3, imageUrl: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb" },
+      { id: 30, word: "SMILE", level: 3, imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" },
+      { id: 31, word: "PLANE", level: 3, imageUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05" },
+      { id: 32, word: "TRAIN", level: 3, imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957" },
+      { id: 33, word: "BEACH", level: 3, imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e" },
+      { id: 34, word: "CHAIR", level: 3, imageUrl: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7" },
+      { id: 35, word: "FLOWER", level: 3, imageUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486c946" },
+      { id: 36, word: "BREAD", level: 3, imageUrl: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73" },
+      { id: 37, word: "TIGER", level: 3, imageUrl: "https://images.unsplash.com/photo-1561731216-c3a4d99437d5" },
+      { id: 38, word: "SNAKE", level: 3, imageUrl: "https://images.unsplash.com/photo-1516598540642-e8f40a09d939" },
+      { id: 39, word: "CLOCK", level: 3, imageUrl: "https://images.unsplash.com/photo-1501139083538-0139583c060f" }
+    ];
+
+    // Level 4: Complex consonant blends and compound words
+    const level4Words: ReadingWord[] = [
+      { id: 40, word: "DRAGON", level: 4, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" },
+      { id: 41, word: "CASTLE", level: 4, imageUrl: "https://images.unsplash.com/photo-1520637836862-4d197d17c43a" },
+      { id: 42, word: "PRINCE", level: 4, imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d" },
+      { id: 43, word: "BRIDGE", level: 4, imageUrl: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df" },
+      { id: 44, word: "MONKEY", level: 4, imageUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" },
+      { id: 45, word: "TURTLE", level: 4, imageUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f" },
+      { id: 46, word: "FLOWER", level: 4, imageUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486c946" },
+      { id: 47, word: "PURPLE", level: 4, imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b" },
+      { id: 48, word: "ORANGE", level: 4, imageUrl: "https://images.unsplash.com/photo-1557800636-894a64c1696f" },
+      { id: 49, word: "YELLOW", level: 4, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
+      { id: 50, word: "ROCKET", level: 4, imageUrl: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7" },
+      { id: 51, word: "PLANET", level: 4, imageUrl: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2" }
+    ];
+
+    // Level 5: Advanced words and sight words
+    const level5Words: ReadingWord[] = [
+      { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7" },
+      { id: 53, word: "GIRAFFE", level: 5, imageUrl: "https://images.unsplash.com/photo-1547036967-23d11aacaee0" },
+      { id: 54, word: "RAINBOW", level: 5, imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a" },
+      { id: 55, word: "BIRTHDAY", level: 5, imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13" },
+      { id: 56, word: "COMPUTER", level: 5, imageUrl: "https://images.unsplash.com/photo-1547082299-de196ea013d6" },
+      { id: 57, word: "SANDWICH", level: 5, imageUrl: "https://images.unsplash.com/photo-1553909489-cd47e0ef937f" },
+      { id: 58, word: "FOOTBALL", level: 5, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" },
+      { id: 59, word: "BACKPACK", level: 5, imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62" },
+      { id: 60, word: "SUNSHINE", level: 5, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
+      { id: 61, word: "BUTTERFLY", level: 5, imageUrl: "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0" },
+      { id: 62, word: "TREASURE", level: 5, imageUrl: "https://images.unsplash.com/photo-1519452575417-564c1401ecc0" },
+      { id: 63, word: "MONSTER", level: 5, imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b" }
+    ];
+
+    [level1Words, level2Words, level3Words, level4Words, level5Words].forEach(levelWords => {
+      levelWords.forEach(word => this.readingWords.set(word.id, word));
+    });
+    this.currentWordId = 64;
 
     // Initialize math activities
     const countingActivities: MathActivity[] = [
@@ -125,8 +175,8 @@ export class MemStorage implements IStorage {
     additionActivities.forEach(activity => this.mathActivities.set(activity.id, activity));
     this.currentActivityId = 11;
 
-    // Initialize progress
-    const readingProgress: UserProgress = {
+    // Initialize progress for multiple reading levels
+    const readingProgress1: UserProgress = {
       id: 1,
       userId: 1,
       activityType: "reading",
@@ -134,6 +184,26 @@ export class MemStorage implements IStorage {
       completedItems: [1, 2, 3, 4, 5, 6, 7, 8],
       totalItems: 12,
       stars: 3
+    };
+
+    const readingProgress2: UserProgress = {
+      id: 3,
+      userId: 1,
+      activityType: "reading",
+      level: 2,
+      completedItems: [13, 14, 15],
+      totalItems: 15,
+      stars: 1
+    };
+
+    const readingProgress3: UserProgress = {
+      id: 4,
+      userId: 1,
+      activityType: "reading",
+      level: 3,
+      completedItems: [],
+      totalItems: 12,
+      stars: 0
     };
 
     const mathProgress: UserProgress = {
@@ -146,9 +216,11 @@ export class MemStorage implements IStorage {
       stars: 2
     };
 
-    this.userProgress.set(1, readingProgress);
+    this.userProgress.set(1, readingProgress1);
     this.userProgress.set(2, mathProgress);
-    this.currentProgressId = 3;
+    this.userProgress.set(3, readingProgress2);
+    this.userProgress.set(4, readingProgress3);
+    this.currentProgressId = 5;
 
     // Initialize achievements
     const userAchievements: Achievement[] = [
@@ -203,7 +275,16 @@ export class MemStorage implements IStorage {
       return updatedProgress;
     } else {
       const id = this.currentProgressId++;
-      const totalItems = activityType === "reading" ? 12 : 5;
+      // Calculate total items based on activity type and level
+      let totalItems = 5; // default for math
+      if (activityType === "reading") {
+        if (level === 1) totalItems = 12;
+        else if (level === 2) totalItems = 15;
+        else if (level === 3) totalItems = 12;
+        else if (level === 4) totalItems = 12;
+        else if (level === 5) totalItems = 12;
+      }
+      
       const newProgress: UserProgress = {
         id,
         userId,

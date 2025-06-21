@@ -124,18 +124,26 @@ export default function Home() {
                 <p className="text-lg text-gray-600 mb-6">Learn to read with fun words and sounds!</p>
                 
                 {/* Reading Levels */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  <div className="bg-green-100 rounded-xl p-3 text-center">
-                    <div className="text-2xl mb-1">🌱</div>
-                    <span className="text-sm font-bold text-green-700">Level 1</span>
+                <div className="grid grid-cols-5 gap-2 mb-6">
+                  <div className="bg-green-100 rounded-xl p-2 text-center">
+                    <div className="text-lg mb-1">🌱</div>
+                    <span className="text-xs font-bold text-green-700">Level 1</span>
                   </div>
-                  <div className="bg-yellow-100 rounded-xl p-3 text-center">
-                    <div className="text-2xl mb-1">🌿</div>
-                    <span className="text-sm font-bold text-yellow-700">Level 2</span>
+                  <div className="bg-blue-100 rounded-xl p-2 text-center">
+                    <div className="text-lg mb-1">🌿</div>
+                    <span className="text-xs font-bold text-blue-700">Level 2</span>
                   </div>
-                  <div className="bg-red-100 rounded-xl p-3 text-center">
-                    <div className="text-2xl mb-1">🌳</div>
-                    <span className="text-sm font-bold text-red-700">Level 3</span>
+                  <div className="bg-yellow-100 rounded-xl p-2 text-center">
+                    <div className="text-lg mb-1">🌳</div>
+                    <span className="text-xs font-bold text-yellow-700">Level 3</span>
+                  </div>
+                  <div className="bg-purple-100 rounded-xl p-2 text-center">
+                    <div className="text-lg mb-1">🌲</div>
+                    <span className="text-xs font-bold text-purple-700">Level 4</span>
+                  </div>
+                  <div className="bg-red-100 rounded-xl p-2 text-center">
+                    <div className="text-lg mb-1">🎯</div>
+                    <span className="text-xs font-bold text-red-700">Level 5</span>
                   </div>
                 </div>
                 
