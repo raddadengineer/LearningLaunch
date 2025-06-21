@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Reading from "@/pages/reading";
-import Math from "@/pages/math";
+import MathPage from "@/pages/math";
 import ParentDashboard from "@/pages/parent-dashboard";
 import Admin from "@/pages/admin";
 import UserManagement from "@/pages/user-management";
@@ -34,7 +34,7 @@ function Router() {
           <>
             <Route path="/" component={Home} />
             <Route path="/reading" component={Reading} />
-            <Route path="/math" component={Math} />
+            <Route path="/math" component={MathPage} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
             <Route path="/select-user" component={UserSelection} />
             <Route component={Home} />
