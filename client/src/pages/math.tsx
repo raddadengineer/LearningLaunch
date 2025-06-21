@@ -10,6 +10,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Math() {
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [activityType, setActivityType] = useState<"counting" | "addition">("counting");
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string>("");
@@ -17,34 +19,44 @@ export default function Math() {
   const { toast } = useToast();
 
   const { data: activities, isLoading: activitiesLoading } = useQuery<MathActivity[]>({
-    queryKey: ["/api/math/activities", { type: "counting", level: 1 }],
+    queryKey: ["/api/math/activities", activityType, currentLevel],
+    queryFn: () => fetch(`/api/math/activities?type=${activityType}&level=${currentLevel}`).then(res => res.json()),
   });
 
-  const currentUserId = parseInt(localStorage.getItem("currentUserId") || "1");
+  const currentUserId = localStorage.getItem("currentUserId");
   
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/math", currentUserId],
-    queryFn: () => fetch(`/api/user/${currentUserId}/progress/math`).then(res => res.json()),
+    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/progress/math`).then(res => res.json()) : [],
+    enabled: !!currentUserId,
   });
 
   const updateProgressMutation = useMutation({
     mutationFn: async ({ completedItems, stars }: { completedItems: number[], stars: number }) => {
       return apiRequest("/api/progress", "POST", {
-        userId: currentUserId,
+        userId: parseInt(currentUserId!),
         activityType: "math",
-        level: 1,
+        level: currentLevel,
         completedItems,
         stars
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user/1/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/progress/math"] });
       toast({
-        title: "Great counting! 🌟",
+        title: activityType === "counting" ? "Great counting!" : "Awesome addition!",
         description: "Your progress has been saved!",
       });
     }
   });
+
+  if (!currentUserId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl font-fredoka text-red-500">Please select a user first!</div>
+      </div>
+    );
+  }
 
   if (activitiesLoading || !activities || activities.length === 0) {
     return (
@@ -55,8 +67,10 @@ export default function Math() {
   }
 
   const currentActivity = activities[currentActivityIndex];
-  const currentProgress = progress?.find(p => p.level === 1 && p.activityType === "math");
-  const completedActivities = currentProgress?.completedItems || [];
+  const currentProgress = progress?.find(p => p.level === currentLevel && p.activityType === "math");
+  const completedActivities = Array.isArray(currentProgress?.completedItems) 
+    ? currentProgress.completedItems 
+    : [];
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
 
   const handleAnswerSelect = (answer: number) => {
@@ -114,7 +128,9 @@ export default function Math() {
         </Link>
         
         <div className="text-center">
-          <h2 className="text-2xl font-fredoka text-turquoise">Counting Fun</h2>
+          <h2 className="text-2xl font-fredoka text-turquoise">
+            {activityType === "counting" ? "Counting Fun" : "Addition Adventures"}
+          </h2>
           <ProgressBar 
             current={currentActivityIndex + 1} 
             total={activities.length} 
@@ -127,42 +143,140 @@ export default function Math() {
         </div>
       </div>
 
+      {/* Level and Type Selection */}
+      <div className="bg-white rounded-3xl p-6 kid-shadow max-w-4xl mx-auto mt-6 mb-6">
+        <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Choose Your Challenge</h3>
+        
+        {/* Activity Type Selector */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <Button
+            onClick={() => {
+              setActivityType("counting");
+              setCurrentActivityIndex(0);
+              queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+            }}
+            className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
+              activityType === "counting" 
+                ? 'bg-turquoise text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            🔢 Counting
+          </Button>
+          <Button
+            onClick={() => {
+              setActivityType("addition");
+              setCurrentLevel(3); // Addition starts at level 3
+              setCurrentActivityIndex(0);
+              queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+            }}
+            className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
+              activityType === "addition" 
+                ? 'bg-turquoise text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            ➕ Addition
+          </Button>
+        </div>
+
+        {/* Level Selector */}
+        <div className="text-center">
+          <h4 className="text-lg font-bold text-gray-700 mb-3">Level</h4>
+          <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
+            {activityType === "counting" ? [1, 2].map((level) => (
+              <Button
+                key={level}
+                onClick={() => {
+                  setCurrentLevel(level);
+                  setCurrentActivityIndex(0);
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
+                  currentLevel === level 
+                    ? 'bg-coral text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Level {level}
+              </Button>
+            )) : [3].map((level) => (
+              <Button
+                key={level}
+                onClick={() => {
+                  setCurrentLevel(level);
+                  setCurrentActivityIndex(0);
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
+                  currentLevel === level 
+                    ? 'bg-coral text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Level {level}
+              </Button>
+            ))}
+          </div>
+          <div className="mt-3 text-center text-sm text-gray-600">
+            {activityType === "counting" ? (
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <span>Count 1-5</span>
+                <span>Count 6-10</span>
+              </div>
+            ) : (
+              <span>Simple addition with pictures</span>
+            )}
+          </div>
+        </div>
+      </div>
+
       <main className="container mx-auto px-4 py-8">
-        {/* Counting Activity */}
+        {/* Math Activity */}
         <div className="text-center mb-12">
           <h3 className="text-3xl font-fredoka text-gray-800 mb-8">
             {currentActivity.question}
           </h3>
           
-          {/* Counting Objects */}
-          <Card className="rounded-3xl p-8 kid-shadow max-w-2xl mx-auto mb-8">
-            <div className="grid grid-cols-3 gap-6 mb-8 justify-items-center">
+          {/* Objects Display */}
+          <Card className="rounded-3xl p-8 kid-shadow max-w-4xl mx-auto mb-8">
+            <div className={`grid gap-4 mb-8 justify-items-center ${
+              currentActivity.objects.length <= 5 ? 'grid-cols-5' : 
+              currentActivity.objects.length <= 8 ? 'grid-cols-4' : 'grid-cols-5'
+            }`}>
               {currentActivity.objects.map((object, index) => (
                 <div 
                   key={index} 
                   className="cursor-pointer hover:scale-110 transition-transform"
                   onClick={() => speak((index + 1).toString())}
                 >
-                  <div className="w-20 h-20 bg-red-400 rounded-full flex items-center justify-center text-4xl">
+                  <div className="w-16 h-16 flex items-center justify-center text-3xl">
                     {object}
                   </div>
                 </div>
               ))}
             </div>
+            
+            {/* Visual grouping for addition */}
+            {activityType === "addition" && currentActivity.question.includes("+") && (
+              <div className="text-lg font-bold text-gray-600 mb-4">
+                Look at the groups and count them all together!
+              </div>
+            )}
           </Card>
 
           {/* Answer Options */}
           <div className="grid grid-cols-4 gap-4 max-w-md mx-auto mb-8">
-            {answerOptions.map((option) => (
+            {answerOptions.map((option, index) => (
               <Button
                 key={option}
                 onClick={() => handleAnswerSelect(option)}
                 disabled={showFeedback}
                 className={`
                   text-3xl font-fredoka py-6 rounded-2xl transition-colors touch-friendly
-                  ${option % 4 === 0 ? 'bg-blue-100 hover:bg-blue-200 text-blue-700' : 
-                    option % 4 === 1 ? 'bg-green-100 hover:bg-green-200 text-green-700' :
-                    option % 4 === 2 ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700' :
+                  ${index === 0 ? 'bg-blue-100 hover:bg-blue-200 text-blue-700' : 
+                    index === 1 ? 'bg-green-100 hover:bg-green-200 text-green-700' :
+                    index === 2 ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700' :
                     'bg-red-100 hover:bg-red-200 text-red-700'}
                   ${selectedAnswer === option ? 'ring-4 ring-gray-400' : ''}
                 `}
