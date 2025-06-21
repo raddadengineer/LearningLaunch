@@ -19,12 +19,12 @@ export default function MathPage() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const { toast } = useToast();
 
+  const currentUserId = localStorage.getItem("currentUserId");
+
   const { data: activities, isLoading: activitiesLoading } = useQuery<MathActivity[]>({
     queryKey: ["/api/math/activities", activityType, currentLevel],
     queryFn: () => fetch(`/api/math/activities?type=${activityType}&level=${currentLevel}`).then(res => res.json()),
   });
-
-  const currentUserId = localStorage.getItem("currentUserId");
   
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/math", currentUserId],
@@ -51,6 +51,20 @@ export default function MathPage() {
     }
   });
 
+  // Countdown timer effect - always call this hook
+  useEffect(() => {
+    if (countdown !== null && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && activities && currentActivityIndex < activities.length - 1) {
+      // Auto-advance to next activity
+      setCurrentActivityIndex(currentActivityIndex + 1);
+      setSelectedAnswer(null);
+      setShowFeedback(false);
+      setCountdown(null);
+    }
+  }, [countdown, currentActivityIndex, activities]);
+
   if (!currentUserId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -74,21 +88,7 @@ export default function MathPage() {
     : [];
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
 
-  // Countdown timer effect
-  useEffect(() => {
-    if (countdown !== null && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (countdown === 0) {
-      // Auto-advance to next activity
-      if (currentActivityIndex < activities.length - 1) {
-        setCurrentActivityIndex(currentActivityIndex + 1);
-        setSelectedAnswer(null);
-        setShowFeedback(false);
-        setCountdown(null);
-      }
-    }
-  }, [countdown, currentActivityIndex, activities]);
+
 
   const handleAnswerSelect = (answer: number) => {
     setSelectedAnswer(answer);
