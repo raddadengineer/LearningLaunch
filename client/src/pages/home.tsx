@@ -33,6 +33,14 @@ export default function Home() {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl font-fredoka text-red-500">User not found. Please select a user first.</div>
+      </div>
+    );
+  }
+
   const readingProgress = progress?.find(p => p.activityType === "reading");
   const mathProgress = progress?.find(p => p.activityType === "math");
 

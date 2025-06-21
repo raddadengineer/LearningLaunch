@@ -28,7 +28,8 @@ export default function UserSelection() {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       localStorage.setItem("currentUserId", newUser.id.toString());
       toast({ title: `Welcome ${newUser.name}!` });
-      setLocation("/");
+      // Force reload to ensure state is updated
+      window.location.href = "/";
     },
     onError: (error) => {
       console.error("Error creating user:", error);
@@ -44,7 +45,8 @@ export default function UserSelection() {
     localStorage.setItem("currentUserId", userId.toString());
     queryClient.invalidateQueries({ queryKey: ["/api/user"] });
     toast({ title: `Welcome back!` });
-    setLocation("/");
+    // Force reload to ensure state is updated
+    window.location.href = "/";
   };
 
   const handleCreateUser = () => {
