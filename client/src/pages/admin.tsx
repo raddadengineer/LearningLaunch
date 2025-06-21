@@ -183,12 +183,18 @@ export default function Admin() {
             >
               Logout
             </Button>
-            <Link href="/users">
-              <Button variant="outline">User Management</Button>
-            </Link>
-            <Link href="/">
-              <Button variant="outline">Back to Home</Button>
-            </Link>
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = "/users"}
+            >
+              User Management
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = "/"}
+            >
+              Back to Home
+            </Button>
           </div>
         </div>
       </div>
