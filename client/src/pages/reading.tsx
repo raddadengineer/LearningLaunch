@@ -14,6 +14,22 @@ export default function Reading() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { toast } = useToast();
+  
+  const currentUserId = localStorage.getItem("currentUserId");
+  
+  if (!currentUserId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+        <Card className="p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Please Select a User</h2>
+          <p className="text-gray-600 mb-4">You need to select a user profile before accessing the reading activities.</p>
+          <Link href="/">
+            <Button>Back to User Selection</Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
 
   const { data: words, isLoading: wordsLoading } = useQuery<ReadingWord[]>({
     queryKey: ["/api/reading/words", currentLevel],
@@ -23,12 +39,13 @@ export default function Reading() {
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/reading", currentUserId, currentLevel],
     queryFn: () => fetch(`/api/user/${currentUserId}/progress/reading`).then(res => res.json()),
+    enabled: !!currentUserId,
   });
 
   const updateProgressMutation = useMutation({
     mutationFn: async ({ completedItems, stars }: { completedItems: number[], stars: number }) => {
       return apiRequest("/api/progress", "POST", {
-        userId: currentUserId,
+        userId: parseInt(currentUserId!),
         activityType: "reading",
         level: currentLevel,
         completedItems,
