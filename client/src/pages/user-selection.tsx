@@ -58,8 +58,11 @@ export default function UserSelection() {
   };
 
   const handleGuestLogin = () => {
-    // Create a temporary guest user with unique name
-    const guestName = `Guest_${Date.now()}`;
+    // Create a temporary guest user with friendly name
+    const guestNames = ["Guest Explorer", "Guest Learner", "Guest Student", "Guest Friend", "Guest Buddy"];
+    const randomName = guestNames[Math.floor(Math.random() * guestNames.length)];
+    const uniqueNumber = Math.floor(Math.random() * 999) + 1;
+    const guestName = `${randomName} ${uniqueNumber}`;
     createUserMutation.mutate({ name: guestName, age: 5 });
   };
 
