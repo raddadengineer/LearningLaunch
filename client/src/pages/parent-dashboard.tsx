@@ -36,18 +36,46 @@ export default function ParentDashboard() {
   const readingProgress = progress?.filter(p => p.activityType === "reading") || [];
   const mathProgress = progress?.filter(p => p.activityType === "math") || [];
 
-  // Mock weekly activity data
-  const weeklyActivity = [
-    { day: "Mon", minutes: 25, color: "bg-green-400" },
-    { day: "Tue", minutes: 18, color: "bg-blue-400" },
-    { day: "Wed", minutes: 32, color: "bg-yellow-400" },
-    { day: "Thu", minutes: 12, color: "bg-purple-400" },
-    { day: "Fri", minutes: 22, color: "bg-red-400" },
-    { day: "Sat", minutes: 8, color: "bg-gray-300" },
-    { day: "Sun", minutes: 0, color: "bg-gray-200" },
-  ];
+  // Calculate real weekly activity data based on user progress
+  const calculateWeeklyActivity = () => {
+    const today = new Date();
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const colors = ['bg-red-400', 'bg-green-400', 'bg-blue-400', 'bg-yellow-400', 'bg-purple-400', 'bg-pink-400', 'bg-indigo-400'];
+    
+    // Start from Monday of current week
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(monday);
+      day.setDate(monday.getDate() + i);
+      const dayName = weekDays[(day.getDay())];
+      
+      // Calculate activity minutes based on progress data for this day
+      const dayProgress = progress?.filter(p => {
+        const progressDate = new Date(p.updatedAt);
+        return progressDate.toDateString() === day.toDateString();
+      }) || [];
+      
+      // Estimate minutes based on completed items (roughly 2-3 minutes per completed item)
+      const totalItems = dayProgress.reduce((sum, p) => {
+        const completedCount = Array.isArray(p.completedItems) ? p.completedItems.length : 
+                              typeof p.completedItems === 'object' ? Object.keys(p.completedItems).length : 0;
+        return sum + completedCount;
+      }, 0);
+      
+      const minutes = Math.min(60, totalItems * 3); // Cap at 60 minutes per day
+      
+      return {
+        day: dayName,
+        minutes,
+        color: minutes > 0 ? colors[i % colors.length] : 'bg-gray-200'
+      };
+    });
+  };
 
-  const maxMinutes = Math.max(...weeklyActivity.map(d => d.minutes));
+  const weeklyActivity = calculateWeeklyActivity();
+  const maxMinutes = Math.max(10, ...weeklyActivity.map(d => d.minutes)); // Minimum 10 for scale
 
   return (
     <div className="min-h-screen pb-24">
@@ -153,6 +181,9 @@ export default function ParentDashboard() {
           </div>
           <div className="mt-4 text-center text-sm text-gray-600">
             Total this week: {weeklyActivity.reduce((sum, day) => sum + day.minutes, 0)} minutes
+          </div>
+          <div className="mt-2 text-center text-xs text-gray-500">
+            Based on completed activities and estimated engagement time
           </div>
         </Card>
 
