@@ -230,6 +230,51 @@ export class DatabaseStorage implements IStorage {
         { word: "RAIN", imageUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0", level: 2 },
         { word: "STAR", imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a", level: 2 },
         { word: "MOON", imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b", level: 2 }
+      ],
+      // Level 3: 5-letter words and sight words
+      [
+        { word: "HOUSE", imageUrl: "https://images.unsplash.com/photo-1570129477492-45c003edd2be", level: 3 },
+        { word: "PLANT", imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b", level: 3 },
+        { word: "WATER", imageUrl: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874", level: 3 },
+        { word: "APPLE", imageUrl: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6", level: 3 },
+        { word: "TRAIN", imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957", level: 3 },
+        { word: "BEACH", imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e", level: 3 },
+        { word: "HORSE", imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000", level: 3 },
+        { word: "BREAD", imageUrl: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73", level: 3 },
+        { word: "PIZZA", imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591", level: 3 },
+        { word: "MUSIC", imageUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f", level: 3 },
+        { word: "SMILE", imageUrl: "https://images.unsplash.com/photo-1552053831-71594a27632d", level: 3 },
+        { word: "CHAIR", imageUrl: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237", level: 3 }
+      ],
+      // Level 4: Complex words and blends
+      [
+        { word: "FLOWER", imageUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486c946", level: 4 },
+        { word: "BRIDGE", imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d", level: 4 },
+        { word: "GARDEN", imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b", level: 4 },
+        { word: "CASTLE", imageUrl: "https://images.unsplash.com/photo-1519046904884-53103b34b206", level: 4 },
+        { word: "RABBIT", imageUrl: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308", level: 4 },
+        { word: "BRANCH", imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", level: 4 },
+        { word: "SPIDER", imageUrl: "https://images.unsplash.com/photo-1478359844494-1092259d93e4", level: 4 },
+        { word: "SWITCH", imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13", level: 4 },
+        { word: "SCHOOL", imageUrl: "https://images.unsplash.com/photo-1580582932707-520aed937b7b", level: 4 },
+        { word: "SUMMER", imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4", level: 4 },
+        { word: "ORANGE", imageUrl: "https://images.unsplash.com/photo-1547036967-23d11aacaee0", level: 4 },
+        { word: "JUNGLE", imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", level: 4 }
+      ],
+      // Level 5: Advanced words and complex patterns
+      [
+        { word: "ELEPHANT", imageUrl: "https://images.unsplash.com/photo-1564760055775-d63b17a55c44", level: 5 },
+        { word: "DINOSAUR", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96", level: 5 },
+        { word: "BUTTERFLY", imageUrl: "https://images.unsplash.com/photo-1558449028-b53a39d100fc", level: 5 },
+        { word: "MOUNTAIN", imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4", level: 5 },
+        { word: "SANDWICH", imageUrl: "https://images.unsplash.com/photo-1539252554453-80ab65ce3586", level: 5 },
+        { word: "UMBRELLA", imageUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0", level: 5 },
+        { word: "COMPUTER", imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b", level: 5 },
+        { word: "AIRPLANE", imageUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05", level: 5 },
+        { word: "BIRTHDAY", imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13", level: 5 },
+        { word: "FAVORITE", imageUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3", level: 5 },
+        { word: "HOSPITAL", imageUrl: "https://images.unsplash.com/photo-1551601651-2a8555f1a136", level: 5 },
+        { word: "UNIVERSE", imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b", level: 5 }
       ]
     ];
 
