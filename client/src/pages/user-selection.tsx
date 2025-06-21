@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
@@ -14,6 +15,7 @@ export default function UserSelection() {
   const [location, setLocation] = useLocation();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newUser, setNewUser] = useState({ name: "", age: 5 });
+  const [showGuestOptions, setShowGuestOptions] = useState(false);
   const { toast } = useToast();
 
   const { data: users, isLoading } = useQuery<User[]>({
@@ -57,14 +59,22 @@ export default function UserSelection() {
     createUserMutation.mutate(newUser);
   };
 
-  const handleGuestLogin = () => {
+  const handleCreateNewGuest = () => {
     // Create a temporary guest user with friendly name
     const guestNames = ["Guest Explorer", "Guest Learner", "Guest Student", "Guest Friend", "Guest Buddy"];
     const randomName = guestNames[Math.floor(Math.random() * guestNames.length)];
     const uniqueNumber = Math.floor(Math.random() * 999) + 1;
     const guestName = `${randomName} ${uniqueNumber}`;
     createUserMutation.mutate({ name: guestName, age: 5 });
+    setShowGuestOptions(false);
   };
+
+  const handleSelectGuest = (user: User) => {
+    selectUser(user.id);
+    setShowGuestOptions(false);
+  };
+
+  const guestUsers = users?.filter(user => user.name.startsWith("Guest ")) || [];
 
   const formatLastActive = (date: string | null) => {
     if (!date) return "New user";
@@ -221,11 +231,10 @@ export default function UserSelection() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-gray-600 text-center">
-                  Explore the app without saving progress
+                  Perfect for trying out the app. Your progress will be saved with a guest profile.
                 </p>
                 <Button 
-                  onClick={handleGuestLogin}
-                  disabled={createUserMutation.isPending}
+                  onClick={() => setShowGuestOptions(true)}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl text-lg"
                 >
                   Continue as Guest
@@ -278,6 +287,78 @@ export default function UserSelection() {
             User Management
           </Button>
         </section>
+
+        {/* Guest User Options Dialog */}
+        <Dialog open={showGuestOptions} onOpenChange={setShowGuestOptions}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-center text-2xl">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-2xl">
+                  👋
+                </div>
+                Guest User Options
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Create New Guest Button */}
+              <Card 
+                className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-blue-300 bg-gradient-to-br from-blue-50 to-cyan-50"
+                onClick={handleCreateNewGuest}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center text-2xl">
+                    ➕
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">Create New Guest</h3>
+                  <p className="text-gray-600">Start fresh with a new guest profile</p>
+                </CardContent>
+              </Card>
+
+              {/* Existing Guest Users */}
+              {guestUsers.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 text-center">Or select an existing guest:</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {guestUsers.map((user) => (
+                      <Card 
+                        key={user.id}
+                        className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50"
+                        onClick={() => handleSelectGuest(user)}
+                      >
+                        <CardContent className="p-4 text-center">
+                          <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-lg">
+                            👤
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-800 mb-1">{user.name}</h3>
+                          <div className="flex justify-center items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {user.totalStars} stars
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              Age {user.age}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-500">{formatLastActive(user.lastActive)}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-center">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setShowGuestOptions(false)}
+                  className="flex items-center gap-2"
+                >
+                  ← Back to Main Menu
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
