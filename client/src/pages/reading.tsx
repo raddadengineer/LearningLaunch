@@ -56,7 +56,7 @@ export default function Reading() {
   const isWordCompleted = completedWords.includes(currentWord.id);
 
   const handleLetterClick = (letter: string) => {
-    speak(letter.toLowerCase(), { rate: 0.7, pitch: 1.2 });
+    speak(letter.toLowerCase(), { rate: 0.6, pitch: 1.1 });
   };
 
   const handleSpellWord = () => {
