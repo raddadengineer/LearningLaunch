@@ -30,17 +30,22 @@ export default function UserSelection() {
       toast({ title: `Welcome ${newUser.name}!` });
       setLocation("/");
     },
-  });
-
-  const selectUserMutation = useMutation({
-    mutationFn: (userId: number) => apiRequest(`/api/user/${userId}/activate`, "POST"),
-    onSuccess: (user) => {
-      localStorage.setItem("currentUserId", user.id.toString());
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: `Welcome back, ${user.name}!` });
-      setLocation("/");
+    onError: (error) => {
+      console.error("Error creating user:", error);
+      toast({ 
+        title: "Error creating user", 
+        description: "Please try again",
+        variant: "destructive" 
+      });
     },
   });
+
+  const selectUser = (userId: number) => {
+    localStorage.setItem("currentUserId", userId.toString());
+    queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    toast({ title: `Welcome back!` });
+    setLocation("/");
+  };
 
   const handleCreateUser = () => {
     if (!newUser.name.trim()) {
@@ -51,8 +56,9 @@ export default function UserSelection() {
   };
 
   const handleGuestLogin = () => {
-    // Create a temporary guest user
-    createUserMutation.mutate({ name: "Guest", age: 5 });
+    // Create a temporary guest user with unique name
+    const guestName = `Guest_${Date.now()}`;
+    createUserMutation.mutate({ name: guestName, age: 5 });
   };
 
   const formatLastActive = (date: string | null) => {
@@ -90,7 +96,7 @@ export default function UserSelection() {
                 <Card 
                   key={user.id} 
                   className="cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white border-2 border-gray-200 hover:border-blue-300"
-                  onClick={() => selectUserMutation.mutate(user.id)}
+                  onClick={() => selectUser(user.id)}
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-3xl font-bold text-white">
@@ -112,9 +118,8 @@ export default function UserSelection() {
                     </p>
                     <Button 
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 rounded-xl"
-                      disabled={selectUserMutation.isPending}
                     >
-                      {selectUserMutation.isPending ? "Loading..." : "Continue Learning"}
+                      Continue Learning
                     </Button>
                   </CardContent>
                 </Card>
