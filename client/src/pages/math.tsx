@@ -95,10 +95,7 @@ export default function MathPage() {
 
     setTimeout(() => {
       setShowFeedback(false);
-      if (answer === currentActivity.answer && currentActivityIndex < activities.length - 1) {
-        setCurrentActivityIndex(currentActivityIndex + 1);
-        setSelectedAnswer(null);
-      }
+      setSelectedAnswer(null);
     }, 3000);
   };
 
@@ -234,9 +231,20 @@ export default function MathPage() {
       <main className="container mx-auto px-4 py-8">
         {/* Math Activity */}
         <div className="text-center mb-12">
-          <h3 className="text-3xl font-fredoka text-gray-800 mb-8">
-            {currentActivity.question}
-          </h3>
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <h3 className="text-3xl font-fredoka text-gray-800">
+              {currentActivity.question}
+            </h3>
+            <Button
+              onClick={() => speak(currentActivity.question, { rate: 0.8, pitch: 1.1 })}
+              className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 touch-friendly"
+              size="sm"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 5l6 7-6 7z" />
+              </svg>
+            </Button>
+          </div>
           
           {/* Objects Display */}
           <Card className="rounded-3xl p-8 kid-shadow max-w-4xl mx-auto mb-8">
@@ -303,7 +311,7 @@ export default function MathPage() {
         </div>
 
         {/* Next Activity Button */}
-        {selectedAnswer === currentActivity.answer && currentActivityIndex < activities.length - 1 && (
+        {selectedAnswer === currentActivity.answer && currentActivityIndex < activities.length - 1 && !showFeedback && (
           <div className="flex justify-center">
             <Button 
               onClick={() => {
@@ -318,7 +326,7 @@ export default function MathPage() {
           </div>
         )}
 
-        {currentActivityIndex === activities.length - 1 && selectedAnswer === currentActivity.answer && (
+        {currentActivityIndex === activities.length - 1 && selectedAnswer === currentActivity.answer && !showFeedback && (
           <div className="text-center">
             <div className="text-2xl font-fredoka text-turquoise mb-4">
               🎉 All activities complete!
