@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { User, UserProgress, Achievement } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function Home() {
   const currentUserId = localStorage.getItem("currentUserId");
+  const [, setLocation] = useLocation();
   
   const { data: user, isLoading: userLoading } = useQuery<User>({
     queryKey: ["/api/user", currentUserId],
@@ -121,54 +122,84 @@ export default function Home() {
         {/* Activity Selection */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Reading Section */}
-          <Link href="/reading">
-            <Card className="rounded-3xl p-8 kid-shadow hover:scale-105 transition-transform cursor-pointer">
-              <div className="text-center">
-                <img 
-                  src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                  alt="Colorful alphabet blocks" 
-                  className="w-full h-48 object-cover rounded-2xl mb-6"
-                />
-                
-                <div className="flex items-center justify-center mb-4">
-                  <svg className="w-10 h-10 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <h3 className="text-3xl font-fredoka text-coral">Reading</h3>
+          <Card className="rounded-3xl p-8 kid-shadow hover:scale-105 transition-transform cursor-pointer">
+            <div className="text-center">
+              <img 
+                src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
+                alt="Colorful alphabet blocks" 
+                className="w-full h-48 object-cover rounded-2xl mb-6"
+              />
+              
+              <div className="flex items-center justify-center mb-4">
+                <svg className="w-10 h-10 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <h3 className="text-3xl font-fredoka text-coral">Reading</h3>
+              </div>
+              
+              <p className="text-lg text-gray-600 mb-6">Learn to read with fun words and sounds!</p>
+              
+              {/* Reading Levels */}
+              <div className="grid grid-cols-5 gap-2 mb-6">
+                <div 
+                  className="bg-green-100 rounded-xl p-2 text-center cursor-pointer hover:bg-green-200 transition-colors"
+                  onClick={() => {
+                    localStorage.setItem("selectedReadingLevel", "1");
+                    setLocation("/reading");
+                  }}
+                >
+                  <div className="text-lg mb-1">🌱</div>
+                  <span className="text-xs font-bold text-green-700">Level 1</span>
                 </div>
-                
-                <p className="text-lg text-gray-600 mb-6">Learn to read with fun words and sounds!</p>
-                
-                {/* Reading Levels */}
-                <div className="grid grid-cols-5 gap-2 mb-6">
-                  <div className="bg-green-100 rounded-xl p-2 text-center">
-                    <div className="text-lg mb-1">🌱</div>
-                    <span className="text-xs font-bold text-green-700">Level 1</span>
-                  </div>
-                  <div className="bg-blue-100 rounded-xl p-2 text-center">
-                    <div className="text-lg mb-1">🌿</div>
-                    <span className="text-xs font-bold text-blue-700">Level 2</span>
-                  </div>
-                  <div className="bg-yellow-100 rounded-xl p-2 text-center">
-                    <div className="text-lg mb-1">🌳</div>
-                    <span className="text-xs font-bold text-yellow-700">Level 3</span>
-                  </div>
-                  <div className="bg-purple-100 rounded-xl p-2 text-center">
-                    <div className="text-lg mb-1">🌲</div>
-                    <span className="text-xs font-bold text-purple-700">Level 4</span>
-                  </div>
-                  <div className="bg-red-100 rounded-xl p-2 text-center">
-                    <div className="text-lg mb-1">🎯</div>
-                    <span className="text-xs font-bold text-red-700">Level 5</span>
-                  </div>
+                <div 
+                  className="bg-blue-100 rounded-xl p-2 text-center cursor-pointer hover:bg-blue-200 transition-colors"
+                  onClick={() => {
+                    localStorage.setItem("selectedReadingLevel", "2");
+                    setLocation("/reading");
+                  }}
+                >
+                  <div className="text-lg mb-1">🌿</div>
+                  <span className="text-xs font-bold text-blue-700">Level 2</span>
                 </div>
-                
+                <div 
+                  className="bg-yellow-100 rounded-xl p-2 text-center cursor-pointer hover:bg-yellow-200 transition-colors"
+                  onClick={() => {
+                    localStorage.setItem("selectedReadingLevel", "3");
+                    setLocation("/reading");
+                  }}
+                >
+                  <div className="text-lg mb-1">🌳</div>
+                  <span className="text-xs font-bold text-yellow-700">Level 3</span>
+                </div>
+                <div 
+                  className="bg-purple-100 rounded-xl p-2 text-center cursor-pointer hover:bg-purple-200 transition-colors"
+                  onClick={() => {
+                    localStorage.setItem("selectedReadingLevel", "4");
+                    setLocation("/reading");
+                  }}
+                >
+                  <div className="text-lg mb-1">🌲</div>
+                  <span className="text-xs font-bold text-purple-700">Level 4</span>
+                </div>
+                <div 
+                  className="bg-red-100 rounded-xl p-2 text-center cursor-pointer hover:bg-red-200 transition-colors"
+                  onClick={() => {
+                    localStorage.setItem("selectedReadingLevel", "5");
+                    setLocation("/reading");
+                  }}
+                >
+                  <div className="text-lg mb-1">🎯</div>
+                  <span className="text-xs font-bold text-red-700">Level 5</span>
+                </div>
+              </div>
+              
+              <Link href="/reading">
                 <Button className="w-full bg-coral text-white text-xl font-bold py-4 rounded-2xl hover:bg-red-500 transition-colors touch-friendly">
                   Start Reading! 📚
                 </Button>
-              </div>
-            </Card>
-          </Link>
+              </Link>
+            </div>
+          </Card>
 
           {/* Math Section */}
           <Link href="/math">

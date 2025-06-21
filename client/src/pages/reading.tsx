@@ -11,11 +11,18 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Reading() {
-  const [currentLevel, setCurrentLevel] = useState(1);
+  // Check for pre-selected level from home page
+  const preSelectedLevel = localStorage.getItem("selectedReadingLevel");
+  const [currentLevel, setCurrentLevel] = useState(preSelectedLevel ? parseInt(preSelectedLevel) : 1);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { toast } = useToast();
   
   const currentUserId = localStorage.getItem("currentUserId");
+  
+  // Clear the selected level after using it
+  if (preSelectedLevel) {
+    localStorage.removeItem("selectedReadingLevel");
+  }
   
   if (!currentUserId) {
     return (
