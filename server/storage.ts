@@ -68,16 +68,16 @@ export class MemStorage implements IStorage {
 
     // Initialize reading words - Level 1: Simple 3-letter CVC words
     const level1Words: ReadingWord[] = [
-      { id: 1, word: "CAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1574158622682-e40e69881006" },
-      { id: 2, word: "DOG", level: 1, imageUrl: "https://images.unsplash.com/photo-1587300003388-59208cc962cb" },
+      { id: 1, word: "CAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba" },
+      { id: 2, word: "DOG", level: 1, imageUrl: "https://images.unsplash.com/photo-1552053831-71594a27632d" },
       { id: 3, word: "SUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
-      { id: 4, word: "BAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae" },
-      { id: 5, word: "HAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62" },
-      { id: 6, word: "CAN", level: 1, imageUrl: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b" },
+      { id: 4, word: "BAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" },
+      { id: 5, word: "HAT", level: 1, imageUrl: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0" },
+      { id: 6, word: "CAN", level: 1, imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c" },
       { id: 7, word: "RUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b" },
       { id: 8, word: "FUN", level: 1, imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9" },
       { id: 9, word: "BUS", level: 1, imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957" },
-      { id: 10, word: "CUP", level: 1, imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c" },
+      { id: 10, word: "CUP", level: 1, imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f" },
       { id: 11, word: "PEN", level: 1, imageUrl: "https://images.unsplash.com/photo-1586953208448-b95a79798f07" },
       { id: 12, word: "BED", level: 1, imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85" }
     ];
@@ -90,7 +90,7 @@ export class MemStorage implements IStorage {
       { id: 16, word: "BOOK", level: 2, imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570" },
       { id: 17, word: "BALL", level: 2, imageUrl: "https://images.unsplash.com/photo-1594736797933-d0bd1aebf67c" },
       { id: 18, word: "PLAY", level: 2, imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9" },
-      { id: 19, word: "JUMP", level: 2, imageUrl: "https://images.unsplash.com/photo-1606889464198-fcae85d024d8" },
+      { id: 19, word: "JUMP", level: 2, imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b" },
       { id: 20, word: "HELP", level: 2, imageUrl: "https://images.unsplash.com/photo-1559027615-cd4628902d4a" },
       { id: 21, word: "CAKE", level: 2, imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13" },
       { id: 22, word: "DUCK", level: 2, imageUrl: "https://images.unsplash.com/photo-1551196007-2b6c0afbc0dd" },
@@ -135,18 +135,18 @@ export class MemStorage implements IStorage {
 
     // Level 5: Advanced words and sight words
     const level5Words: ReadingWord[] = [
-      { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6" },
+      { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7" },
       { id: 53, word: "GIRAFFE", level: 5, imageUrl: "https://images.unsplash.com/photo-1547036967-23d11aacaee0" },
       { id: 54, word: "RAINBOW", level: 5, imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a" },
       { id: 55, word: "BIRTHDAY", level: 5, imageUrl: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3" },
       { id: 56, word: "COMPUTER", level: 5, imageUrl: "https://images.unsplash.com/photo-1547082299-de196ea013d6" },
       { id: 57, word: "SANDWICH", level: 5, imageUrl: "https://images.unsplash.com/photo-1553909489-cd47e0ef937f" },
-      { id: 58, word: "FOOTBALL", level: 5, imageUrl: "https://images.unsplash.com/photo-1594736797933-d0bd1aebf67c" },
+      { id: 58, word: "FOOTBALL", level: 5, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" },
       { id: 59, word: "BACKPACK", level: 5, imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62" },
       { id: 60, word: "SUNSHINE", level: 5, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
       { id: 61, word: "BUTTERFLY", level: 5, imageUrl: "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0" },
       { id: 62, word: "TREASURE", level: 5, imageUrl: "https://images.unsplash.com/photo-1519452575417-564c1401ecc0" },
-      { id: 63, word: "PRINCESS", level: 5, imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96" }
+      { id: 63, word: "PRINCESS", level: 5, imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" }
     ];
 
     [level1Words, level2Words, level3Words, level4Words, level5Words].forEach(levelWords => {
