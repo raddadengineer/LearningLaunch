@@ -21,8 +21,8 @@ export default function Reading() {
   });
 
   const { data: progress } = useQuery<UserProgress[]>({
-    queryKey: ["/api/user/1/progress/reading", currentLevel],
-    queryFn: () => fetch(`/api/user/1/progress/reading`).then(res => res.json()),
+    queryKey: ["/api/user/progress/reading", currentUserId, currentLevel],
+    queryFn: () => fetch(`/api/user/${currentUserId}/progress/reading`).then(res => res.json()),
   });
 
   const updateProgressMutation = useMutation({
@@ -211,7 +211,7 @@ export default function Reading() {
                   setCurrentWordIndex(0);
                   // Invalidate queries to refetch data for new level
                   queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
-                  queryClient.invalidateQueries({ queryKey: ["/api/user/1/progress/reading"] });
+                  queryClient.invalidateQueries({ queryKey: ["/api/user/progress/reading"] });
                 }}
                 className={`
                   py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly

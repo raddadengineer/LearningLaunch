@@ -9,7 +9,7 @@ export default function Navigation() {
     { path: "/reading", icon: "📚", label: "Reading" },
     { path: "/math", icon: "🔢", label: "Math" },
     { path: "/parent-dashboard", icon: "📊", label: "Progress" },
-    { path: "/admin", icon: "⚙️", label: "Admin" },
+    { path: "/select-user", icon: "👤", label: "Switch User" },
   ];
 
   return (

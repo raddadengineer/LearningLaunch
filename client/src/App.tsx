@@ -10,21 +10,36 @@ import Math from "@/pages/math";
 import ParentDashboard from "@/pages/parent-dashboard";
 import Admin from "@/pages/admin";
 import UserManagement from "@/pages/user-management";
+import UserSelection from "@/pages/user-selection";
 import Navigation from "@/components/navigation";
 
 function Router() {
+  // Check if user is selected
+  const currentUserId = localStorage.getItem("currentUserId");
+  
   return (
     <div className="min-h-screen relative">
       <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/reading" component={Reading} />
-        <Route path="/math" component={Math} />
-        <Route path="/parent-dashboard" component={ParentDashboard} />
-        <Route path="/admin" component={Admin} />
-        <Route path="/users" component={UserManagement} />
-        <Route component={NotFound} />
+        {/* If no user selected, show user selection page */}
+        {!currentUserId ? (
+          <>
+            <Route path="/admin" component={Admin} />
+            <Route component={UserSelection} />
+          </>
+        ) : (
+          <>
+            <Route path="/" component={Home} />
+            <Route path="/reading" component={Reading} />
+            <Route path="/math" component={Math} />
+            <Route path="/parent-dashboard" component={ParentDashboard} />
+            <Route path="/admin" component={Admin} />
+            <Route path="/users" component={UserManagement} />
+            <Route path="/select-user" component={UserSelection} />
+            <Route component={NotFound} />
+          </>
+        )}
       </Switch>
-      <Navigation />
+      {currentUserId && <Navigation />}
     </div>
   );
 }
