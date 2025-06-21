@@ -81,6 +81,10 @@ export default function Reading() {
         title: "Level Complete! 🎉",
         description: "You've finished all words in this level!",
       });
+      // Navigate back to home after completing the level
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
     }
   };
 

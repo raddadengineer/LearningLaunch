@@ -88,12 +88,12 @@ export default function Math() {
   const generateAnswerOptions = (correctAnswer: number) => {
     const options = [correctAnswer];
     while (options.length < 4) {
-      const option = Math.max(1, correctAnswer + Math.floor(Math.random() * 6) - 3);
+      const option = Math.max(1, correctAnswer + Math.floor(globalThis.Math.random() * 6) - 3);
       if (!options.includes(option)) {
         options.push(option);
       }
     }
-    return options.sort(() => Math.random() - 0.5);
+    return options.sort(() => globalThis.Math.random() - 0.5);
   };
 
   const answerOptions = generateAnswerOptions(currentActivity.answer);

@@ -96,8 +96,8 @@ export class MemStorage implements IStorage {
       { id: 23, word: "FROG", level: 2, imageUrl: "https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80" },
       { id: 24, word: "MILK", level: 2, imageUrl: "https://images.unsplash.com/photo-1550583724-b2692b85b150" },
       { id: 25, word: "RAIN", level: 2, imageUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0" },
-      { id: 26, word: "STAR", level: 2, imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4" },
-      { id: 27, word: "MOON", level: 2, imageUrl: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2" }
+      { id: 26, word: "STAR", level: 2, imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a" },
+      { id: 27, word: "MOON", level: 2, imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b" }
     ];
 
     level1Words.forEach(word => this.readingWords.set(word.id, word));
