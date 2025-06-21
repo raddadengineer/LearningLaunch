@@ -21,22 +21,21 @@ function Router() {
   return (
     <div className="min-h-screen relative">
       <Switch>
-        {/* If no user selected, show user selection page */}
+        {/* Admin route always available */}
+        <Route path="/admin" component={Admin} />
+        
+        {/* If no user selected, show user selection page for all other routes */}
         {!currentUserId ? (
-          <>
-            <Route path="/admin" component={Admin} />
-            <Route component={UserSelection} />
-          </>
+          <Route component={UserSelection} />
         ) : (
           <>
             <Route path="/" component={Home} />
             <Route path="/reading" component={Reading} />
             <Route path="/math" component={Math} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
-            <Route path="/admin" component={Admin} />
             <Route path="/users" component={UserManagement} />
             <Route path="/select-user" component={UserSelection} />
-            <Route component={NotFound} />
+            <Route component={Home} />
           </>
         )}
       </Switch>
