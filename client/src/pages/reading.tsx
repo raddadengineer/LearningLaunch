@@ -16,11 +16,13 @@ export default function Reading() {
   const { toast } = useToast();
 
   const { data: words, isLoading: wordsLoading } = useQuery<ReadingWord[]>({
-    queryKey: ["/api/reading/words", { level: currentLevel }],
+    queryKey: ["/api/reading/words", currentLevel],
+    queryFn: () => fetch(`/api/reading/words?level=${currentLevel}`).then(res => res.json()),
   });
 
   const { data: progress } = useQuery<UserProgress[]>({
-    queryKey: ["/api/user/1/progress/reading"],
+    queryKey: ["/api/user/1/progress/reading", currentLevel],
+    queryFn: () => fetch(`/api/user/1/progress/reading`).then(res => res.json()),
   });
 
   const updateProgressMutation = useMutation({
@@ -207,6 +209,9 @@ export default function Reading() {
                 onClick={() => {
                   setCurrentLevel(level);
                   setCurrentWordIndex(0);
+                  // Invalidate queries to refetch data for new level
+                  queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+                  queryClient.invalidateQueries({ queryKey: ["/api/user/1/progress/reading"] });
                 }}
                 className={`
                   py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly
