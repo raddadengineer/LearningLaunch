@@ -9,6 +9,7 @@ import Reading from "@/pages/reading";
 import Math from "@/pages/math";
 import ParentDashboard from "@/pages/parent-dashboard";
 import Admin from "@/pages/admin";
+import UserManagement from "@/pages/user-management";
 import Navigation from "@/components/navigation";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
         <Route path="/math" component={Math} />
         <Route path="/parent-dashboard" component={ParentDashboard} />
         <Route path="/admin" component={Admin} />
+        <Route path="/users" component={UserManagement} />
         <Route component={NotFound} />
       </Switch>
       <Navigation />

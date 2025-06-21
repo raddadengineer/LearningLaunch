@@ -12,9 +12,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
+      // Update last active time
+      await storage.updateUserLastActive(userId);
       res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
+  app.get("/api/users", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get users" });
+    }
+  });
+
+  app.post("/api/users", async (req, res) => {
+    try {
+      const { name, age } = req.body;
+      if (!name || !age) {
+        return res.status(400).json({ error: "Name and age are required" });
+      }
+      const user = await storage.createUser({ name, age });
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  });
+
+  app.put("/api/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const userData = req.body;
+      const user = await storage.updateUser(userId, userData);
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+
+  app.delete("/api/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      await storage.deleteUser(userId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete user" });
+    }
+  });
+
+  app.post("/api/user/:id/activate", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.updateUserLastActive(userId);
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to activate user" });
     }
   });
 
@@ -58,6 +113,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(progress);
     } catch (error) {
       res.status(500).json({ message: "Failed to update progress" });
+    }
+  });
+
+  app.delete("/api/user/:id/progress", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      await storage.clearUserProgress(userId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to clear progress" });
+    }
+  });
+
+  app.delete("/api/user/:id/progress/:type", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const activityType = req.params.type;
+      await storage.clearUserProgressByType(userId, activityType);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to clear progress by type" });
     }
   });
 
