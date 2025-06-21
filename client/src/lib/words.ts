@@ -70,7 +70,7 @@ export const level4Words: WordData[] = [
 ];
 
 export const level5Words: WordData[] = [
-  { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7", phonics: ["EL", "E", "PHANT"] },
+  { id: 52, word: "ELEPHANT", level: 5, imageUrl: "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6", phonics: ["EL", "E", "PHANT"] },
   { id: 53, word: "GIRAFFE", level: 5, imageUrl: "https://images.unsplash.com/photo-1547036967-23d11aacaee0", phonics: ["G", "I", "RAFFE"] },
   { id: 54, word: "RAINBOW", level: 5, imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a", phonics: ["R", "AIN", "BOW"] },
   { id: 55, word: "BIRTHDAY", level: 5, imageUrl: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3", phonics: ["B", "IRTH", "DAY"] },
