@@ -33,24 +33,24 @@ export function speak(text: string, options: SpeechOptions = {}) {
 }
 
 export function speakWord(word: string, options: SpeechOptions = {}) {
-  speak(word, options);
+  speak(word.toLowerCase(), options);
 }
 
 export function speakLetters(word: string, options: SpeechOptions = {}) {
-  const letters = word.split('');
+  const letters = word.toLowerCase().split('');
   let delay = 0;
   
   letters.forEach((letter, index) => {
     setTimeout(() => {
       speak(letter, options);
     }, delay);
-    delay += 800; // 800ms delay between letters
+    delay += 1000; // 1000ms delay between letters for better spacing
   });
   
   // Say the whole word after spelling
   setTimeout(() => {
-    speak(word, { ...options, rate: (options.rate || 0.8) + 0.2 });
-  }, delay + 500);
+    speak(word.toLowerCase(), { ...options, rate: (options.rate || 0.8) + 0.1 });
+  }, delay + 800);
 }
 
 export function speakFeedback(isCorrect: boolean) {
