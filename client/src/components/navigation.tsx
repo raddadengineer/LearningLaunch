@@ -22,6 +22,11 @@ export default function Navigation() {
               className={`flex flex-col items-center space-y-1 touch-friendly p-2 rounded-xl ${
                 location === item.path ? "bg-blue-50 text-blue-600" : "text-gray-600"
               }`}
+              onClick={() => {
+                if (item.path === "/select-user") {
+                  localStorage.removeItem("currentUserId");
+                }
+              }}
             >
               <span className="text-2xl">{item.icon}</span>
               <span className="text-xs font-bold">{item.label}</span>

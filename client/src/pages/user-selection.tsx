@@ -225,16 +225,7 @@ export default function UserSelection() {
           </div>
         </section>
 
-        {/* Admin Access */}
-        <section className="mt-16 text-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => setLocation("/admin")}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            Admin Access
-          </Button>
-        </section>
+
       </div>
     </div>
   );
