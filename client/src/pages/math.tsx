@@ -88,15 +88,21 @@ export default function MathPage() {
           updateProgressMutation.mutate({ completedItems: newCompletedItems, stars });
         }, 2000);
       }
+
+      // For correct answers, hide feedback after 3 seconds but keep selectedAnswer
+      setTimeout(() => {
+        setShowFeedback(false);
+      }, 3000);
     } else {
       setFeedback("🤔 Try again! Count carefully.");
       speak("Try again! Count carefully.", { rate: 0.8, pitch: 1.1 });
+      
+      // For wrong answers, clear everything after 3 seconds
+      setTimeout(() => {
+        setShowFeedback(false);
+        setSelectedAnswer(null);
+      }, 3000);
     }
-
-    setTimeout(() => {
-      setShowFeedback(false);
-      setSelectedAnswer(null);
-    }, 3000);
   };
 
   const generateAnswerOptions = (correctAnswer: number) => {
@@ -312,14 +318,14 @@ export default function MathPage() {
 
         {/* Next Activity Button */}
         {selectedAnswer === currentActivity.answer && currentActivityIndex < activities.length - 1 && !showFeedback && (
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-8">
             <Button 
               onClick={() => {
                 setCurrentActivityIndex(currentActivityIndex + 1);
                 setSelectedAnswer(null);
                 setShowFeedback(false);
               }}
-              className="bg-turquoise text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly"
+              className="bg-turquoise text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly animate-pulse"
             >
               Next Activity →
             </Button>
@@ -327,15 +333,27 @@ export default function MathPage() {
         )}
 
         {currentActivityIndex === activities.length - 1 && selectedAnswer === currentActivity.answer && !showFeedback && (
-          <div className="text-center">
+          <div className="text-center mb-8">
             <div className="text-2xl font-fredoka text-turquoise mb-4">
               🎉 All activities complete!
             </div>
-            <Link href="/">
-              <Button className="bg-turquoise text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly">
-                Back to Home
+            <div className="mb-4">
+              <Button 
+                onClick={() => {
+                  setCurrentActivityIndex(0);
+                  setSelectedAnswer(null);
+                  setShowFeedback(false);
+                }}
+                className="bg-coral text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-red-500 transition-colors touch-friendly mr-4"
+              >
+                Try Again
               </Button>
-            </Link>
+              <Link href="/">
+                <Button className="bg-turquoise text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-teal-500 transition-colors touch-friendly">
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </main>
