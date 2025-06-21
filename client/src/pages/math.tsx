@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { MathActivity, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -16,6 +16,7 @@ export default function MathPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const { toast } = useToast();
 
   const { data: activities, isLoading: activitiesLoading } = useQuery<MathActivity[]>({
@@ -73,6 +74,22 @@ export default function MathPage() {
     : [];
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
 
+  // Countdown timer effect
+  useEffect(() => {
+    if (countdown !== null && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      // Auto-advance to next activity
+      if (currentActivityIndex < activities.length - 1) {
+        setCurrentActivityIndex(currentActivityIndex + 1);
+        setSelectedAnswer(null);
+        setShowFeedback(false);
+        setCountdown(null);
+      }
+    }
+  }, [countdown, currentActivityIndex, activities]);
+
   const handleAnswerSelect = (answer: number) => {
     setSelectedAnswer(answer);
     setShowFeedback(true);
@@ -89,10 +106,13 @@ export default function MathPage() {
         }, 2000);
       }
 
-      // For correct answers, hide feedback after 3 seconds but keep selectedAnswer
+      // Start countdown for auto-advance
       setTimeout(() => {
         setShowFeedback(false);
-      }, 3000);
+        if (currentActivityIndex < activities.length - 1) {
+          setCountdown(5); // 5 second countdown
+        }
+      }, 2000);
     } else {
       setFeedback("🤔 Try again! Count carefully.");
       speak("Try again! Count carefully.", { rate: 0.8, pitch: 1.1 });
@@ -316,19 +336,65 @@ export default function MathPage() {
           )}
         </div>
 
-        {/* Next Activity Button */}
+        {/* Auto-advance countdown or manual next button */}
         {selectedAnswer === currentActivity.answer && currentActivityIndex < activities.length - 1 && !showFeedback && (
-          <div className="flex justify-center mb-8">
-            <Button 
-              onClick={() => {
-                setCurrentActivityIndex(currentActivityIndex + 1);
-                setSelectedAnswer(null);
-                setShowFeedback(false);
-              }}
-              className="bg-turquoise text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly animate-pulse"
-            >
-              Next Activity →
-            </Button>
+          <div className="flex flex-col items-center mb-8">
+            {countdown !== null ? (
+              <div className="text-center">
+                <div className="text-3xl font-bold text-turquoise mb-4">
+                  Next activity in {countdown}...
+                </div>
+                <div className="w-32 h-32 mx-auto relative">
+                  <svg className="w-32 h-32 -rotate-90" viewBox="0 0 128 128">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="#e5e7eb"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="#0891b2"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={351.86}
+                      strokeDashoffset={351.86 * (1 - (5 - countdown) / 5)}
+                      className="transition-all duration-1000 ease-linear"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-turquoise">{countdown}</span>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => {
+                    setCurrentActivityIndex(currentActivityIndex + 1);
+                    setSelectedAnswer(null);
+                    setShowFeedback(false);
+                    setCountdown(null);
+                  }}
+                  className="bg-coral text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-red-500 transition-colors touch-friendly mt-4"
+                >
+                  Skip to Next →
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                onClick={() => {
+                  setCurrentActivityIndex(currentActivityIndex + 1);
+                  setSelectedAnswer(null);
+                  setShowFeedback(false);
+                }}
+                className="bg-turquoise text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly animate-pulse"
+              >
+                Next Activity →
+              </Button>
+            )}
           </div>
         )}
 
