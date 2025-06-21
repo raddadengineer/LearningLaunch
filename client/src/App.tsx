@@ -24,6 +24,9 @@ function Router() {
         {/* Admin route always available */}
         <Route path="/admin" component={Admin} />
         
+        {/* User management always available */}
+        <Route path="/users" component={UserManagement} />
+        
         {/* If no user selected, show user selection page for all other routes */}
         {!currentUserId ? (
           <Route component={UserSelection} />
@@ -33,7 +36,6 @@ function Router() {
             <Route path="/reading" component={Reading} />
             <Route path="/math" component={Math} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
-            <Route path="/users" component={UserManagement} />
             <Route path="/select-user" component={UserSelection} />
             <Route component={Home} />
           </>

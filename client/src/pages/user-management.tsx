@@ -84,13 +84,28 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">User Management</h1>
-        <Link href="/">
-          <Button variant="outline">Back to Home</Button>
-        </Link>
+    <div className="min-h-screen pb-24 bg-gray-50">
+      <div className="bg-white p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = "/admin"}
+            >
+              Admin Panel
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = "/"}
+            >
+              Back to Home
+            </Button>
+          </div>
+        </div>
       </div>
+      
+      <div className="container mx-auto p-6 max-w-6xl">
       
       <Tabs defaultValue="users" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
@@ -250,6 +265,7 @@ export default function UserManagement() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
