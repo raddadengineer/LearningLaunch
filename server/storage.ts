@@ -39,12 +39,107 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  async initializeData() {
+    // Initialize default reading words if they don't exist
+    const existingWords = await this.getAllReadingWords();
+    if (existingWords.length === 0) {
+      await this.seedReadingWords();
+    }
+  }
 
-  constructor() {
-    this.users = new Map();
-    this.userProgress = new Map();
-    this.readingWords = new Map();
-    this.mathActivities = new Map();
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.lastActive));
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values({
+      ...insertUser,
+      totalStars: 0
+    }).returning();
+    return user;
+  }
+
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User> {
+    const [user] = await db.update(users)
+      .set(userData)
+      .where(eq(users.id, id))
+      .returning();
+    if (!user) throw new Error("User not found");
+    return user;
+  }
+
+  async updateUserStars(id: number, stars: number): Promise<User> {
+    const [user] = await db.update(users)
+      .set({ totalStars: stars })
+      .where(eq(users.id, id))
+      .returning();
+    if (!user) throw new Error("User not found");
+    return user;
+  }
+
+  async updateUserLastActive(id: number): Promise<User> {
+    const [user] = await db.update(users)
+      .set({ lastActive: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    if (!user) throw new Error("User not found");
+    return user;
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    // Delete user progress first
+    await db.delete(userProgress).where(eq(userProgress.userId, id));
+    // Delete achievements
+    await db.delete(achievements).where(eq(achievements.userId, id));
+    // Delete user
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  async getUserProgress(userId: number): Promise<UserProgress[]> {
+    return await db.select().from(userProgress).where(eq(userProgress.userId, userId));
+  }
+
+  async getProgressByType(userId: number, activityType: string): Promise<UserProgress[]> {
+    return await db.select().from(userProgress)
+      .where(eq(userProgress.userId, userId))
+      .where(eq(userProgress.activityType, activityType));
+  }
+
+  async updateProgress(userId: number, activityType: string, level: number, completedItems: any[], stars: number): Promise<UserProgress> {
+    // Try to find existing progress
+    const [existingProgress] = await db.select().from(userProgress)
+      .where(eq(userProgress.userId, userId))
+      .where(eq(userProgress.activityType, activityType))
+      .where(eq(userProgress.level, level));
+
+    if (existingProgress) {
+      const [updated] = await db.update(userProgress)
+        .set({ completedItems, stars })
+        .where(eq(userProgress.id, existingProgress.id))
+        .returning();
+      return updated;
+    } else {
+      const [newProgress] = await db.insert(userProgress)
+        .values({ userId, activityType, level, completedItems, stars })
+        .returning();
+      return newProgress;
+    }
+  }
+
+  async clearUserProgress(userId: number): Promise<void> {
+    await db.delete(userProgress).where(eq(userProgress.userId, userId));
+  }
+
+  async clearUserProgressByType(userId: number, activityType: string): Promise<void> {
+    await db.delete(userProgress)
+      .where(eq(userProgress.userId, userId))
+      .where(eq(userProgress.activityType, activityType));
+  }
     this.achievements = new Map();
     this.currentUserId = 1;
     this.currentProgressId = 1;
@@ -333,8 +428,14 @@ export class DatabaseStorage implements IStorage {
     );
   }
 
+  async getMathActivities(type: string, level: number): Promise<MathActivity[]> {
+    return await db.select().from(mathActivities)
+      .where(eq(mathActivities.type, type))
+      .where(eq(mathActivities.level, level));
+  }
+
   async getAllMathActivities(): Promise<MathActivity[]> {
-    return Array.from(this.mathActivities.values());
+    return await db.select().from(mathActivities);
   }
 
   async getUserAchievements(userId: number): Promise<Achievement[]> {
@@ -351,8 +452,6 @@ export class DatabaseStorage implements IStorage {
   async clearUserAchievements(userId: number): Promise<void> {
     await db.delete(achievements).where(eq(achievements.userId, userId));
   }
-}
-
   async seedReadingWords() {
     const wordsByLevel = [
       // Level 1: Simple 3-letter CVC words
