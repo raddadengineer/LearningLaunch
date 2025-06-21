@@ -18,6 +18,9 @@ export interface IStorage {
   // Reading methods
   getReadingWords(level: number): Promise<ReadingWord[]>;
   getAllReadingWords(): Promise<ReadingWord[]>;
+  addReadingWord(word: { word: string; imageUrl: string; level: number }): Promise<ReadingWord>;
+  updateReadingWord(id: number, word: { word: string; imageUrl: string; level: number }): Promise<ReadingWord>;
+  deleteReadingWord(id: number): Promise<void>;
 
   // Math methods
   getMathActivities(type: string, level: number): Promise<MathActivity[]>;
@@ -305,6 +308,42 @@ export class MemStorage implements IStorage {
 
   async getAllReadingWords(): Promise<ReadingWord[]> {
     return Array.from(this.readingWords.values());
+  }
+
+  async addReadingWord(wordData: { word: string; imageUrl: string; level: number }): Promise<ReadingWord> {
+    const id = this.currentWordId++;
+    const newWord: ReadingWord = {
+      id,
+      word: wordData.word,
+      imageUrl: wordData.imageUrl,
+      level: wordData.level
+    };
+    this.readingWords.set(id, newWord);
+    return newWord;
+  }
+
+  async updateReadingWord(id: number, wordData: { word: string; imageUrl: string; level: number }): Promise<ReadingWord> {
+    const existingWord = this.readingWords.get(id);
+    if (!existingWord) {
+      throw new Error("Word not found");
+    }
+    
+    const updatedWord: ReadingWord = {
+      ...existingWord,
+      word: wordData.word,
+      imageUrl: wordData.imageUrl,
+      level: wordData.level
+    };
+    
+    this.readingWords.set(id, updatedWord);
+    return updatedWord;
+  }
+
+  async deleteReadingWord(id: number): Promise<void> {
+    const deleted = this.readingWords.delete(id);
+    if (!deleted) {
+      throw new Error("Word not found");
+    }
   }
 
   async getMathActivities(type: string, level: number): Promise<MathActivity[]> {

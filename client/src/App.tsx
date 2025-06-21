@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Reading from "@/pages/reading";
 import Math from "@/pages/math";
 import ParentDashboard from "@/pages/parent-dashboard";
+import Admin from "@/pages/admin";
 import Navigation from "@/components/navigation";
 
 function Router() {
@@ -18,6 +19,7 @@ function Router() {
         <Route path="/reading" component={Reading} />
         <Route path="/math" component={Math} />
         <Route path="/parent-dashboard" component={ParentDashboard} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
       <Navigation />
