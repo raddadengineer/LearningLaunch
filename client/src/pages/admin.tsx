@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { ReadingWord } from "@shared/schema";
+import { Link } from "wouter";
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,12 +20,47 @@ export default function Admin() {
   const [newWord, setNewWord] = useState({ word: "", imageUrl: "", level: 1 });
   const { toast } = useToast();
 
-  // Check if already authenticated
-  useState(() => {
+  // Always call hooks first - check authentication
+  useEffect(() => {
     const adminAuth = localStorage.getItem("adminAuthenticated");
     if (adminAuth === "true") {
       setIsAuthenticated(true);
     }
+  }, []);
+
+  // Always call all hooks
+  const { data: words, isLoading } = useQuery<ReadingWord[]>({
+    queryKey: ["/api/reading/words/all"],
+    queryFn: () => fetch("/api/reading/words/all").then(res => res.json()),
+    enabled: isAuthenticated, // Only fetch when authenticated
+  });
+
+  const updateWordMutation = useMutation({
+    mutationFn: (data: { id: number; word: string; imageUrl: string; level: number }) => 
+      apiRequest(`/api/reading/words/${data.id}`, "PUT", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+      setEditingWord(null);
+      toast({ title: "Word updated successfully" });
+    },
+  });
+
+  const addWordMutation = useMutation({
+    mutationFn: (data: { word: string; imageUrl: string; level: number }) =>
+      apiRequest("/api/reading/words", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+      setNewWord({ word: "", imageUrl: "", level: 1 });
+      toast({ title: "Word added successfully" });
+    },
+  });
+
+  const deleteWordMutation = useMutation({
+    mutationFn: (id: number) => apiRequest(`/api/reading/words/${id}`, "DELETE"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+      toast({ title: "Word deleted successfully" });
+    },
   });
 
   const handleLogin = () => {
@@ -46,6 +82,25 @@ export default function Admin() {
     setIsAuthenticated(false);
     setCredentials({ username: "", password: "" });
     toast({ title: "Logged out successfully" });
+  };
+
+  const filteredWords = words?.filter(word => word.level === parseInt(selectedLevel)) || [];
+
+  const handleUpdateWord = (word: ReadingWord) => {
+    updateWordMutation.mutate({
+      id: word.id,
+      word: word.word,
+      imageUrl: word.imageUrl,
+      level: word.level
+    });
+  };
+
+  const handleAddWord = () => {
+    if (!newWord.word || !newWord.imageUrl) {
+      toast({ title: "Please fill in all fields", variant: "destructive" });
+      return;
+    }
+    addWordMutation.mutate(newWord);
   };
 
   // Show login form if not authenticated
@@ -110,65 +165,36 @@ export default function Admin() {
     );
   }
 
-  const { data: words, isLoading } = useQuery<ReadingWord[]>({
-    queryKey: ["/api/reading/words/all"],
-    queryFn: () => fetch("/api/reading/words/all").then(res => res.json()),
-  });
-
-  const updateWordMutation = useMutation({
-    mutationFn: (data: { id: number; word: string; imageUrl: string; level: number }) => 
-      apiRequest(`/api/reading/words/${data.id}`, "PUT", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
-      setEditingWord(null);
-      toast({ title: "Word updated successfully" });
-    },
-  });
-
-  const addWordMutation = useMutation({
-    mutationFn: (data: { word: string; imageUrl: string; level: number }) =>
-      apiRequest("/api/reading/words", "POST", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
-      setNewWord({ word: "", imageUrl: "", level: 1 });
-      toast({ title: "Word added successfully" });
-    },
-  });
-
-  const deleteWordMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/reading/words/${id}`, "DELETE"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
-      toast({ title: "Word deleted successfully" });
-    },
-  });
-
-  const filteredWords = words?.filter(word => word.level === parseInt(selectedLevel)) || [];
-
-  const handleUpdateWord = (word: ReadingWord) => {
-    updateWordMutation.mutate({
-      id: word.id,
-      word: word.word,
-      imageUrl: word.imageUrl,
-      level: word.level
-    });
-  };
-
-  const handleAddWord = () => {
-    if (!newWord.word || !newWord.imageUrl) {
-      toast({ title: "Please fill in all fields", variant: "destructive" });
-      return;
-    }
-    addWordMutation.mutate(newWord);
-  };
-
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-6">Word Management Admin</h1>
+    <div className="min-h-screen pb-24 bg-gray-50">
+      {/* Header */}
+      <div className="bg-white p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              Logout
+            </Button>
+            <Link href="/users">
+              <Button variant="outline">User Management</Button>
+            </Link>
+            <Link href="/">
+              <Button variant="outline">Back to Home</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto p-6 max-w-6xl">
+        <h1 className="text-3xl font-bold mb-6">Word Management Admin</h1>
       
       <Tabs defaultValue="manage" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
@@ -342,6 +368,7 @@ export default function Admin() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
