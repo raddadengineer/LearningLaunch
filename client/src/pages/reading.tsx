@@ -27,8 +27,8 @@ export default function Reading() {
 
   const updateProgressMutation = useMutation({
     mutationFn: async ({ completedItems, stars }: { completedItems: number[], stars: number }) => {
-      return apiRequest("POST", "/api/progress", {
-        userId: 1,
+      return apiRequest("/api/progress", "POST", {
+        userId: currentUserId,
         activityType: "reading",
         level: currentLevel,
         completedItems,
@@ -36,7 +36,8 @@ export default function Reading() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user/1/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Great job! 🌟",
         description: "Your progress has been saved!",

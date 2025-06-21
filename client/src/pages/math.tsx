@@ -20,14 +20,17 @@ export default function Math() {
     queryKey: ["/api/math/activities", { type: "counting", level: 1 }],
   });
 
+  const currentUserId = parseInt(localStorage.getItem("currentUserId") || "1");
+  
   const { data: progress } = useQuery<UserProgress[]>({
-    queryKey: ["/api/user/1/progress/math"],
+    queryKey: ["/api/user/progress/math", currentUserId],
+    queryFn: () => fetch(`/api/user/${currentUserId}/progress/math`).then(res => res.json()),
   });
 
   const updateProgressMutation = useMutation({
     mutationFn: async ({ completedItems, stars }: { completedItems: number[], stars: number }) => {
-      return apiRequest("POST", "/api/progress", {
-        userId: 1,
+      return apiRequest("/api/progress", "POST", {
+        userId: currentUserId,
         activityType: "math",
         level: 1,
         completedItems,

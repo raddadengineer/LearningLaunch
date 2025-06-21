@@ -5,16 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
 export default function Home() {
+  const currentUserId = localStorage.getItem("currentUserId");
+  
   const { data: user, isLoading: userLoading } = useQuery<User>({
-    queryKey: ["/api/user/1"],
+    queryKey: ["/api/user", currentUserId],
+    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}`).then(res => res.json()) : null,
+    enabled: !!currentUserId,
   });
 
   const { data: progress, isLoading: progressLoading } = useQuery<UserProgress[]>({
-    queryKey: ["/api/user/1/progress"],
+    queryKey: ["/api/user/progress", currentUserId],
+    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/progress`).then(res => res.json()) : [],
+    enabled: !!currentUserId,
   });
 
   const { data: achievements, isLoading: achievementsLoading } = useQuery<Achievement[]>({
-    queryKey: ["/api/user/1/achievements"],
+    queryKey: ["/api/user/achievements", currentUserId],
+    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/achievements`).then(res => res.json()) : [],
+    enabled: !!currentUserId,
   });
 
   if (userLoading || progressLoading || achievementsLoading) {
