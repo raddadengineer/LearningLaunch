@@ -235,7 +235,49 @@ export default function UserSelection() {
           </div>
         </section>
 
+        {/* Admin Login */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-700 text-center mb-6">
+            Administrator Access
+          </h2>
+          
+          <div className="max-w-md mx-auto">
+            <Card className="bg-white border-2 border-red-200 hover:border-red-400 transition-colors">
+              <CardHeader>
+                <CardTitle className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-2xl">
+                    🔐
+                  </div>
+                  Admin Panel
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center text-sm text-gray-600 mb-4">
+                  <p><strong>Default Credentials:</strong></p>
+                  <p>Username: <code className="bg-gray-100 px-2 py-1 rounded">admin</code></p>
+                  <p>Password: <code className="bg-gray-100 px-2 py-1 rounded">admin123</code></p>
+                </div>
+                <Button 
+                  onClick={() => setLocation("/admin")}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl text-lg"
+                >
+                  Access Admin Panel
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
 
+        {/* Quick Links */}
+        <section className="mt-8 text-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => setLocation("/users")}
+            className="text-gray-500 hover:text-gray-700 text-sm"
+          >
+            User Management
+          </Button>
+        </section>
       </div>
     </div>
   );

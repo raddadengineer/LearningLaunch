@@ -12,10 +12,103 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { ReadingWord } from "@shared/schema";
 
 export default function Admin() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [selectedLevel, setSelectedLevel] = useState("1");
   const [editingWord, setEditingWord] = useState<ReadingWord | null>(null);
   const [newWord, setNewWord] = useState({ word: "", imageUrl: "", level: 1 });
   const { toast } = useToast();
+
+  // Check if already authenticated
+  useState(() => {
+    const adminAuth = localStorage.getItem("adminAuthenticated");
+    if (adminAuth === "true") {
+      setIsAuthenticated(true);
+    }
+  });
+
+  const handleLogin = () => {
+    if (credentials.username === "admin" && credentials.password === "admin123") {
+      localStorage.setItem("adminAuthenticated", "true");
+      setIsAuthenticated(true);
+      toast({ title: "Welcome, Administrator!" });
+    } else {
+      toast({ 
+        title: "Login Failed", 
+        description: "Invalid credentials. Use admin/admin123",
+        variant: "destructive" 
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminAuthenticated");
+    setIsAuthenticated(false);
+    setCredentials({ username: "", password: "" });
+    toast({ title: "Logged out successfully" });
+  };
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
+        <Card className="w-full max-w-md mx-4">
+          <CardHeader>
+            <CardTitle className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-2xl">
+                🔐
+              </div>
+              Administrator Login
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={credentials.username}
+                onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+                placeholder="Enter username"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                placeholder="Enter password"
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+              />
+            </div>
+
+            <div className="text-center text-sm text-gray-600 p-3 bg-gray-50 rounded">
+              <p><strong>Default Credentials:</strong></p>
+              <p>Username: admin</p>
+              <p>Password: admin123</p>
+            </div>
+            
+            <Button 
+              onClick={handleLogin}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3"
+            >
+              Login
+            </Button>
+            
+            <Button 
+              variant="ghost"
+              onClick={() => window.history.back()}
+              className="w-full"
+            >
+              Back to Main
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const { data: words, isLoading } = useQuery<ReadingWord[]>({
     queryKey: ["/api/reading/words/all"],
