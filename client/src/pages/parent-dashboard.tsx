@@ -86,6 +86,7 @@ export default function ParentDashboard() {
 
   const weeklyActivity = calculateWeeklyActivity();
   const maxMinutes = Math.max(10, ...weeklyActivity.map(d => d.minutes)); // Minimum 10 for scale
+  const totalSessionTime = calculateTotalSessionTime();
 
   return (
     <div className="min-h-screen pb-24">
@@ -104,14 +105,25 @@ export default function ParentDashboard() {
       <main className="container mx-auto px-4 py-8">
         {/* User Info */}
         <Card className="rounded-3xl p-6 kid-shadow mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-coral rounded-full flex items-center justify-center text-3xl">
-              👧
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-coral rounded-full flex items-center justify-center text-3xl">
+                👧
+              </div>
+              <div>
+                <h3 className="text-2xl font-fredoka text-gray-800">{user?.name}</h3>
+                <p className="text-gray-600">Age: {user?.age} years old</p>
+                <p className="text-gray-600">Total Stars: ⭐ {user?.totalStars}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-2xl font-fredoka text-gray-800">{user?.name}</h3>
-              <p className="text-gray-600">Age: {user?.age} years old</p>
-              <p className="text-gray-600">Total Stars: ⭐ {user?.totalStars}</p>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-turquoise">{totalSessionTime}m</div>
+              <div className="text-sm text-gray-600">Total Learning Time</div>
+              {user?.lastActive && (
+                <div className="text-xs text-gray-500 mt-1">
+                  Last active: {new Date(user.lastActive).toLocaleDateString()}
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -124,16 +136,24 @@ export default function ParentDashboard() {
               {readingProgress.map((progress) => (
                 <div key={progress.id}>
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm font-semibold">Level {progress.level} Words</span>
+                    <span className="text-sm font-semibold">
+                      Level {progress.level} {progress.level === 6 ? 'Sentences' : 'Words'}
+                    </span>
                     <span className="text-sm text-gray-600">
-                      {progress.completedItems.length}/{progress.totalItems}
+                      {Array.isArray(progress.completedItems) ? progress.completedItems.length : 0}/{progress.totalItems}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
                     <div 
                       className="bg-coral h-3 rounded-full transition-all duration-300" 
-                      style={{ width: `${(progress.completedItems.length / progress.totalItems) * 100}%` }}
+                      style={{ width: `${((Array.isArray(progress.completedItems) ? progress.completedItems.length : 0) / progress.totalItems) * 100}%` }}
                     />
+                  </div>
+                  <div className="flex justify-between mt-1 text-xs text-gray-500">
+                    <span>⭐ {progress.stars} stars</span>
+                    {progress.updatedAt && (
+                      <span>Updated: {new Date(progress.updatedAt).toLocaleDateString()}</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -150,17 +170,23 @@ export default function ParentDashboard() {
                 <div key={progress.id}>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-semibold">
-                      {progress.activityType === "math" ? "Counting & Addition" : progress.activityType}
+                      Level {progress.level} - {progress.level <= 2 ? 'Counting' : 'Addition'}
                     </span>
                     <span className="text-sm text-gray-600">
-                      {progress.completedItems.length}/{progress.totalItems}
+                      {Array.isArray(progress.completedItems) ? progress.completedItems.length : 0}/{progress.totalItems}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
                     <div 
                       className="bg-turquoise h-3 rounded-full transition-all duration-300" 
-                      style={{ width: `${(progress.completedItems.length / progress.totalItems) * 100}%` }}
+                      style={{ width: `${((Array.isArray(progress.completedItems) ? progress.completedItems.length : 0) / progress.totalItems) * 100}%` }}
                     />
+                  </div>
+                  <div className="flex justify-between mt-1 text-xs text-gray-500">
+                    <span>⭐ {progress.stars} stars</span>
+                    {progress.updatedAt && (
+                      <span>Updated: {new Date(progress.updatedAt).toLocaleDateString()}</span>
+                    )}
                   </div>
                 </div>
               ))}
