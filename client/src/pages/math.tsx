@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { MathActivity, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -125,18 +125,34 @@ export default function MathPage() {
     }
   };
 
-  const generateAnswerOptions = (correctAnswer: number) => {
+  const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
+    // Use activity ID as seed for consistent options
     const options = [correctAnswer];
+    const seed = activityId * 1000;
+    
     while (options.length < 4) {
-      const option = Math.max(1, correctAnswer + Math.floor(Math.random() * 6) - 3);
+      const randomValue = Math.sin(seed + options.length) * 10000;
+      const option = Math.max(1, correctAnswer + Math.floor((randomValue - Math.floor(randomValue)) * 6) - 3);
       if (!options.includes(option)) {
         options.push(option);
       }
     }
-    return options.sort(() => Math.random() - 0.5);
+    
+    // Deterministic shuffle based on activity ID
+    const shuffled = [...options];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const randomValue = Math.sin(seed + i) * 10000;
+      const j = Math.floor((randomValue - Math.floor(randomValue)) * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    return shuffled;
   };
 
-  const answerOptions = generateAnswerOptions(currentActivity.answer);
+  const answerOptions = useMemo(() => 
+    generateAnswerOptions(currentActivity.answer, currentActivity.id), 
+    [currentActivity.answer, currentActivity.id]
+  );
 
   return (
     <div className="min-h-screen pb-24">
