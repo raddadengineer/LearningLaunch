@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kidlearn_db
+      POSTGRES_USER: kidlearn_user
+      POSTGRES_PASSWORD: kidlearn_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kidlearn_user -d kidlearn_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Application
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://kidlearn_user:kidlearn_password@postgres:5432/kidlearn_db
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGUSER=kidlearn_user
+      - PGPASSWORD=kidlearn_password
+      - PGDATABASE=kidlearn_db
+      - SESSION_SECRET=your-super-secret-session-key-change-this-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
