@@ -79,7 +79,7 @@ export default function Welcome() {
           {/* Action Buttons */}
           <div className="text-center space-y-4">
             <div className="space-x-4">
-              <Link href="/users">
+              <Link href="/select-user">
                 <Button className="bg-coral hover:bg-coral/90 text-white text-xl px-8 py-4 rounded-2xl kid-shadow">
                   🎮 Start Learning
                 </Button>

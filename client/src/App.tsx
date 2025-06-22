@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState, useEffect } from "react";
 import NotFound from "@/pages/not-found";
+import Welcome from "@/pages/welcome";
 import Home from "@/pages/home";
 import Reading from "@/pages/reading";
 import MathPage from "@/pages/math";
@@ -27,9 +28,13 @@ function Router() {
         {/* User management always available */}
         <Route path="/users" component={UserManagement} />
         
-        {/* If no user selected, show user selection page for all other routes */}
+        {/* Routes based on user selection */}
         {!currentUserId ? (
-          <Route component={UserSelection} />
+          <>
+            <Route path="/" component={Welcome} />
+            <Route path="/select-user" component={UserSelection} />
+            <Route component={Welcome} />
+          </>
         ) : (
           <>
             <Route path="/" component={Home} />
