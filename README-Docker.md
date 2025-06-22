@@ -7,7 +7,7 @@ This educational app for children can be run locally using Docker with persisten
 ### Prerequisites
 - Docker and Docker Compose installed on your system
 - At least 2GB of available RAM
-- Port 5000 and 5432 available on your machine
+- Port 3456 and 5432 available on your machine
 
 ### Running the Application
 
@@ -17,7 +17,7 @@ This educational app for children can be run locally using Docker with persisten
    ```
 
 2. **Access the application:**
-   - Open your browser to: http://localhost:5000
+   - Open your browser to: http://localhost:3456
    - The app will be ready once both services are healthy
 
 3. **View logs:**
@@ -38,7 +38,7 @@ The PostgreSQL database data is stored in a Docker volume called `postgres_data`
 
 ### Services
 
-- **App**: Node.js application running on port 5000
+- **App**: Node.js application running on port 3456 (mapped from internal port 5000)
 - **Database**: PostgreSQL 15 running on port 5432
 - **Volume**: `postgres_data` for persistent database storage
 
@@ -51,7 +51,7 @@ The Docker setup includes these pre-configured environment variables:
 
 ### Troubleshooting
 
-1. **Port conflicts**: If port 5000 or 5432 are in use, modify the ports in `docker-compose.yml`
+1. **Port conflicts**: If port 3456 or 5432 are in use, modify the ports in `docker-compose.yml`
 2. **Database connection issues**: Check if PostgreSQL service is healthy with `docker-compose ps`
 3. **Build failures**: Ensure you have enough disk space and memory
 4. **Permission issues**: On Linux, you may need to run with `sudo`
