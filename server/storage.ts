@@ -93,6 +93,18 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getSessionTime(userId: number): Promise<number> {
+    // Calculate session time based on progress activity
+    const progress = await this.getUserProgress(userId);
+    const totalCompletedItems = progress.reduce((sum, p) => {
+      const count = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
+      return sum + count;
+    }, 0);
+    
+    // Estimate 2-3 minutes per completed activity
+    return totalCompletedItems * 2.5;
+  }
+
   async deleteUser(id: number): Promise<void> {
     // Delete user progress first
     await db.delete(userProgress).where(eq(userProgress.userId, id));

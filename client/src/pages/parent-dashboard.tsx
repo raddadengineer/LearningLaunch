@@ -53,18 +53,18 @@ export default function ParentDashboard() {
       
       // Calculate activity minutes based on progress data for this day
       const dayProgress = progress?.filter(p => {
+        if (!p.updatedAt) return false;
         const progressDate = new Date(p.updatedAt);
         return progressDate.toDateString() === day.toDateString();
       }) || [];
       
       // Estimate minutes based on completed items (roughly 2-3 minutes per completed item)
       const totalItems = dayProgress.reduce((sum, p) => {
-        const completedCount = Array.isArray(p.completedItems) ? p.completedItems.length : 
-                              typeof p.completedItems === 'object' ? Object.keys(p.completedItems).length : 0;
+        const completedCount = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
         return sum + completedCount;
       }, 0);
       
-      const minutes = Math.min(60, totalItems * 3); // Cap at 60 minutes per day
+      const minutes = Math.min(60, totalItems * 2.5); // Cap at 60 minutes per day
       
       return {
         day: dayName,
@@ -72,6 +72,16 @@ export default function ParentDashboard() {
         color: minutes > 0 ? colors[i % colors.length] : 'bg-gray-200'
       };
     });
+  };
+
+  // Calculate total session time
+  const calculateTotalSessionTime = () => {
+    if (!progress) return 0;
+    const totalCompleted = progress.reduce((sum, p) => {
+      const count = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
+      return sum + count;
+    }, 0);
+    return Math.round(totalCompleted * 2.5); // 2.5 minutes per activity
   };
 
   const weeklyActivity = calculateWeeklyActivity();

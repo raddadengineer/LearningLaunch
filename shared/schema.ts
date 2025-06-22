@@ -30,6 +30,7 @@ export const userProgress = pgTable("user_progress", {
   completedItems: jsonb("completed_items").notNull().default([]),
   totalItems: integer("total_items").notNull(),
   stars: integer("stars").notNull().default(0),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const readingWords = pgTable("reading_words", {
