@@ -25,14 +25,25 @@ export default function Reading() {
   }
   
   if (!currentUserId) {
+    // Show error and redirect after a few seconds
+    setTimeout(() => {
+      window.location.href = "/select-user";
+    }, 3000);
+    
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-        <Card className="p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">Please Select a User</h2>
-          <p className="text-gray-600 mb-4">You need to select a user profile before accessing the reading activities.</p>
-          <Link href="/">
-            <Button>Back to User Selection</Button>
-          </Link>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
+        <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
+          <div className="text-center">
+            <div className="text-6xl mb-4">❌</div>
+            <h2 className="text-2xl font-fredoka text-gray-800 mb-4">User not found</h2>
+            <p className="text-gray-600 mb-6">Please select a user first.</p>
+            <p className="text-sm text-gray-500 mb-4">Redirecting in 3 seconds...</p>
+            <Link href="/select-user">
+              <Button className="bg-coral hover:bg-coral/90 text-white px-6 py-3 rounded-2xl">
+                Select User Now
+              </Button>
+            </Link>
+          </div>
         </Card>
       </div>
     );
