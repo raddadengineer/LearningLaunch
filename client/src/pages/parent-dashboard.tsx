@@ -36,6 +36,36 @@ export default function ParentDashboard() {
   const readingProgress = progress?.filter(p => p.activityType === "reading") || [];
   const mathProgress = progress?.filter(p => p.activityType === "math") || [];
 
+  // Generate complete reading progress (levels 1-6)
+  const completeReadingProgress = Array.from({ length: 6 }, (_, i) => {
+    const level = i + 1;
+    const existing = readingProgress.find(p => p.level === level);
+    return existing || {
+      id: `reading-${level}`,
+      level,
+      activityType: "reading",
+      completedItems: [],
+      totalItems: 12, // Standard reading word count per level
+      stars: 0,
+      updatedAt: null
+    };
+  });
+
+  // Generate complete math progress (levels 1-6)
+  const completeMathProgress = Array.from({ length: 6 }, (_, i) => {
+    const level = i + 1;
+    const existing = mathProgress.find(p => p.level === level);
+    return existing || {
+      id: `math-${level}`,
+      level,
+      activityType: "math",
+      completedItems: [],
+      totalItems: 10, // Standard math activity count per level
+      stars: 0,
+      updatedAt: null
+    };
+  });
+
   // Calculate real weekly activity data based on user progress
   const calculateWeeklyActivity = () => {
     const today = new Date();
@@ -133,7 +163,7 @@ export default function ParentDashboard() {
           <Card className="rounded-3xl p-6 kid-shadow">
             <h3 className="text-xl font-bold text-coral mb-4">Reading Progress</h3>
             <div className="space-y-4">
-              {readingProgress.map((progress) => (
+              {completeReadingProgress.map((progress) => (
                 <div key={progress.id}>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-semibold">
@@ -157,16 +187,16 @@ export default function ParentDashboard() {
                   </div>
                 </div>
               ))}
-              {readingProgress.length === 0 && (
-                <p className="text-gray-500">No reading progress yet</p>
-              )}
+              <div className="text-xs text-gray-500 text-center mt-4">
+                Levels 1-5: Individual words • Level 6: Simple sentences
+              </div>
             </div>
           </Card>
 
           <Card className="rounded-3xl p-6 kid-shadow">
             <h3 className="text-xl font-bold text-turquoise mb-4">Math Progress</h3>
             <div className="space-y-4">
-              {mathProgress.map((progress) => (
+              {completeMathProgress.map((progress) => (
                 <div key={progress.id}>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-semibold">
@@ -190,9 +220,9 @@ export default function ParentDashboard() {
                   </div>
                 </div>
               ))}
-              {mathProgress.length === 0 && (
-                <p className="text-gray-500">No math progress yet</p>
-              )}
+              <div className="text-xs text-gray-500 text-center mt-4">
+                Levels 1-2: Counting • Levels 3-6: Addition (Basic to Expert)
+              </div>
             </div>
           </Card>
         </div>
