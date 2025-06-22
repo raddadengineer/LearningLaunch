@@ -140,7 +140,8 @@ export default function Reading() {
               currentLevel === 2 ? "Four Letter Words" :
               currentLevel === 3 ? "Five Letter Words" :
               currentLevel === 4 ? "Complex Words" :
-              "Advanced Words"
+              currentLevel === 5 ? "Advanced Words" :
+              "Simple Sentences"
             }
           </h2>
           <ProgressBar 
@@ -164,38 +165,96 @@ export default function Reading() {
             className="w-64 h-48 object-cover rounded-3xl mx-auto mb-8 kid-shadow"
           />
           
-          <Card className="rounded-3xl p-8 kid-shadow max-w-md mx-auto">
-            <div className="flex justify-center space-x-4 mb-8">
-              {currentWord.word.split('').map((letter, index) => (
-                <LetterBox
-                  key={index}
-                  letter={letter}
-                  color={index === 0 ? 'coral' : index === 1 ? 'turquoise' : 'sunnyellow'}
-                  onClick={() => handleLetterClick(letter)}
-                />
-              ))}
-            </div>
+          <Card className="rounded-3xl p-8 kid-shadow max-w-4xl mx-auto">
+            {currentLevel === 6 ? (
+              // Sentence display for level 6
+              <div className="text-center mb-8">
+                <div className="text-4xl font-bold text-gray-800 mb-6 leading-relaxed">
+                  {currentWord.word.split(' ').map((word, wordIndex) => (
+                    <span key={wordIndex} className="inline-block mx-2 mb-2">
+                      {word.split('').map((letter, letterIndex) => (
+                        <span
+                          key={letterIndex}
+                          className={`inline-block px-2 py-1 mx-1 rounded-lg text-white font-bold ${
+                            letterIndex % 3 === 0 ? 'bg-coral' : 
+                            letterIndex % 3 === 1 ? 'bg-turquoise' : 'bg-sunnyellow'
+                          }`}
+                        >
+                          {letter}
+                        </span>
+                      ))}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              // Individual word display for levels 1-5
+              <div className="flex justify-center space-x-4 mb-8">
+                {currentWord.word.split('').map((letter, index) => (
+                  <LetterBox
+                    key={index}
+                    letter={letter}
+                    color={index === 0 ? 'coral' : index === 1 ? 'turquoise' : 'sunnyellow'}
+                    onClick={() => handleLetterClick(letter)}
+                  />
+                ))}
+              </div>
+            )}
             
             {/* Audio Controls */}
             <div className="flex justify-center space-x-4 mb-6">
-              <Button 
-                onClick={handleSpellWord}
-                className="bg-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-green-600 transition-colors touch-friendly"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Spell It
-              </Button>
-              <Button 
-                onClick={handleSayWord}
-                className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M13 16a3 3 0 01-6 0V8a3 3 0 016 0v8z" />
-                </svg>
-                Say Word
-              </Button>
+              {currentLevel === 6 ? (
+                // Sentence-specific controls
+                <>
+                  <Button 
+                    onClick={() => speak(currentWord.word, { rate: 0.7, pitch: 1.1 })}
+                    className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M13 16a3 3 0 01-6 0V8a3 3 0 016 0v8z" />
+                    </svg>
+                    Read Sentence
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      const words = currentWord.word.split(' ');
+                      words.forEach((word, index) => {
+                        setTimeout(() => {
+                          speak(word, { rate: 0.6, pitch: 1.2 });
+                        }, index * 800);
+                      });
+                    }}
+                    className="bg-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-green-600 transition-colors touch-friendly"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Read Each Word
+                  </Button>
+                </>
+              ) : (
+                // Word-specific controls for levels 1-5
+                <>
+                  <Button 
+                    onClick={handleSpellWord}
+                    className="bg-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-green-600 transition-colors touch-friendly"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Spell It
+                  </Button>
+                  <Button 
+                    onClick={handleSayWord}
+                    className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M13 16a3 3 0 01-6 0V8a3 3 0 016 0v8z" />
+                    </svg>
+                    Say Word
+                  </Button>
+                </>
+              )}
             </div>
 
             {isWordCompleted && (
