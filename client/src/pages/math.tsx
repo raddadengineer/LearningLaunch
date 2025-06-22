@@ -65,37 +65,33 @@ export default function MathPage() {
     }
   }, [countdown, currentActivityIndex, activities]);
 
-  // Generate answer options using useMemo - must be called before any early returns
+  // Generate answer options - simplified approach
   const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
-    // Use activity ID as seed for consistent options
     const options = [correctAnswer];
-    const seed = activityId * 1000;
     
-    while (options.length < 4) {
-      const randomValue = Math.sin(seed + options.length) * 10000;
-      const option = Math.max(1, correctAnswer + Math.floor((randomValue - Math.floor(randomValue)) * 6) - 3);
-      if (!options.includes(option)) {
-        options.push(option);
+    // Generate 3 other options based on activity ID for consistency
+    for (let i = 1; i <= 3; i++) {
+      const offset = (activityId + i) % 5 + 1; // Always positive, 1-5
+      let option = correctAnswer + (i % 2 === 0 ? offset : -offset);
+      if (option < 1) option = correctAnswer + offset;
+      if (option === correctAnswer) option = correctAnswer + 1;
+      
+      while (options.includes(option)) {
+        option = option + 1;
+        if (option > 10) option = 1; // Keep numbers reasonable
       }
+      options.push(option);
     }
     
-    // Deterministic shuffle based on activity ID
-    const shuffled = [...options];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const randomValue = Math.sin(seed + i) * 10000;
-      const j = Math.floor((randomValue - Math.floor(randomValue)) * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    // Simple deterministic shuffle
+    const seed = activityId % 4;
+    for (let i = 0; i < seed; i++) {
+      const first = options.shift();
+      if (first) options.push(first);
     }
     
-    return shuffled;
+    return options;
   };
-
-  const answerOptions = useMemo(() => {
-    if (!activities || activities.length === 0 || !activities[currentActivityIndex]) {
-      return [];
-    }
-    return generateAnswerOptions(activities[currentActivityIndex].answer, activities[currentActivityIndex].id);
-  }, [activities, currentActivityIndex]);
 
   if (!currentUserId) {
     return (
@@ -105,7 +101,7 @@ export default function MathPage() {
     );
   }
 
-  if (activitiesLoading || !activities || activities.length === 0) {
+  if (activitiesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-2xl font-fredoka text-turquoise">Loading math activities...</div>
@@ -113,12 +109,30 @@ export default function MathPage() {
     );
   }
 
+  if (!activities || activities.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl font-fredoka text-red-500">No math activities found. Please try again.</div>
+      </div>
+    );
+  }
+
   const currentActivity = activities[currentActivityIndex];
+  if (!currentActivity) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl font-fredoka text-red-500">Activity not found. Please try again.</div>
+      </div>
+    );
+  }
+
   const currentProgress = progress?.find(p => p.level === currentLevel && p.activityType === "math");
   const completedActivities = Array.isArray(currentProgress?.completedItems) 
     ? currentProgress.completedItems 
     : [];
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
+  
+  const answerOptions = generateAnswerOptions(currentActivity.answer, currentActivity.id);
 
 
 
