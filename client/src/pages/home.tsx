@@ -140,7 +140,7 @@ export default function Home() {
               <p className="text-lg text-gray-600 mb-6">Learn to read with fun words and sounds!</p>
               
               {/* Reading Levels */}
-              <div className="grid grid-cols-5 gap-2 mb-6">
+              <div className="grid grid-cols-6 gap-2 mb-6">
                 <div 
                   className="bg-green-100 rounded-xl p-2 text-center cursor-pointer hover:bg-green-200 transition-colors"
                   onClick={() => {
@@ -190,6 +190,16 @@ export default function Home() {
                 >
                   <div className="text-lg mb-1">🎯</div>
                   <span className="text-xs font-bold text-red-700">Level 5</span>
+                </div>
+                <div 
+                  className="bg-indigo-100 rounded-xl p-2 text-center cursor-pointer hover:bg-indigo-200 transition-colors"
+                  onClick={() => {
+                    localStorage.setItem("selectedReadingLevel", "6");
+                    setLocation("/reading");
+                  }}
+                >
+                  <div className="text-lg mb-1">📖</div>
+                  <span className="text-xs font-bold text-indigo-700">Level 6</span>
                 </div>
               </div>
               
