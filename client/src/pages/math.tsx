@@ -241,7 +241,7 @@ export default function MathPage() {
         {/* Level Selector */}
         <div className="text-center">
           <h4 className="text-lg font-bold text-gray-700 mb-3">Level</h4>
-          <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
+          <div className={`grid gap-3 max-w-md mx-auto ${activityType === "counting" ? "grid-cols-2" : "grid-cols-4"}`}>
             {activityType === "counting" ? [1, 2].map((level) => (
               <Button
                 key={level}
@@ -258,7 +258,7 @@ export default function MathPage() {
               >
                 Level {level}
               </Button>
-            )) : [3].map((level) => (
+            )) : [3, 4, 5, 6].map((level) => (
               <Button
                 key={level}
                 onClick={() => {
@@ -283,7 +283,12 @@ export default function MathPage() {
                 <span>Count 6-10</span>
               </div>
             ) : (
-              <span>Simple addition with pictures</span>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <span>Level 3: Basic</span>
+                <span>Level 4: Medium</span>
+                <span>Level 5: Hard</span>
+                <span>Level 6: Expert</span>
+              </div>
             )}
           </div>
         </div>
