@@ -65,6 +65,38 @@ export default function MathPage() {
     }
   }, [countdown, currentActivityIndex, activities]);
 
+  // Generate answer options using useMemo - must be called before any early returns
+  const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
+    // Use activity ID as seed for consistent options
+    const options = [correctAnswer];
+    const seed = activityId * 1000;
+    
+    while (options.length < 4) {
+      const randomValue = Math.sin(seed + options.length) * 10000;
+      const option = Math.max(1, correctAnswer + Math.floor((randomValue - Math.floor(randomValue)) * 6) - 3);
+      if (!options.includes(option)) {
+        options.push(option);
+      }
+    }
+    
+    // Deterministic shuffle based on activity ID
+    const shuffled = [...options];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const randomValue = Math.sin(seed + i) * 10000;
+      const j = Math.floor((randomValue - Math.floor(randomValue)) * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    return shuffled;
+  };
+
+  const answerOptions = useMemo(() => {
+    if (!activities || activities.length === 0 || !activities[currentActivityIndex]) {
+      return [];
+    }
+    return generateAnswerOptions(activities[currentActivityIndex].answer, activities[currentActivityIndex].id);
+  }, [activities, currentActivityIndex]);
+
   if (!currentUserId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -125,34 +157,7 @@ export default function MathPage() {
     }
   };
 
-  const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
-    // Use activity ID as seed for consistent options
-    const options = [correctAnswer];
-    const seed = activityId * 1000;
-    
-    while (options.length < 4) {
-      const randomValue = Math.sin(seed + options.length) * 10000;
-      const option = Math.max(1, correctAnswer + Math.floor((randomValue - Math.floor(randomValue)) * 6) - 3);
-      if (!options.includes(option)) {
-        options.push(option);
-      }
-    }
-    
-    // Deterministic shuffle based on activity ID
-    const shuffled = [...options];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const randomValue = Math.sin(seed + i) * 10000;
-      const j = Math.floor((randomValue - Math.floor(randomValue)) * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    
-    return shuffled;
-  };
 
-  const answerOptions = useMemo(() => 
-    generateAnswerOptions(currentActivity.answer, currentActivity.id), 
-    [currentActivity.answer, currentActivity.id]
-  );
 
   return (
     <div className="min-h-screen pb-24">
