@@ -3,7 +3,7 @@ import {
   type User, type UserProgress, type ReadingWord, type MathActivity, type Achievement,
   type InsertUser, type InsertUserProgress, type InsertReadingWord, type InsertMathActivity, type InsertAchievement
 } from "@shared/schema";
-import { db } from "./db";
+import { db } from "./db-switch";
 import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {

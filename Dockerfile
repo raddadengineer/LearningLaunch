@@ -35,6 +35,7 @@ COPY --from=builder /app/dist ./dist
 # Copy necessary files for runtime
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/shared ./shared
+COPY --from=builder /app/server/db-docker.ts ./server/db-docker.ts
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY --from=builder /app/package*.json ./
 
