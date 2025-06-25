@@ -12,8 +12,10 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the client application (outputs to dist/public based on vite.config.ts)
 RUN npx vite build
+
+# Build the server application  
 RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist/server --external:@neondatabase/serverless
 
 # Production stage
@@ -29,7 +31,6 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 
 # Copy necessary files for runtime
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
