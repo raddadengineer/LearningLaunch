@@ -39,8 +39,8 @@ COPY --from=builder /app/server/db-docker.ts ./server/db-docker.ts
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY --from=builder /app/package*.json ./
 
-# Install drizzle-kit for schema management and pg_isready for health checks
-RUN npm install drizzle-kit && apk add --no-cache postgresql-client curl
+# Install drizzle-kit and pg for Docker database support
+RUN npm install drizzle-kit pg @types/pg && apk add --no-cache postgresql-client curl
 
 # Make entrypoint script executable
 RUN chmod +x ./docker-entrypoint.sh

@@ -14,5 +14,8 @@ npx drizzle-kit push --config=./drizzle.config.ts || echo "Schema push completed
 
 echo "Starting application"
 
+# Set environment variable to use Docker-compatible database
+export USE_DOCKER_DB=true
+
 # Start the application
 exec "$@"
