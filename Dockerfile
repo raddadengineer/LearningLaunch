@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # Build the application
-RUN npm run build:client
+RUN npx vite build
 RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist/server --external:@neondatabase/serverless
 
 # Production stage
@@ -24,18 +24,21 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (needed for drizzle-kit)
-RUN npm ci && npm cache clean --force
+# Install production dependencies only
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/client/dist ./client/dist
+
+# Copy necessary files for runtime
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --from=builder /app/package*.json ./
 
-# Install pg_isready for health checks
-RUN apk add --no-cache postgresql-client curl
+# Install drizzle-kit for schema management and pg_isready for health checks
+RUN npm install drizzle-kit && apk add --no-cache postgresql-client curl
 
 # Make entrypoint script executable
 RUN chmod +x ./docker-entrypoint.sh
