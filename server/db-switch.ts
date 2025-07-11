@@ -30,4 +30,4 @@ async function createDatabase() {
   }
 }
 
-export const db = await createDatabase();
+export const db = createDatabase();

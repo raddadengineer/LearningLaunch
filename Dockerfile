@@ -46,4 +46,14 @@ RUN npm install drizzle-kit pg @types/pg && \
     apk add --no-cache postgresql-client curl
 
 # Enable entrypoint script
-RUN
+RUN chmod +x ./docker-entrypoint.sh
+
+# Create the expected public directory structure for static files
+RUN mkdir -p /app/dist/server && cp -r /app/dist/public /app/dist/server/public 2>/dev/null || echo "Static files will be created at runtime"
+
+# Expose the application port
+EXPOSE 5000
+
+# Use entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["node", "dist/server/index.mjs"]
