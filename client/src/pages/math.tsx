@@ -4,6 +4,7 @@ import { MathActivity, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
 import ProgressBar from "@/components/progress-bar";
 import { speak } from "@/lib/speech";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -25,7 +26,7 @@ export default function MathPage() {
     queryKey: ["/api/math/activities", activityType, currentLevel],
     queryFn: () => fetch(`/api/math/activities?type=${activityType}&level=${currentLevel}`).then(res => res.json()),
   });
-  
+
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/math", currentUserId],
     queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/progress/math`).then(res => res.json()) : [],
@@ -68,28 +69,28 @@ export default function MathPage() {
   // Generate answer options - simplified approach
   const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
     const options = [correctAnswer];
-    
+
     // Generate 3 other options based on activity ID for consistency
     for (let i = 1; i <= 3; i++) {
       const offset = (activityId + i) % 5 + 1; // Always positive, 1-5
       let option = correctAnswer + (i % 2 === 0 ? offset : -offset);
       if (option < 1) option = correctAnswer + offset;
       if (option === correctAnswer) option = correctAnswer + 1;
-      
+
       while (options.includes(option)) {
         option = option + 1;
         if (option > 10) option = 1; // Keep numbers reasonable
       }
       options.push(option);
     }
-    
+
     // Simple deterministic shuffle
     const seed = activityId % 4;
     for (let i = 0; i < seed; i++) {
       const first = options.shift();
       if (first) options.push(first);
     }
-    
+
     return options;
   };
 
@@ -98,7 +99,7 @@ export default function MathPage() {
     setTimeout(() => {
       window.location.href = "/select-user";
     }, 3000);
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
         <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
@@ -144,23 +145,32 @@ export default function MathPage() {
   }
 
   const currentProgress = progress?.find(p => p.level === currentLevel && p.activityType === "math");
-  const completedActivities = Array.isArray(currentProgress?.completedItems) 
-    ? currentProgress.completedItems 
+  const completedActivities = Array.isArray(currentProgress?.completedItems)
+    ? currentProgress.completedItems
     : [];
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
-  
+
   const answerOptions = generateAnswerOptions(currentActivity.answer, currentActivity.id);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
 
-
-  const handleAnswerSelect = (answer: number) => {
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } }
+  }; const handleAnswerSelect = (answer: number) => {
     setSelectedAnswer(answer);
     setShowFeedback(true);
 
     if (answer === currentActivity.answer) {
       setFeedback("🎉 Great job! That's correct!");
       speak("Great job! That's correct!", { rate: 0.8, pitch: 1.2 });
-      
+
       if (!isActivityCompleted) {
         const newCompletedItems = [...completedActivities, currentActivity.id];
         const stars = Math.min(5, newCompletedItems.length);
@@ -179,7 +189,7 @@ export default function MathPage() {
     } else {
       setFeedback("🤔 Try again! Count carefully.");
       speak("Try again! Count carefully.", { rate: 0.8, pitch: 1.1 });
-      
+
       // For wrong answers, clear everything after 3 seconds
       setTimeout(() => {
         setShowFeedback(false);
@@ -193,35 +203,47 @@ export default function MathPage() {
   return (
     <div className="min-h-screen pb-24">
       {/* Activity Header */}
-      <div className="flex items-center justify-between p-4 bg-white kid-shadow">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", bounce: 0.5 }}
+        className="flex items-center justify-between p-4 bg-white kid-shadow sticky top-0 z-50"
+      >
         <Link href="/">
-          <Button variant="outline" size="sm" className="rounded-full touch-friendly">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <Button variant="outline" size="sm" className="rounded-2xl touch-friendly">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
             </svg>
           </Button>
         </Link>
-        
+
         <div className="text-center">
           <h2 className="text-2xl font-fredoka text-turquoise">
             {activityType === "counting" ? "Counting Fun" : "Addition Adventures"}
           </h2>
-          <ProgressBar 
-            current={currentActivityIndex + 1} 
-            total={activities.length} 
+          <ProgressBar
+            current={currentActivityIndex + 1}
+            total={activities.length}
             color="turquoise"
           />
         </div>
-        
-        <div className="bg-sunnyellow px-4 py-2 rounded-full">
+
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          className="bg-sunnyellow px-4 py-2 rounded-2xl kid-shadow"
+        >
           <span className="text-lg font-bold text-gray-800">⭐ {currentProgress?.stars || 0}</span>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Level and Type Selection */}
-      <div className="bg-white rounded-3xl p-6 kid-shadow max-w-4xl mx-auto mt-6 mb-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-[2.5rem] p-6 kid-shadow max-w-4xl mx-auto mt-6 mb-6"
+      >
         <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Choose Your Challenge</h3>
-        
+
         {/* Activity Type Selector */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Button
@@ -230,11 +252,10 @@ export default function MathPage() {
               setCurrentActivityIndex(0);
               queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
             }}
-            className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
-              activityType === "counting" 
-                ? 'bg-turquoise text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "counting"
+              ? 'bg-turquoise text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
           >
             🔢 Counting
           </Button>
@@ -245,11 +266,10 @@ export default function MathPage() {
               setCurrentActivityIndex(0);
               queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
             }}
-            className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
-              activityType === "addition" 
-                ? 'bg-turquoise text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "addition"
+              ? 'bg-turquoise text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
           >
             ➕ Addition
           </Button>
@@ -267,11 +287,10 @@ export default function MathPage() {
                   setCurrentActivityIndex(0);
                   queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
                 }}
-                className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
-                  currentLevel === level 
-                    ? 'bg-coral text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${currentLevel === level
+                  ? 'bg-coral text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 Level {level}
               </Button>
@@ -283,11 +302,10 @@ export default function MathPage() {
                   setCurrentActivityIndex(0);
                   queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
                 }}
-                className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${
-                  currentLevel === level 
-                    ? 'bg-coral text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${currentLevel === level
+                  ? 'bg-coral text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 Level {level}
               </Button>
@@ -309,18 +327,23 @@ export default function MathPage() {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <main className="container mx-auto px-4 py-8">
+      <motion.main
+        className="container mx-auto px-4 py-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
         {/* Math Activity */}
-        <div className="text-center mb-12">
+        <motion.div variants={itemVariants} className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-8">
-            <h3 className="text-3xl font-fredoka text-gray-800">
+            <h3 className="text-4xl font-fredoka text-gray-800">
               {currentActivity.question}
             </h3>
             <Button
               onClick={() => speak(currentActivity.question, { rate: 0.8, pitch: 1.1 })}
-              className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 touch-friendly"
+              className="bg-blue-500 hover:bg-blue-600 text-white rounded-2xl p-3 touch-friendly"
               size="sm"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,16 +351,15 @@ export default function MathPage() {
               </svg>
             </Button>
           </div>
-          
+
           {/* Objects Display */}
-          <Card className="rounded-3xl p-8 kid-shadow max-w-4xl mx-auto mb-8">
-            <div className={`grid gap-4 mb-8 justify-items-center ${
-              currentActivity.objects.length <= 5 ? 'grid-cols-5' : 
+          <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto mb-8 bg-white/90 backdrop-blur">
+            <div className={`grid gap-4 mb-8 justify-items-center ${currentActivity.objects.length <= 5 ? 'grid-cols-5' :
               currentActivity.objects.length <= 8 ? 'grid-cols-4' : 'grid-cols-5'
-            }`}>
+              }`}>
               {currentActivity.objects.map((object, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="cursor-pointer hover:scale-110 transition-transform"
                   onClick={() => speak((index + 1).toString())}
                 >
@@ -347,7 +369,7 @@ export default function MathPage() {
                 </div>
               ))}
             </div>
-            
+
             {/* Visual grouping for addition */}
             {activityType === "addition" && currentActivity.question.includes("+") && (
               <div className="text-lg font-bold text-gray-600 mb-4">
@@ -359,29 +381,29 @@ export default function MathPage() {
           {/* Answer Options */}
           <div className="grid grid-cols-4 gap-4 max-w-md mx-auto mb-8">
             {answerOptions.map((option, index) => (
-              <Button
-                key={option}
-                onClick={() => handleAnswerSelect(option)}
-                disabled={showFeedback}
-                className={`
-                  text-3xl font-fredoka py-6 rounded-2xl transition-colors touch-friendly
-                  ${index === 0 ? 'bg-blue-100 hover:bg-blue-200 text-blue-700' : 
-                    index === 1 ? 'bg-green-100 hover:bg-green-200 text-green-700' :
-                    index === 2 ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700' :
-                    'bg-red-100 hover:bg-red-200 text-red-700'}
-                  ${selectedAnswer === option ? 'ring-4 ring-gray-400' : ''}
-                `}
-              >
-                {option}
-              </Button>
+              <motion.div key={option} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={() => handleAnswerSelect(option)}
+                  disabled={showFeedback}
+                  className={`
+                    w-full h-full text-4xl font-fredoka py-8 rounded-[2rem] transition-colors touch-friendly kid-shadow border-b-4
+                    ${index === 0 ? 'bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-200' :
+                      index === 1 ? 'bg-green-100 hover:bg-green-200 text-green-700 border-green-200' :
+                        index === 2 ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 border-yellow-200' :
+                          'bg-red-100 hover:bg-red-200 text-red-700 border-red-200'}
+                    ${selectedAnswer === option ? 'ring-4 ring-gray-400' : ''}
+                  `}
+                >
+                  {option}
+                </Button>
+              </motion.div>
             ))}
           </div>
 
           {/* Feedback Area */}
           {showFeedback && (
-            <div className={`text-2xl font-bold mb-4 transition-opacity duration-300 ${
-              feedback.includes('correct') ? 'text-green-600' : 'text-yellow-600'
-            }`}>
+            <div className={`text-2xl font-bold mb-4 transition-opacity duration-300 ${feedback.includes('correct') ? 'text-green-600' : 'text-yellow-600'
+              }`}>
               {feedback}
             </div>
           )}
@@ -391,7 +413,7 @@ export default function MathPage() {
               ✅ Activity completed!
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Auto-advance countdown or manual next button */}
         {selectedAnswer === currentActivity.answer && currentActivityIndex < activities.length - 1 && !showFeedback && (
@@ -428,7 +450,7 @@ export default function MathPage() {
                     <span className="text-2xl font-bold text-turquoise">{countdown}</span>
                   </div>
                 </div>
-                <Button 
+                <Button
                   onClick={() => {
                     setCurrentActivityIndex(currentActivityIndex + 1);
                     setSelectedAnswer(null);
@@ -441,45 +463,51 @@ export default function MathPage() {
                 </Button>
               </div>
             ) : (
-              <Button 
-                onClick={() => {
-                  setCurrentActivityIndex(currentActivityIndex + 1);
-                  setSelectedAnswer(null);
-                  setShowFeedback(false);
-                }}
-                className="bg-turquoise text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly animate-pulse"
-              >
-                Next Activity →
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={() => {
+                    setCurrentActivityIndex(currentActivityIndex + 1);
+                    setSelectedAnswer(null);
+                    setShowFeedback(false);
+                  }}
+                  className="bg-turquoise border-turquoise/80 text-white px-10 py-6 rounded-[2rem] font-bold text-2xl hover:bg-teal-500 transition-colors touch-friendly kid-shadow animate-pulse"
+                >
+                  Next Activity →
+                </Button>
+              </motion.div>
             )}
           </div>
         )}
 
         {currentActivityIndex === activities.length - 1 && selectedAnswer === currentActivity.answer && !showFeedback && (
-          <div className="text-center mb-8">
-            <div className="text-2xl font-fredoka text-turquoise mb-4">
+          <motion.div variants={itemVariants} className="text-center mb-8">
+            <div className="text-3xl font-fredoka text-turquoise mb-6">
               🎉 All activities complete!
             </div>
-            <div className="mb-4">
-              <Button 
-                onClick={() => {
-                  setCurrentActivityIndex(0);
-                  setSelectedAnswer(null);
-                  setShowFeedback(false);
-                }}
-                className="bg-coral text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-red-500 transition-colors touch-friendly mr-4"
-              >
-                Try Again
-              </Button>
-              <Link href="/">
-                <Button className="bg-turquoise text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-teal-500 transition-colors touch-friendly">
-                  Back to Home
+            <div className="flex justify-center gap-4">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={() => {
+                    setCurrentActivityIndex(0);
+                    setSelectedAnswer(null);
+                    setShowFeedback(false);
+                  }}
+                  className="bg-coral border-coral/80 text-white px-8 py-6 rounded-[2rem] font-bold text-xl hover:bg-red-500 transition-colors touch-friendly kid-shadow"
+                >
+                  Try Again
                 </Button>
+              </motion.div>
+              <Link href="/">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button className="bg-turquoise border-turquoise/80 text-white px-8 py-6 rounded-[2rem] font-bold text-xl hover:bg-teal-500 transition-colors touch-friendly kid-shadow">
+                    Back to Home
+                  </Button>
+                </motion.div>
               </Link>
             </div>
-          </div>
+          </motion.div>
         )}
-      </main>
+      </motion.main>
     </div>
   );
 }

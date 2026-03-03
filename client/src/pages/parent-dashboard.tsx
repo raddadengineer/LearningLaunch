@@ -3,6 +3,10 @@ import { User, UserProgress, Achievement } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ParentDashboard() {
   const currentUserId = localStorage.getItem("currentUserId");
@@ -13,7 +17,7 @@ export default function ParentDashboard() {
     setTimeout(() => {
       window.location.href = "/select-user";
     }, 3000);
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
         <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
@@ -32,7 +36,7 @@ export default function ParentDashboard() {
       </div>
     );
   }
-  
+
   const { data: user, isLoading: userLoading } = useQuery<User>({
     queryKey: ["/api/user", currentUserId],
     queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}`).then(res => res.json()) : null,
@@ -97,31 +101,31 @@ export default function ParentDashboard() {
     const today = new Date();
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const colors = ['bg-red-400', 'bg-green-400', 'bg-blue-400', 'bg-yellow-400', 'bg-purple-400', 'bg-pink-400', 'bg-indigo-400'];
-    
+
     // Start from Monday of current week
     const monday = new Date(today);
     monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
-    
+
     return Array.from({ length: 7 }, (_, i) => {
       const day = new Date(monday);
       day.setDate(monday.getDate() + i);
       const dayName = weekDays[(day.getDay())];
-      
+
       // Calculate activity minutes based on progress data for this day
       const dayProgress = progress?.filter(p => {
         if (!p.updatedAt) return false;
         const progressDate = new Date(p.updatedAt);
         return progressDate.toDateString() === day.toDateString();
       }) || [];
-      
+
       // Estimate minutes based on completed items (roughly 2-3 minutes per completed item)
       const totalItems = dayProgress.reduce((sum, p) => {
         const completedCount = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
         return sum + completedCount;
       }, 0);
-      
+
       const minutes = Math.min(60, totalItems * 2.5); // Cap at 60 minutes per day
-      
+
       return {
         day: dayName,
         minutes,
@@ -143,6 +147,78 @@ export default function ParentDashboard() {
   const weeklyActivity = calculateWeeklyActivity();
   const maxMinutes = Math.max(10, ...weeklyActivity.map(d => d.minutes)); // Minimum 10 for scale
   const totalSessionTime = calculateTotalSessionTime();
+
+  // Voice Settings State
+  const { toast } = useToast();
+  const [kokoroUrl, setKokoroUrl] = useState("");
+  const [kokoroVoiceId, setKokoroVoiceId] = useState("");
+  const [kokoroEnabled, setKokoroEnabled] = useState(false);
+
+  // Load initial settings
+  useEffect(() => {
+    setKokoroUrl(localStorage.getItem("kokoroApiUrl") || "http://localhost:8880/v1/audio/speech");
+    setKokoroVoiceId(localStorage.getItem("kokoroVoiceId") || "af_heart");
+    setKokoroEnabled(localStorage.getItem("kokoroEnabled") === "true");
+  }, []);
+
+  const saveSettings = () => {
+    localStorage.setItem("kokoroApiUrl", kokoroUrl);
+    localStorage.setItem("kokoroVoiceId", kokoroVoiceId);
+    localStorage.setItem("kokoroEnabled", kokoroEnabled.toString());
+
+    toast({
+      title: "Settings Saved",
+      description: "Voice preferences have been updated successfully.",
+    });
+  };
+
+  const testVoice = async () => {
+    if (!kokoroEnabled) {
+      toast({
+        title: "Kokoro Disabled",
+        description: "Please enable Kokoro voice to test it.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(kokoroUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: "kokoro",
+          input: "Hello! This is a test of the Kokoro voice system.",
+          voice: kokoroVoiceId,
+          response_format: "mp3",
+          speed: 1.0
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.play();
+
+      toast({
+        title: "Testing Voice",
+        description: "You should hear the test message now.",
+      });
+    } catch (error) {
+      console.error("Failed to test Kokoro voice:", error);
+      toast({
+        title: "Test Failed",
+        description: "Could not connect to Kokoro API. Please check the URL.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen pb-24">
@@ -200,8 +276,8 @@ export default function ParentDashboard() {
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div 
-                      className="bg-coral h-3 rounded-full transition-all duration-300" 
+                    <div
+                      className="bg-coral h-3 rounded-full transition-all duration-300"
                       style={{ width: `${((Array.isArray(progress.completedItems) ? progress.completedItems.length : 0) / progress.totalItems) * 100}%` }}
                     />
                   </div>
@@ -233,8 +309,8 @@ export default function ParentDashboard() {
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div 
-                      className="bg-turquoise h-3 rounded-full transition-all duration-300" 
+                    <div
+                      className="bg-turquoise h-3 rounded-full transition-all duration-300"
                       style={{ width: `${((Array.isArray(progress.completedItems) ? progress.completedItems.length : 0) / progress.totalItems) * 100}%` }}
                     />
                   </div>
@@ -260,7 +336,7 @@ export default function ParentDashboard() {
             {weeklyActivity.map((day) => (
               <div key={day.day} className="text-center">
                 <div className="text-xs font-semibold text-gray-600 mb-2">{day.day}</div>
-                <div 
+                <div
                   className={`${day.color} rounded-lg flex items-end justify-center relative`}
                   style={{ height: `${Math.max(24, (day.minutes / maxMinutes) * 80)}px` }}
                 >
@@ -295,6 +371,76 @@ export default function ParentDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        </Card>
+
+        {/* Voice Settings */}
+        <Card className="rounded-3xl p-6 kid-shadow mb-8 border-2 border-indigo-100">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="text-3xl">🎙️</div>
+            <h3 className="text-xl font-bold text-gray-800">Voice Settings (Kokoro-FastAPI)</h3>
+          </div>
+          <p className="text-gray-600 mb-6 text-sm">
+            Configure a local Kokoro-FastAPI server for high-quality, natural-sounding voices.
+            When enabled, this will override the standard browser voice for reading and math activities.
+          </p>
+
+          <div className="space-y-4 max-w-2xl">
+            <div className="flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                id="enableKokoro"
+                checked={kokoroEnabled}
+                onChange={(e) => setKokoroEnabled(e.target.checked)}
+                className="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+              />
+              <Label htmlFor="enableKokoro" className="text-gray-800 font-medium cursor-pointer">
+                Enable Kokoro High-Quality Voices
+              </Label>
+            </div>
+
+            <div className={`space-y-4 transition-opacity duration-200 ${!kokoroEnabled ? 'opacity-50 pointer-events-none' : ''}`}>
+              <div className="space-y-2">
+                <Label htmlFor="kokoroUrl">API URL</Label>
+                <Input
+                  id="kokoroUrl"
+                  value={kokoroUrl}
+                  onChange={(e) => setKokoroUrl(e.target.value)}
+                  placeholder="http://localhost:8880/v1/audio/speech"
+                  className="rounded-xl border-indigo-200 focus:border-indigo-400 focus:ring-indigo-400"
+                />
+                <p className="text-xs text-gray-500">The full endpoint URL for the speech completions API.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="kokoroVoiceId">Voice ID</Label>
+                <Input
+                  id="kokoroVoiceId"
+                  value={kokoroVoiceId}
+                  onChange={(e) => setKokoroVoiceId(e.target.value)}
+                  placeholder="af_heart"
+                  className="rounded-xl border-indigo-200 focus:border-indigo-400 focus:ring-indigo-400"
+                />
+                <p className="text-xs text-gray-500">The ID of the voice to use (e.g., af_heart, af_bella).</p>
+              </div>
+            </div>
+
+            <div className="flex space-x-3 pt-4">
+              <Button
+                onClick={saveSettings}
+                className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl"
+              >
+                Save Settings
+              </Button>
+              <Button
+                onClick={testVoice}
+                variant="outline"
+                className="rounded-xl border-indigo-200 text-indigo-700 hover:bg-indigo-50 disabled:opacity-50"
+                disabled={!kokoroEnabled}
+              >
+                Test Voice Setup
+              </Button>
+            </div>
           </div>
         </Card>
 

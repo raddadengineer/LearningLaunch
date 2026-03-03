@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -23,7 +23,7 @@
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  --radius: 1rem;
   
   /* Kid-friendly colors */
   --coral: hsl(0, 73%, 70%);
@@ -54,7 +54,7 @@
   --destructive: hsl(0, 62.8%, 30.6%);
   --destructive-foreground: hsl(0, 0%, 98%);
   --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
+  --radius: 1rem;
 }
 
 @layer base {
@@ -63,18 +63,22 @@
   }
 
   body {
-    @apply font-sans antialiased bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen;
-    font-family: 'Open Sans', sans-serif;
+    @apply font-sans antialiased bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen text-slate-800;
+    font-family: 'Nunito', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Balsamiq Sans', cursive;
   }
 }
 
 @layer utilities {
   .font-fredoka {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Balsamiq Sans', cursive;
   }
 
   .font-opensans {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Nunito', sans-serif;
   }
 
   .bg-coral {
@@ -131,7 +135,20 @@
   }
 
   .kid-shadow {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+  }
+  
+  .btn-pressable {
+    border-bottom-width: 6px;
+    transition-property: transform, border-bottom-width, background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 100ms;
+  }
+  
+  .btn-pressable:active {
+    transform: translateY(4px);
+    border-bottom-width: 2px;
   }
 
   .animate-bounce-gentle {

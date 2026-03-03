@@ -4,6 +4,7 @@ import { ReadingWord, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
 import LetterBox from "@/components/letter-box";
 import ProgressBar from "@/components/progress-bar";
 import { speak, speakWord, speakLetters } from "@/lib/speech";
@@ -16,20 +17,20 @@ export default function Reading() {
   const [currentLevel, setCurrentLevel] = useState(preSelectedLevel ? parseInt(preSelectedLevel) : 1);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { toast } = useToast();
-  
+
   const currentUserId = localStorage.getItem("currentUserId");
-  
+
   // Clear the selected level after using it
   if (preSelectedLevel) {
     localStorage.removeItem("selectedReadingLevel");
   }
-  
+
   if (!currentUserId) {
     // Show error and redirect after a few seconds
     setTimeout(() => {
       window.location.href = "/select-user";
     }, 3000);
-    
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
         <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
@@ -132,51 +133,84 @@ export default function Reading() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } }
+  };
+
   return (
     <div className="min-h-screen pb-24">
       {/* Activity Header */}
-      <div className="flex items-center justify-between p-4 bg-white kid-shadow">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", bounce: 0.5 }}
+        className="flex items-center justify-between p-4 bg-white kid-shadow sticky top-0 z-50"
+      >
         <Link href="/">
-          <Button variant="outline" size="sm" className="rounded-full touch-friendly">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <Button variant="outline" size="sm" className="rounded-2xl touch-friendly">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
             </svg>
           </Button>
         </Link>
-        
+
         <div className="text-center">
           <h2 className="text-2xl font-fredoka text-coral">
             Level {currentLevel}: {
               currentLevel === 1 ? "Three Letter Words" :
-              currentLevel === 2 ? "Four Letter Words" :
-              currentLevel === 3 ? "Five Letter Words" :
-              currentLevel === 4 ? "Complex Words" :
-              currentLevel === 5 ? "Advanced Words" :
-              "Simple Sentences"
+                currentLevel === 2 ? "Four Letter Words" :
+                  currentLevel === 3 ? "Five Letter Words" :
+                    currentLevel === 4 ? "Complex Words" :
+                      currentLevel === 5 ? "Advanced Words" :
+                        "Simple Sentences"
             }
           </h2>
-          <ProgressBar 
-            current={currentWordIndex + 1} 
-            total={words.length} 
+          <ProgressBar
+            current={currentWordIndex + 1}
+            total={words.length}
             color="coral"
           />
         </div>
-        
-        <div className="bg-sunnyellow px-4 py-2 rounded-full">
-          <span className="text-lg font-bold text-gray-800">⭐ {currentProgress?.stars || 0}</span>
-        </div>
-      </div>
 
-      <main className="container mx-auto px-4 py-8">
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          className="bg-sunnyellow px-4 py-2 rounded-2xl kid-shadow"
+        >
+          <span className="text-lg font-bold text-gray-800">⭐ {currentProgress?.stars || 0}</span>
+        </motion.div>
+      </motion.div>
+
+      <motion.main
+        className="container mx-auto px-4 py-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
         {/* Word Display */}
-        <div className="text-center mb-12">
-          <img 
-            src={`${currentWord.imageUrl}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300`}
-            alt={`Image for the word ${currentWord.word}`}
-            className="w-64 h-48 object-cover rounded-3xl mx-auto mb-8 kid-shadow"
-          />
-          
-          <Card className="rounded-3xl p-8 kid-shadow max-w-4xl mx-auto">
+        <motion.div variants={itemVariants} className="text-center mb-12">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentWord.imageUrl}
+              initial={{ scale: 0.8, opacity: 0, rotate: -5 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              exit={{ scale: 0.8, opacity: 0, rotate: 5 }}
+              transition={{ type: "spring", bounce: 0.5 }}
+              src={`${currentWord.imageUrl}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300`}
+              alt={`Image for the word ${currentWord.word}`}
+              className="w-64 h-48 object-cover rounded-[2rem] mx-auto mb-8 kid-shadow"
+            />
+          </AnimatePresence>
+
+          <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto bg-white/90 backdrop-blur">
             {currentLevel === 6 ? (
               // Sentence display for level 6
               <div className="text-center mb-8">
@@ -186,10 +220,9 @@ export default function Reading() {
                       {word.split('').map((letter, letterIndex) => (
                         <span
                           key={letterIndex}
-                          className={`inline-block px-2 py-1 mx-1 rounded-lg text-white font-bold ${
-                            letterIndex % 3 === 0 ? 'bg-coral' : 
-                            letterIndex % 3 === 1 ? 'bg-turquoise' : 'bg-sunnyellow'
-                          }`}
+                          className={`inline-block px-2 py-1 mx-1 rounded-lg text-white font-bold ${letterIndex % 3 === 0 ? 'bg-coral' :
+                              letterIndex % 3 === 1 ? 'bg-turquoise' : 'bg-sunnyellow'
+                            }`}
                         >
                           {letter}
                         </span>
@@ -211,13 +244,13 @@ export default function Reading() {
                 ))}
               </div>
             )}
-            
+
             {/* Audio Controls */}
             <div className="flex justify-center space-x-4 mb-6">
               {currentLevel === 6 ? (
                 // Sentence-specific controls
                 <>
-                  <Button 
+                  <Button
                     onClick={() => speak(currentWord.word, { rate: 0.7, pitch: 1.1 })}
                     className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
                   >
@@ -226,7 +259,7 @@ export default function Reading() {
                     </svg>
                     Read Sentence
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => {
                       const words = currentWord.word.split(' ');
                       words.forEach((word, index) => {
@@ -246,7 +279,7 @@ export default function Reading() {
               ) : (
                 // Word-specific controls for levels 1-5
                 <>
-                  <Button 
+                  <Button
                     onClick={handleSpellWord}
                     className="bg-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-green-600 transition-colors touch-friendly"
                   >
@@ -255,7 +288,7 @@ export default function Reading() {
                     </svg>
                     Spell It
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleSayWord}
                     className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
                   >
@@ -274,29 +307,33 @@ export default function Reading() {
               </div>
             )}
           </Card>
-        </div>
+        </motion.div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center space-x-4 mb-8">
-          <Button 
-            onClick={handlePreviousWord}
-            disabled={currentWordIndex === 0}
-            variant="outline"
-            className="px-8 py-4 rounded-2xl font-bold text-xl transition-colors touch-friendly"
-          >
-            ← Previous
-          </Button>
-          <Button 
-            onClick={handleNextWord}
-            className="bg-coral text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-red-500 transition-colors touch-friendly"
-          >
-            {currentWordIndex === words.length - 1 ? "Finish!" : "Next →"}
-          </Button>
-        </div>
+        <motion.div variants={itemVariants} className="flex justify-center space-x-4 mb-8">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={handlePreviousWord}
+              disabled={currentWordIndex === 0}
+              variant="outline"
+              className="px-8 py-6 rounded-2xl font-bold text-xl transition-colors touch-friendly kid-shadow border-2"
+            >
+              ← Previous
+            </Button>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={handleNextWord}
+              className="bg-coral text-white border-coral/80 px-8 py-6 rounded-2xl font-bold text-xl hover:bg-red-500 transition-colors touch-friendly kid-shadow"
+            >
+              {currentWordIndex === words.length - 1 ? "Finish Level! 🎉" : "Next Word →"}
+            </Button>
+          </motion.div>
+        </motion.div>
 
         {/* Level Selection */}
-        <div className="bg-white rounded-3xl p-6 kid-shadow max-w-2xl mx-auto">
-          <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Choose Your Level</h3>
+        <motion.div variants={itemVariants} className="bg-white rounded-[2.5rem] p-8 kid-shadow max-w-2xl mx-auto">
+          <h3 className="text-2xl font-fredoka text-gray-800 mb-6 text-center">Choose Your Level</h3>
           <div className="grid grid-cols-5 gap-3">
             {[1, 2, 3, 4, 5].map((level) => (
               <Button
@@ -309,29 +346,29 @@ export default function Reading() {
                   queryClient.invalidateQueries({ queryKey: ["/api/user/progress/reading"] });
                 }}
                 className={`
-                  py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly
-                  ${currentLevel === level 
-                    ? 'bg-coral text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly kid-shadow
+                  ${currentLevel === level
+                    ? 'bg-coral text-white border-coral/80'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'
                   }
                 `}
               >
-                Level {level}
+                Lvl {level}
               </Button>
             ))}
           </div>
-          
-          <div className="mt-4 text-center text-sm text-gray-600">
+
+          <div className="mt-4 text-center text-sm text-gray-600 font-bold">
             <div className="grid grid-cols-5 gap-3 text-xs">
-              <span>3-letter words</span>
-              <span>4-letter words</span>
-              <span>5-letter words</span>
-              <span>Complex words</span>
-              <span>Advanced words</span>
+              <span>3-letter</span>
+              <span>4-letter</span>
+              <span>5-letter</span>
+              <span>Complex</span>
+              <span>Advanced</span>
             </div>
           </div>
-        </div>
-      </main>
+        </motion.div>
+      </motion.main>
     </div>
   );
 }
