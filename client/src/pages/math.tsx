@@ -163,7 +163,19 @@ export default function MathPage() {
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } }
-  }; const handleAnswerSelect = (answer: number) => {
+  };
+
+  useEffect(() => {
+    // Whenever a new activity loads, announce the question automatically 
+    if (currentActivity && currentActivity.question) {
+      const timeoutId = setTimeout(() => {
+        speak(currentActivity.question, { rate: 0.8, pitch: 1.1 });
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentActivity]);
+
+  const handleAnswerSelect = (answer: number) => {
     setSelectedAnswer(answer);
     setShowFeedback(true);
 

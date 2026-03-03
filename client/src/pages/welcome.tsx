@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { speak } from "@/lib/speech";
 
 export default function Welcome() {
   const containerVariants = {
@@ -43,8 +44,13 @@ export default function Welcome() {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             {/* Reading Section */}
-            <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} className="h-full">
-              <Card className="rounded-[2.5rem] p-8 kid-shadow bg-white/95 backdrop-blur-sm h-full flex flex-col justify-between">
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              className="h-full cursor-pointer"
+              onMouseEnter={() => speak("Reading Fun!", { rate: 0.9, pitch: 1.2 })}
+            >
+              <Card className="rounded-[2.5rem] p-8 kid-shadow bg-white/95 backdrop-blur-sm h-full flex flex-col justify-between border-4 border-transparent hover:border-coral transition-colors duration-300">
                 <div className="text-center">
                   <motion.div
                     className="text-6xl mb-4"
@@ -66,8 +72,13 @@ export default function Welcome() {
             </motion.div>
 
             {/* Math Section */}
-            <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} className="h-full">
-              <Card className="rounded-[2.5rem] p-8 kid-shadow bg-white/95 backdrop-blur-sm h-full flex flex-col justify-between">
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              className="h-full cursor-pointer"
+              onMouseEnter={() => speak("Math Magic!", { rate: 0.9, pitch: 1.2 })}
+            >
+              <Card className="rounded-[2.5rem] p-8 kid-shadow bg-white/95 backdrop-blur-sm h-full flex flex-col justify-between border-4 border-transparent hover:border-turquoise transition-colors duration-300">
                 <div className="text-center">
                   <motion.div
                     className="text-6xl mb-4"

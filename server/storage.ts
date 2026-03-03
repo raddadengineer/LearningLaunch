@@ -47,6 +47,32 @@ export class DatabaseStorage implements IStorage {
     const existingWords = await this.getAllReadingWords();
     if (existingWords.length === 0) {
       await this.seedReadingWords();
+    } else {
+      // Check for old abstract vocabulary to trigger an upgrade
+      const hasOldVocab = existingWords.some(w => w.word === "FUN" || w.word === "JUMP" || w.word === "FAVORITE");
+      if (hasOldVocab) {
+        console.log("Upgrading reading vocabulary list to new concrete noun dataset...");
+        // Delete the old default words. 
+        // We know old defaults included FUN, JUMP, PLAY, etc.
+        // Easiest is to clear the table and reseed, but to preserve custom words,
+        // we'll just delete the old specific words if needed.
+        // For simplicity and to ensure a clean slate for the foundational levels, 
+        // we'll remove words that were part of the old defaults by their known names.
+        const oldWords = ["CAT", "DOG", "SUN", "BAT", "HAT", "CAN", "RUN", "FUN", "BUS", "CUP", "PEN", "BED",
+          "FISH", "BIRD", "TREE", "BOOK", "BALL", "PLAY", "JUMP", "HELP", "CAKE", "DUCK", "FROG", "MILK", "RAIN", "STAR", "MOON",
+          "HOUSE", "PLANT", "WATER", "APPLE", "TRAIN", "BEACH", "HORSE", "BREAD", "PIZZA", "MUSIC", "SMILE", "CHAIR",
+          "FLOWER", "BRIDGE", "GARDEN", "CASTLE", "RABBIT", "BRANCH", "SPIDER", "SWITCH", "SCHOOL", "SUMMER", "ORANGE", "JUNGLE",
+          "ELEPHANT", "DINOSAUR", "BUTTERFLY", "MOUNTAIN", "SANDWICH", "UMBRELLA", "COMPUTER", "AIRPLANE", "BIRTHDAY", "FAVORITE", "HOSPITAL", "UNIVERSE"];
+
+        for (const oldWord of oldWords) {
+          const wordsToDelete = existingWords.filter(w => w.word === oldWord);
+          for (const w of wordsToDelete) {
+            await this.deleteReadingWord(w.id);
+          }
+        }
+        await this.seedReadingWords();
+        console.log("Vocabulary upgrade complete.");
+      }
     }
   }
 

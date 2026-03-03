@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ReadingWord, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -133,6 +133,18 @@ export default function Reading() {
     }
   };
 
+  useEffect(() => {
+    // Whenever the current word changes, read it aloud automatically
+    if (words && words.length > 0 && currentWordIndex < words.length) {
+      const word = words[currentWordIndex].word;
+      // Slight delay so the user sees the image appear first
+      const timeoutId = setTimeout(() => {
+        speakWord(word, { rate: 0.8, pitch: 1.1 });
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentWordIndex, words]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -221,7 +233,7 @@ export default function Reading() {
                         <span
                           key={letterIndex}
                           className={`inline-block px-2 py-1 mx-1 rounded-lg text-white font-bold ${letterIndex % 3 === 0 ? 'bg-coral' :
-                              letterIndex % 3 === 1 ? 'bg-turquoise' : 'bg-sunnyellow'
+                            letterIndex % 3 === 1 ? 'bg-turquoise' : 'bg-sunnyellow'
                             }`}
                         >
                           {letter}

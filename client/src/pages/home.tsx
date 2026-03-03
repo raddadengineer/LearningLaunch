@@ -3,7 +3,8 @@ import { User, UserProgress, Achievement } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { speak } from "@/lib/speech";
 
 export default function Home() {
   const currentUserId = localStorage.getItem("currentUserId");
@@ -186,7 +187,10 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </motion.div>
-                  <h3 className="text-4xl font-fredoka text-coral">Reading</h3>
+                  <h3
+                    className="text-4xl font-fredoka text-coral"
+                    onMouseEnter={() => speak("Reading", { rate: 0.9, pitch: 1.2 })}
+                  >Reading</h3>
                 </div>
 
                 <p className="text-xl font-bold text-gray-600 mb-6">Learn to read with fun words and sounds!</p>
@@ -238,8 +242,12 @@ export default function Home() {
                 </div>
 
                 <Link href="/reading">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button className="w-full bg-coral border-coral/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-red-500 touch-friendly">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onMouseEnter={() => speak("Start Reading!", { rate: 0.9, pitch: 1.2 })}
+                  >
+                    <Button className="w-full bg-coral border-coral/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-red-500 touch-friendly cursor-pointer">
                       Start Reading! 📚
                     </Button>
                   </motion.div>
@@ -266,7 +274,10 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                   </motion.div>
-                  <h3 className="text-4xl font-fredoka text-turquoise">Math</h3>
+                  <h3
+                    className="text-4xl font-fredoka text-turquoise"
+                    onMouseEnter={() => speak("Math", { rate: 0.9, pitch: 1.2 })}
+                  >Math</h3>
                 </div>
 
                 <p className="text-xl font-bold text-gray-600 mb-6">Count, add and have fun with numbers!</p>
@@ -288,8 +299,12 @@ export default function Home() {
                 </div>
 
                 <Link href="/math">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button className="w-full bg-turquoise border-turquoise/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-teal-500 touch-friendly">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onMouseEnter={() => speak("Start Counting!", { rate: 0.9, pitch: 1.2 })}
+                  >
+                    <Button className="w-full bg-turquoise border-turquoise/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-teal-500 touch-friendly cursor-pointer">
                       Start Counting! 🔢
                     </Button>
                   </motion.div>
