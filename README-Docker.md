@@ -56,6 +56,15 @@ The Docker setup includes these pre-configured environment variables:
 3. **Build failures**: Ensure you have enough disk space and memory
 4. **Permission issues**: On Linux, you may need to run with `sudo`
 
+### Portainer Deployment
+
+For a GUI-managed deployment, we've provided a ready-to-use `portainer-stack.yml` file. This avoids the need to set up local command-line Docker environments:
+1. Open up your Portainer dashboard.
+2. Navigate to **Stacks** > **Add stack**.
+3. Copy and paste the full contents of `portainer-stack.yml` into the Web editor.
+4. Modify any environment variables or passwords directly in the YAML or utilizing Portainer's "Environment variables" tools at the bottom.
+5. Click **Deploy the stack**.
+
 ### Development vs Production
 
 This Docker setup is configured for local development with production-like settings. For actual production deployment, you should:
