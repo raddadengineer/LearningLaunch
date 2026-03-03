@@ -101,7 +101,7 @@ export class DatabaseStorage implements IStorage {
       const count = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
       return sum + count;
     }, 0);
-    
+
     // Estimate 2-3 minutes per completed activity
     return totalCompletedItems * 2.5;
   }
@@ -211,83 +211,80 @@ export class DatabaseStorage implements IStorage {
 
   async seedReadingWords() {
     const wordsByLevel = [
-      // Level 1: Simple 3-letter CVC words
+      // Level 1: CVC words
       [
-        { word: "CAT", imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba", level: 1 },
-        { word: "DOG", imageUrl: "https://images.unsplash.com/photo-1552053831-71594a27632d", level: 1 },
-        { word: "SUN", imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4", level: 1 },
-        { word: "BAT", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96", level: 1 },
-        { word: "HAT", imageUrl: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0", level: 1 },
-        { word: "CAN", imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c", level: 1 },
-        { word: "RUN", imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b", level: 1 },
-        { word: "FUN", imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9", level: 1 },
-        { word: "BUS", imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957", level: 1 },
-        { word: "CUP", imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f", level: 1 },
-        { word: "PEN", imageUrl: "https://images.unsplash.com/photo-1586953208448-b95a79798f07", level: 1 },
-        { word: "BED", imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85", level: 1 }
+        { word: "CAT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg", level: 1 },
+        { word: "DOG", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Huskiesatrest.jpg", level: 1 },
+        { word: "PIG", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pig_farm_Vampula_1.jpg", level: 1 },
+        { word: "BUG", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ed/Insects_-_Neoptera_-_Paleoptera_-_Apterygota.jpg", level: 1 },
+        { word: "SUN", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/83/The_Sun_in_white_light.jpg", level: 1 },
+        { word: "BAT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/77/Big-eared-townsend-fledermaus.jpg", level: 1 },
+        { word: "HAT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Chapeaux_en_peau_de_castor.jpg", level: 1 },
+        { word: "BOX", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/L%C3%A5da_-_Livrustkammaren_-_107142.tif/lossy-page1-8178px-L%C3%A5da_-_Livrustkammaren_-_107142.tif.jpg", level: 1 },
+        { word: "FOX", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d2/Portrait_of_a_red_fox_in_Rautas_fj%C3%A4llurskog_%28cropped%29.jpg", level: 1 },
+        { word: "MUG", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Mug_of_Tea.JPG", level: 1 },
+        { word: "LOG", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Felling_a_gumtree_c1884-1917_Powerhouse_Museum.jpg", level: 1 },
+        { word: "RAT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/44/Brown_Rat_%28Rattus_norvegicus%29.jpg", level: 1 }
       ],
       // Level 2: 4-letter words
       [
-        { word: "FISH", imageUrl: "https://images.unsplash.com/photo-1535591273668-578e31182c4f", level: 2 },
-        { word: "BIRD", imageUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3", level: 2 },
-        { word: "TREE", imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", level: 2 },
-        { word: "BOOK", imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570", level: 2 },
-        { word: "BALL", imageUrl: "https://images.unsplash.com/photo-1594736797933-d0bd1aebf67c", level: 2 },
-        { word: "PLAY", imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9", level: 2 },
-        { word: "JUMP", imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b", level: 2 },
-        { word: "HELP", imageUrl: "https://images.unsplash.com/photo-1559027615-cd4628902d4a", level: 2 },
-        { word: "CAKE", imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13", level: 2 },
-        { word: "DUCK", imageUrl: "https://images.unsplash.com/photo-1551196007-2b6c0afbc0dd", level: 2 },
-        { word: "FROG", imageUrl: "https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80", level: 2 },
-        { word: "MILK", imageUrl: "https://images.unsplash.com/photo-1563636619-e9143da7973b", level: 2 },
-        { word: "RAIN", imageUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0", level: 2 },
-        { word: "STAR", imageUrl: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a", level: 2 },
-        { word: "MOON", imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b", level: 2 }
+        { word: "FISH", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Balantiocheilos_melanopterus_-_Karlsruhe_Zoo_02_%28cropped%29.jpg", level: 2 },
+        { word: "DUCK", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Bucephala-albeola-010.jpg", level: 2 },
+        { word: "FROG", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/f/f5/Red-eyed_Leaf_Frog_%2849661076226%29.jpg", level: 2 },
+        { word: "BIRD", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Bird_Diversity_2013.png", level: 2 },
+        { word: "TREE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Usamljeni_jasen_-_panoramio_%28cropped%29.jpg", level: 2 },
+        { word: "BOOK", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Gutenberg_Bible%2C_Lenox_Copy%2C_New_York_Public_Library%2C_2009._Pic_01.jpg", level: 2 },
+        { word: "BALL", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Many_balls.jpg", level: 2 },
+        { word: "BEAR", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Ours_brun_parcanimalierpyrenees_1.jpg", level: 2 },
+        { word: "BOAT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Motorboat_at_Kankaria_lake.JPG", level: 2 },
+        { word: "MOON", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg", level: 2 },
+        { word: "STAR", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/83/The_Sun_in_white_light.jpg", level: 2 },
+        { word: "CAKE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/04/Pound_layer_cake.jpg", level: 2 }
       ],
-      // Level 3: 5-letter words and sight words
+      // Level 3: 5-letter words
       [
-        { word: "HOUSE", imageUrl: "https://images.unsplash.com/photo-1570129477492-45c003edd2be", level: 3 },
-        { word: "PLANT", imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b", level: 3 },
-        { word: "WATER", imageUrl: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874", level: 3 },
-        { word: "APPLE", imageUrl: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6", level: 3 },
-        { word: "TRAIN", imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957", level: 3 },
-        { word: "BEACH", imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e", level: 3 },
-        { word: "HORSE", imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000", level: 3 },
-        { word: "BREAD", imageUrl: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73", level: 3 },
-        { word: "PIZZA", imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591", level: 3 },
-        { word: "MUSIC", imageUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f", level: 3 },
-        { word: "SMILE", imageUrl: "https://images.unsplash.com/photo-1552053831-71594a27632d", level: 3 },
-        { word: "CHAIR", imageUrl: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237", level: 3 }
+        { word: "HOUSE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Katsura_Imperial_Villa_in_Spring.jpg", level: 3 },
+        { word: "APPLE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Pink_lady_and_cross_section.jpg", level: 3 },
+        { word: "TRAIN", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/50/%D0%9F%D0%BE%D0%B5%D0%B7%D0%B4_%D0%BD%D0%B0_%D1%84%D0%BE%D0%BD%D0%B5_%D0%B3%D0%BE%D1%80%D1%8B_%D0%A8%D0%B0%D1%82%D1%80%D0%B8%D1%89%D0%B5._%D0%92%D0%BE%D1%80%D0%BE%D0%BD%D0%B5%D0%B6%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C.jpg", level: 3 },
+        { word: "HORSE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/de/Nokota_Horses_cropped.jpg", level: 3 },
+        { word: "MOUSE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0d/%D0%9C%D1%8B%D1%88%D1%8C_2.jpg", level: 3 },
+        { word: "CHAIR", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Set_of_fourteen_side_chairs_MET_DP110780.jpg", level: 3 },
+        { word: "CLOUD", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1d/ISS-40_Thunderheads_near_Borneo.jpg", level: 3 },
+        { word: "SHEEP", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Flock_of_sheep.jpg", level: 3 },
+        { word: "SNAKE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/6/60/Trimeresurus_sabahi_fucatus%2C_Banded_pit_viper_-_Takua_Pa_District%2C_Phang-nga_Province_%2846710893582%29.jpg", level: 3 },
+        { word: "TIGER", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Bengal_tiger_%28Panthera_tigris_tigris%29_female_3_crop.jpg", level: 3 },
+        { word: "GRASS", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/77/Poa_annua.jpg", level: 3 },
+        { word: "TRUCK", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/11/Freightliner_M2_106_6x4_2014_%2814240376744%29.jpg", level: 3 }
       ],
-      // Level 4: Complex words and blends
+      // Level 4: 6-7 letter words
       [
-        { word: "FLOWER", imageUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486c946", level: 4 },
-        { word: "BRIDGE", imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d", level: 4 },
-        { word: "GARDEN", imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b", level: 4 },
-        { word: "CASTLE", imageUrl: "https://images.unsplash.com/photo-1519046904884-53103b34b206", level: 4 },
-        { word: "RABBIT", imageUrl: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308", level: 4 },
-        { word: "BRANCH", imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", level: 4 },
-        { word: "SPIDER", imageUrl: "https://images.unsplash.com/photo-1478359844494-1092259d93e4", level: 4 },
-        { word: "SWITCH", imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13", level: 4 },
-        { word: "SCHOOL", imageUrl: "https://images.unsplash.com/photo-1580582932707-520aed937b7b", level: 4 },
-        { word: "SUMMER", imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4", level: 4 },
-        { word: "ORANGE", imageUrl: "https://images.unsplash.com/photo-1547036967-23d11aacaee0", level: 4 },
-        { word: "JUNGLE", imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", level: 4 }
+        { word: "FLOWER", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/38/Magnolia_grandiflora_-_flower_1.jpg", level: 4 },
+        { word: "RABBIT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Oryctolagus_cuniculus_Rcdo.jpg", level: 4 },
+        { word: "MONKEY", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dc/BrownSpiderMonkey_%28edit2%29.jpg", level: 4 },
+        { word: "SPIDER", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/26/Araneae3.jpg", level: 4 },
+        { word: "PENCIL", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/08/Pencils_hb.jpg", level: 4 },
+        { word: "ORANGE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Oranges_-_whole-halved-segment.jpg", level: 4 },
+        { word: "DRAGON", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/bf/St_Catherine%2C_St_George_and_the_Dragon_%28M%C3%A4staren_fr%C3%A5n_Kappenberg%29_-_Nationalmuseum_-_18337_%28brightened%29%2C_draken.png", level: 4 },
+        { word: "TURTLE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/21/Turtle_diversity.jpg", level: 4 },
+        { word: "LIZARD", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Hemidactylus_platyurus_%28Flat-tailed_House_Gecko%29_on_white_background%2C_focus_stacking.jpg", level: 4 },
+        { word: "CASTLE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/40/Panor%C3%A1mica_Oto%C3%B1o_Alc%C3%A1zar_de_Segovia.jpg", level: 4 },
+        { word: "ROCKET", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Soyuz_TMA-9_launch.jpg", level: 4 },
+        { word: "DOCTOR", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/84/The_Doctor_Luke_Fildes_crop.jpg", level: 4 }
       ],
-      // Level 5: Advanced words and complex patterns
+      // Level 5: 8+ letter words
       [
-        { word: "ELEPHANT", imageUrl: "https://images.unsplash.com/photo-1564760055775-d63b17a55c44", level: 5 },
-        { word: "DINOSAUR", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96", level: 5 },
-        { word: "BUTTERFLY", imageUrl: "https://images.unsplash.com/photo-1558449028-b53a39d100fc", level: 5 },
-        { word: "MOUNTAIN", imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4", level: 5 },
-        { word: "SANDWICH", imageUrl: "https://images.unsplash.com/photo-1539252554453-80ab65ce3586", level: 5 },
-        { word: "UMBRELLA", imageUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0", level: 5 },
-        { word: "COMPUTER", imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b", level: 5 },
-        { word: "AIRPLANE", imageUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05", level: 5 },
-        { word: "BIRTHDAY", imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13", level: 5 },
-        { word: "FAVORITE", imageUrl: "https://images.unsplash.com/photo-1552728089-57bdde30beb3", level: 5 },
-        { word: "HOSPITAL", imageUrl: "https://images.unsplash.com/photo-1551601651-2a8555f1a136", level: 5 },
-        { word: "UNIVERSE", imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b", level: 5 }
+        { word: "ELEPHANT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/37/African_Bush_Elephant.jpg", level: 5 },
+        { word: "DINOSAUR", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Sinosauropteryxfossil.jpg", level: 5 },
+        { word: "BUTTERFLY", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3d/Fesoj_-_Papilio_machaon_%28by%29.jpg", level: 5 },
+        { word: "MOUNTAIN", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg", level: 5 },
+        { word: "UMBRELLA", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/87/M0354_000727-005_1.jpg", level: 5 },
+        { word: "AIRPLANE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/36/United_Airlines_Boeing_777-200_Meulemans.jpg", level: 5 },
+        { word: "ASTRONAUT", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/9/91/Bruce_McCandless_II_during_EVA_in_1984.jpg", level: 5 },
+        { word: "HELICOPTER", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/78/LAPD_Bell_206_Jetranger.jpg", level: 5 },
+        { word: "KANGAROO", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/df/Forester_kangaroo_%28Macropus_giganteus_tasmaniensis%29_juvenile_hopping_Esk_Valley.jpg", level: 5 },
+        { word: "ALLIGATOR", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4a/Chinese%2Bamerican_alligators.png", level: 5 },
+        { word: "VOLCANO", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/48/Augustine_volcano_Jan_24_2006_-_Cyrus_Read.jpg", level: 5 },
+        { word: "TELESCOPE", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ac/100inchHooker.jpg", level: 5 }
       ]
     ];
 

@@ -16,8 +16,8 @@ The application supports seamless integration with [Kokoro-FastAPI](https://gith
 
 **How to set up Kokoro:**
 1. Run your local Kokoro-FastAPI server (e.g., via Docker on port 8880).
-2. Open the App and navigate to the **Parent Dashboard** (`/parent-dashboard`).
-3. Scroll down to the **Voice Settings** section.
+2. Open the App and navigate to the **Admin Panel** (`/admin`).
+3. Click on the **Voice Settings** tab.
 4. Check **Enable Kokoro High-Quality Voices**.
 5. Set your API URL (default: `http://localhost:8880/v1/audio/speech`) and Voice ID (e.g., `af_heart` or `af_bella`).
 6. Click **Save Settings** and use the **Test Voice Setup** button to confirm it works!
