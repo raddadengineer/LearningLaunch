@@ -1,10 +1,12 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { speak } from "@/lib/speech";
 
 export default function Welcome() {
+  const [, setLocation] = useLocation();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -129,13 +131,15 @@ export default function Welcome() {
           {/* Action Buttons */}
           <motion.div variants={itemVariants} className="text-center space-y-6">
             <div>
-              <Link href="/select-user">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-                  <Button className="bg-coral hover:bg-coral/90 border-coral/80 text-white text-3xl px-12 py-8 rounded-[2rem] font-fredoka shadow-xl">
-                    🎮 Start Learning!
-                  </Button>
-                </motion.div>
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+                <Button
+                  onClick={() => setLocation("/select-user")}
+                  onTouchStart={() => speak("Start Learning!", { rate: 0.9, pitch: 1.2 })}
+                  className="bg-coral hover:bg-coral/90 border-coral/80 text-white text-3xl px-12 py-8 rounded-[2rem] font-fredoka shadow-xl touch-friendly btn-pressable"
+                >
+                  🎮 Start Learning!
+                </Button>
+              </motion.div>
             </div>
             <p className="text-white text-xl font-bold bg-black/20 rounded-full px-6 py-2 inline-block">
               Choose an existing profile or create a new one!

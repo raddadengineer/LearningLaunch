@@ -146,7 +146,7 @@ export default function MathPage() {
 
   const currentProgress = progress?.find(p => p.level === currentLevel && p.activityType === "math");
   const completedActivities = Array.isArray(currentProgress?.completedItems)
-    ? currentProgress.completedItems
+    ? (currentProgress.completedItems as number[])
     : [];
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
 

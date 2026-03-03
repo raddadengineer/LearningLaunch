@@ -91,7 +91,7 @@ export default function Reading() {
 
   const currentWord = words[currentWordIndex];
   const currentProgress = progress?.find(p => p.level === currentLevel);
-  const completedWords = currentProgress?.completedItems || [];
+  const completedWords = Array.isArray(currentProgress?.completedItems) ? currentProgress.completedItems as number[] : [];
   const isWordCompleted = completedWords.includes(currentWord.id);
 
   const handleLetterClick = (letter: string) => {

@@ -140,7 +140,7 @@ export default function Home() {
                 <div className="w-full bg-gray-200 rounded-full h-4 kid-shadow overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${(readingProgress.completedItems.length / readingProgress.totalItems) * 100}%` }}
+                    animate={{ width: `${((Array.isArray(readingProgress.completedItems) ? readingProgress.completedItems.length : 0) / readingProgress.totalItems) * 100}%` }}
                     transition={{ duration: 1, delay: 0.5 }}
                     className="bg-coral h-full rounded-full"
                   />
@@ -157,7 +157,7 @@ export default function Home() {
                 <div className="w-full bg-gray-200 rounded-full h-4 kid-shadow overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${(mathProgress.completedItems.length / mathProgress.totalItems) * 100}%` }}
+                    animate={{ width: `${((Array.isArray(mathProgress.completedItems) ? mathProgress.completedItems.length : 0) / mathProgress.totalItems) * 100}%` }}
                     transition={{ duration: 1, delay: 0.7 }}
                     className="bg-turquoise h-full rounded-full"
                   />
@@ -190,6 +190,7 @@ export default function Home() {
                   <h3
                     className="text-4xl font-fredoka text-coral"
                     onMouseEnter={() => speak("Reading", { rate: 0.9, pitch: 1.2 })}
+                    onTouchStart={() => speak("Reading", { rate: 0.9, pitch: 1.2 })}
                   >Reading</h3>
                 </div>
 
@@ -241,17 +242,19 @@ export default function Home() {
                   </motion.div>
                 </div>
 
-                <Link href="/reading">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onMouseEnter={() => speak("Start Reading!", { rate: 0.9, pitch: 1.2 })}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onMouseEnter={() => speak("Start Reading!", { rate: 0.9, pitch: 1.2 })}
+                >
+                  <Button
+                    onClick={() => setLocation("/reading")}
+                    onTouchStart={() => speak("Start Reading!", { rate: 0.9, pitch: 1.2 })}
+                    className="w-full bg-coral border-coral/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-red-500 touch-friendly cursor-pointer btn-pressable"
                   >
-                    <Button className="w-full bg-coral border-coral/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-red-500 touch-friendly cursor-pointer">
-                      Start Reading! 📚
-                    </Button>
-                  </motion.div>
-                </Link>
+                    Start Reading! 📚
+                  </Button>
+                </motion.div>
               </div>
             </Card>
           </motion.div>
@@ -277,6 +280,7 @@ export default function Home() {
                   <h3
                     className="text-4xl font-fredoka text-turquoise"
                     onMouseEnter={() => speak("Math", { rate: 0.9, pitch: 1.2 })}
+                    onTouchStart={() => speak("Math", { rate: 0.9, pitch: 1.2 })}
                   >Math</h3>
                 </div>
 
@@ -298,17 +302,19 @@ export default function Home() {
                   </motion.div>
                 </div>
 
-                <Link href="/math">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onMouseEnter={() => speak("Start Counting!", { rate: 0.9, pitch: 1.2 })}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onMouseEnter={() => speak("Start Counting!", { rate: 0.9, pitch: 1.2 })}
+                >
+                  <Button
+                    onClick={() => setLocation("/math")}
+                    onTouchStart={() => speak("Start Counting!", { rate: 0.9, pitch: 1.2 })}
+                    className="w-full bg-turquoise border-turquoise/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-teal-500 touch-friendly cursor-pointer btn-pressable"
                   >
-                    <Button className="w-full bg-turquoise border-turquoise/80 text-white text-2xl font-fredoka py-6 rounded-[2rem] kid-shadow hover:bg-teal-500 touch-friendly cursor-pointer">
-                      Start Counting! 🔢
-                    </Button>
-                  </motion.div>
-                </Link>
+                    Start Counting! 🔢
+                  </Button>
+                </motion.div>
               </div>
             </Card>
           </motion.div>
