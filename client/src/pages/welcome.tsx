@@ -36,7 +36,7 @@ export default function Welcome() {
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
           >
-            🎓 KidLearn
+            🎓 LearningLaunch
           </motion.h1>
           <p className="text-3xl font-bold text-white drop-shadow-md mb-8">
             Fun Learning Adventures for Kids Ages 4-5!
@@ -106,7 +106,7 @@ export default function Welcome() {
           <motion.div variants={itemVariants}>
             <Card className="rounded-[2.5rem] p-8 kid-shadow bg-white/95 backdrop-blur-sm mb-12">
               <div className="text-center">
-                <h2 className="text-4xl font-fredoka text-mintgreen mb-8">Why Kids Love KidLearn</h2>
+                <h2 className="text-4xl font-fredoka text-mintgreen mb-8">Why Kids Love LearningLaunch</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center">
                     <div className="text-5xl mb-4">🎨</div>

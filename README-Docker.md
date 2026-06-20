@@ -1,4 +1,4 @@
-# KidLearn App - Docker Setup
+# LearningLaunch App - Docker Setup
 
 This educational app for children can be run locally using Docker with persistent data storage.
 
@@ -32,15 +32,15 @@ This educational app for children can be run locally using Docker with persisten
 
 ### Data Persistence
 
-The PostgreSQL database data is stored in a Docker volume called `postgres_data`. This means:
+The PostgreSQL database data is stored in a Docker volume called `learninglaunch_postgres_data`. This means:
 - Your progress, users, and all data will persist between container restarts
-- To completely reset the database, remove the volume: `docker volume rm kidlearn_postgres_data`
+- To completely reset the database, remove the volume: `docker volume rm learninglaunch_postgres_data`
 
 ### Services
 
 - **App**: Node.js application running on port 3456 (mapped from internal port 5000)
 - **Database**: PostgreSQL 15 running on port 5433 (mapped from internal port 5432)
-- **Volume**: `postgres_data` for persistent database storage
+- **Volume**: `learninglaunch_postgres_data` for persistent database storage
 
 ### Environment Variables
 

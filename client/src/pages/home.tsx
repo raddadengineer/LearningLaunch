@@ -90,7 +90,7 @@ export default function Home() {
                 <div className="w-12 h-12 bg-coral rounded-[1rem] flex items-center justify-center text-2xl kid-shadow">
                   🦉
                 </div>
-                <h1 className="text-3xl font-fredoka text-coral">KidLearn</h1>
+                <h1 className="text-3xl font-fredoka text-coral">LearningLaunch</h1>
               </motion.div>
             </Link>
 

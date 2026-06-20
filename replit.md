@@ -1,8 +1,8 @@
-# KidLearn - Educational App for Children
+# LearningLaunch - Educational App for Children
 
 ## Overview
 
-KidLearn is a fun, interactive educational application designed for children ages 4-5. The app provides engaging learning experiences through reading and math activities, featuring a colorful, child-friendly interface with voice feedback and progress tracking.
+LearningLaunch is a fun, interactive educational application designed for children ages 4-5. The app provides engaging learning experiences through reading and math activities, featuring a colorful, child-friendly interface with voice feedback and progress tracking.
 
 ## System Architecture
 

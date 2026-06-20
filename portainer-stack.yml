@@ -6,35 +6,35 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: kidlearn_db
-      POSTGRES_USER: kidlearn_user
+      POSTGRES_DB: learninglaunch_db
+      POSTGRES_USER: learninglaunch_user
       POSTGRES_PASSWORD: my_super_secret_db_password
     volumes:
-      - kidlearn_postgres_data:/var/lib/postgresql/data
+      - learninglaunch_postgres_data:/var/lib/postgresql/data
     # Note: If you need to initialize the database with schema/data, 
-    # you can run 'npm run db:push' inside the kidlearn container 
+    # you can run 'npm run db:push' inside the learninglaunch container 
     # after the stack is deployed.
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kidlearn_user -d kidlearn_db"]
+      test: ["CMD-SHELL", "pg_isready -U learninglaunch_user -d learninglaunch_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # KidLearn Application
-  kidlearn:
-    image: raddadengineer/kidlearn:latest
+  # LearningLaunch Application
+  learninglaunch:
+    image: raddadengineer/learninglaunch:latest
     restart: unless-stopped
     ports:
       # Map host port 3456 to container port 5000
       - "3456:5000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://kidlearn_user:my_super_secret_db_password@postgres:5432/kidlearn_db
+      - DATABASE_URL=postgresql://learninglaunch_user:my_super_secret_db_password@postgres:5432/learninglaunch_db
       - PGHOST=postgres
       - PGPORT=5432
-      - PGUSER=kidlearn_user
+      - PGUSER=learninglaunch_user
       - PGPASSWORD=my_super_secret_db_password
-      - PGDATABASE=kidlearn_db
+      - PGDATABASE=learninglaunch_db
       - SESSION_SECRET=my_super_secret_session_key
     depends_on:
       postgres:
@@ -47,6 +47,6 @@ services:
       start_period: 40s
 
 volumes:
-  kidlearn_postgres_data:
+  learninglaunch_postgres_data:
     # Uses the default local driver for persistent storage
     driver: local

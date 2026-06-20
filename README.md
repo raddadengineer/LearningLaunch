@@ -1,4 +1,4 @@
-# Learning Launch (KidLearn) 🚀
+# LearningLaunch 🚀
 
 A modern, highly engaging early-learning platform designed specifically for young children (ages 4-5) to practice fundamental Reading and Math skills.
 
