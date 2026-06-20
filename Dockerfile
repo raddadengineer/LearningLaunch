@@ -54,6 +54,6 @@ RUN mkdir -p /app/dist/server && cp -r /app/dist/public /app/dist/server/public 
 # Expose the application port
 EXPOSE 5000
 
-# Use entrypoint script
-ENTRYPOINT ["./docker-entrypoint.sh"]
+# Use /bin/sh explicitly — avoids shebang issues on some hosts
+ENTRYPOINT ["/bin/sh", "./docker-entrypoint.sh"]
 CMD ["node", "dist/server/index.mjs"]

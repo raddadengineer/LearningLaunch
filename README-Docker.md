@@ -77,9 +77,10 @@ The Docker setup includes these pre-configured environment variables:
 ### Troubleshooting
 
 1. **Port conflicts**: If port 3456 or 5433 are in use, modify the ports in `docker-compose.yml`
-2. **Database connection issues**: Check if PostgreSQL service is healthy with `docker-compose ps`
-3. **Build failures**: Ensure you have enough disk space and memory
-4. **Permission issues**: On Linux, you may need to run with `sudo`
+2. **`exec format error` on startup**: The published image must match your server CPU. Images pushed with `npm run docker:push` are multi-arch (`linux/amd64` + `linux/arm64`). After a fix, run `docker compose -f docker-compose.hub.yml pull` and recreate the container.
+3. **Database connection issues**: Check if PostgreSQL service is healthy with `docker-compose ps`
+4. **Build failures**: Ensure you have enough disk space and memory
+5. **Permission issues**: On Linux, you may need to run with `sudo`
 
 ### Portainer Deployment
 
@@ -94,18 +95,22 @@ The stack pulls the published image **`raddadengineer/learninglaunch:latest`** f
 
 ### Publishing to Docker Hub
 
-To build and publish a new image under the LearningLaunch name:
+To build and publish a new **multi-architecture** image (AMD64 + ARM64) for Docker Hub:
 
 ```bash
-npm run docker:build
 npm run docker:push
 ```
 
-Or manually:
+For a local-only single-arch build:
 
 ```bash
-docker build -t raddadengineer/learninglaunch:latest .
-docker push raddadengineer/learninglaunch:latest
+npm run docker:build
+```
+
+Or manually (multi-arch publish):
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 -t raddadengineer/learninglaunch:latest --push .
 ```
 
 *Note: The legacy `raddadengineer/kidlearn` image has been replaced by `raddadengineer/learninglaunch`.*

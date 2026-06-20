@@ -24,7 +24,7 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "docker:build": "docker build -t raddadengineer/learninglaunch:latest .",
-    "docker:push": "docker push raddadengineer/learninglaunch:latest"
+    "docker:push": "sh scripts/docker-push.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
