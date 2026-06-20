@@ -2,6 +2,8 @@
 
 A modern, highly engaging early-learning platform designed specifically for young children (ages 4-5) to practice fundamental Reading and Math skills.
 
+**Repository:** [github.com/raddadengineer/LearningLaunch](https://github.com/raddadengineer/LearningLaunch)
+
 ## ✨ Features
 
 - **Reading Activities:** Word and letter recognition with satisfying visual feedback and verbal pronunciation.
@@ -33,6 +35,8 @@ The application supports seamless integration with [Kokoro-FastAPI](https://gith
 ### Installation
 1. Clone the repository and install the dependencies:
    ```bash
+   git clone https://github.com/raddadengineer/LearningLaunch.git
+   cd LearningLaunch
    npm install
    ```
 
