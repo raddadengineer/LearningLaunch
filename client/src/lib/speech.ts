@@ -145,7 +145,7 @@ export async function playPhonemeClip(url: string, options: SpeechOptions = {}):
     const audio = new Audio(url);
     currentAudio = audio;
     if (options.volume !== undefined) audio.volume = options.volume;
-    if (options.rate !== undefined && options.rate !== 1) audio.playbackRate = options.rate;
+    // Clips are baked at target speed at generation time; pacing is via getChunkPauseMs().
 
     audio.onended = () => {
       if (generation === speechGeneration) currentAudio = null;
@@ -226,7 +226,7 @@ export async function speakVowelStretch(
   let playedLong = false;
   for (const url of longUrls) {
     try {
-      await playPhonemeClip(url, { ...options, rate: 0.75 });
+      await playPhonemeClip(url, options);
       playedLong = true;
       break;
     } catch {

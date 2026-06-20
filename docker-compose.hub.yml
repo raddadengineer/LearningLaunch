@@ -41,6 +41,8 @@ services:
       PGPASSWORD: learninglaunch_password
       PGDATABASE: learninglaunch_db
       SESSION_SECRET: change-this-session-secret-in-production
+      KOKORO_URL: http://192.168.10.7:8880/v1/audio/speech
+      KOKORO_VOICE: af_heart
     depends_on:
       postgres:
         condition: service_healthy

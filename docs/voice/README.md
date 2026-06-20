@@ -53,19 +53,23 @@ Hydrated to localStorage on profile switch (`client/src/lib/voice-preferences.ts
 Isolated letter/chunk sounds use static audio in `client/public/audio/phonemes/` (`.mp3` preferred, `.wav` fallback). Mapped in `shared/phoneme-sounds.ts`.
 
 - **74 sounds** — core (Levels 1–3) + extended vowel teams, blends, endings (Levels 4–5)
-- **Fallback** — unmapped chunks use TTS with elongated continuants
+- **30 human-core sounds** — single letters + digraphs in `phonemes/human/` (played first when present)
+- **Fallback** — unmapped chunks use TTS with phonics-tuned prompts from `PHONEME_GENERATION_PROMPTS`
 - **Whole words & coach prompts** — Kokoro proxy or Web Speech API
+
+Clips play at **1.0× speed**. Pause between sounds is controlled by **Phonics Pace** (Slow/Normal), not playback rate. The `rate` option in `speak()` applies only to live TTS (whole words, coach cues).
 
 Regenerate clips:
 
 ```bash
-npm run generate:phonemes              # skip existing
-npm run generate:phonemes -- --force    # overwrite all
+npm run generate:phonemes              # skip existing; auto-fills missing human/ clips on macOS
+npm run generate:phonemes -- --force    # overwrite all synthesized clips
+npm run generate:phonemes -- --force-human   # regenerate human/ core clips only (macOS)
 ```
 
 Or in **Grown-ups → Voice** → **Generate phoneme clips** (calls `POST /api/phonemes/generate`).
 
-Kokoro produces MP3 (best quality). macOS `say` + `afconvert` produces WAV as fallback.
+Kokoro produces MP3 with per-category speed (stops faster, continuants slower). macOS `say` fills `human/` for core letter sounds. ffmpeg trims silence when available.
 
 ## AI Reading Coach
 

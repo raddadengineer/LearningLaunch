@@ -58,7 +58,80 @@ export const ALL_PHONEME_SOUNDS = [
   ...EXTENDED_PHONEME_SOUNDS,
 ] as const;
 
+/** Single-letter + high-use digraph sounds prefer human-recorded clips when present */
+export const HUMAN_CORE_PHONEME_SOUNDS = [
+  "buh", "kuh", "duh", "fff", "guh", "huh", "juh", "lll", "mmm", "nnn",
+  "puh", "rrr", "sss", "tuh", "vvv", "wuh", "zzz",
+  "ah", "eh", "ih", "uh", "ee", "oo",
+  "sh", "ch", "th", "ng",
+] as const;
+
+export type PhonemeCategory = "stop" | "continuant" | "vowel" | "digraph" | "blend" | "extended";
+
+const PHONEME_CATEGORIES: Record<string, PhonemeCategory> = {
+  buh: "stop", kuh: "stop", duh: "stop", guh: "stop", juh: "stop", puh: "stop", tuh: "stop",
+  fff: "continuant", lll: "continuant", mmm: "continuant", nnn: "continuant",
+  rrr: "continuant", sss: "continuant", vvv: "continuant", wuh: "continuant", zzz: "continuant",
+  huh: "continuant",
+  ah: "vowel", eh: "vowel", ih: "vowel", uh: "vowel", ee: "vowel", oo: "vowel",
+  sh: "digraph", ch: "digraph", th: "digraph", ng: "digraph",
+  bl: "blend", br: "blend", cl: "blend", cr: "blend", dr: "blend", fl: "blend",
+  fr: "blend", gr: "blend", pl: "blend", pr: "blend", sk: "blend", sl: "blend",
+  st: "blend", tr: "blend",
+  ay: "vowel", eye: "vowel", er: "vowel", or: "vowel", ar: "vowel", aw: "vowel",
+  oy: "vowel", ow: "vowel", oh: "vowel",
+  sm: "blend", sn: "blend", sp: "blend", sw: "blend", tw: "blend", wh: "blend",
+  mp: "extended", nd: "extended", nt: "extended", nk: "extended", mb: "extended",
+  ll: "extended", ss: "extended", kwuh: "extended", yuh: "extended", j: "extended",
+  un: "extended", al: "extended", all: "extended", ack: "extended", ell: "extended",
+  air: "extended", own: "extended", shun: "extended",
+};
+
+/** Kokoro/macOS input text tuned for isolated phonics sounds (not word prosody) */
+export const PHONEME_GENERATION_PROMPTS: Record<string, string> = {
+  // Stops — minimal schwa
+  buh: "b", puh: "p", tuh: "t", kuh: "k", duh: "d", guh: "g", juh: "j",
+  // Continuants — elongated hold
+  fff: "fffff", sss: "sssss", mmm: "mmmmm", nnn: "nnnnn", lll: "lllll",
+  rrr: "rrrrr", vvv: "vvvvv", zzz: "zzzzz", huh: "huhhh", wuh: "wuh",
+  // Vowels — pure stretch
+  ah: "aaa", eh: "ehhh", ih: "ihhh", uh: "uhhh", ee: "eeee", oo: "oooo",
+  ay: "ayyy", eye: "eye", er: "errr", or: "orrr", ar: "arrr", aw: "awww",
+  oy: "oyyy", ow: "owww", oh: "ohhh",
+  // Digraphs
+  sh: "shhhh", ch: "ch", th: "thth", ng: "nggg",
+  // Blends
+  bl: "bll", br: "brr", cl: "cll", cr: "crr", dr: "drr", fl: "fll",
+  fr: "frr", gr: "grr", pl: "pll", pr: "prr", sk: "skk", sl: "sll",
+  st: "stt", tr: "trr", sm: "smm", sn: "snn", sp: "spp", sw: "sww",
+  tw: "tww", wh: "whh",
+  // Extended / endings
+  mp: "mp", nd: "nd", nt: "nt", nk: "nk", mb: "mb", ll: "lll", ss: "sss",
+  kwuh: "kw", yuh: "yuh", j: "j",
+  un: "un", al: "al", all: "alll", ack: "ack", ell: "ell", air: "air",
+  own: "own", shun: "shun",
+};
+
+const CATEGORY_GENERATION_SPEED: Record<PhonemeCategory, number> = {
+  stop: 0.9,
+  continuant: 0.55,
+  vowel: 0.6,
+  digraph: 0.7,
+  blend: 0.7,
+  extended: 0.75,
+};
+
+const CATEGORY_MAX_DURATION_SEC: Record<PhonemeCategory, number> = {
+  stop: 1.2,
+  continuant: 1.8,
+  vowel: 1.5,
+  digraph: 1.4,
+  blend: 1.4,
+  extended: 1.6,
+};
+
 const PHONEME_AUDIO_EXTENSIONS = [".mp3", ".wav"] as const;
+const HUMAN_PHONEME_SUBDIR = "human";
 
 /** Speakable sound keys that have clip files (mp3 preferred, wav fallback at playback) */
 export const PHONEME_AUDIO: Record<string, string> = Object.fromEntries(
@@ -68,17 +141,25 @@ export const PHONEME_AUDIO: Record<string, string> = Object.fromEntries(
   ]),
 );
 
-/** Elongate continuant sounds for TTS fallback when no clip exists */
-const CONTINUANT_ELONGATION: Record<string, string> = {
-  fff: "fffff",
-  sss: "sssss",
-  mmm: "mmmmm",
-  nnn: "nnnnn",
-  lll: "lllll",
-  rrr: "rrrrr",
-  vvv: "vvvvv",
-  zzz: "zzzzz",
-};
+export function getPhonemeCategory(sound: string): PhonemeCategory {
+  return PHONEME_CATEGORIES[sound] ?? "extended";
+}
+
+export function getPhonemeGenerationPrompt(sound: string): string {
+  return PHONEME_GENERATION_PROMPTS[sound] ?? sound;
+}
+
+export function getPhonemeGenerationSpeed(sound: string): number {
+  return CATEGORY_GENERATION_SPEED[getPhonemeCategory(sound)];
+}
+
+export function getPhonemeMaxDurationSec(sound: string): number {
+  return CATEGORY_MAX_DURATION_SEC[getPhonemeCategory(sound)];
+}
+
+export function isHumanCorePhoneme(sound: string): boolean {
+  return HUMAN_CORE_PHONEME_SOUNDS.includes(sound as typeof HUMAN_CORE_PHONEME_SOUNDS[number]);
+}
 
 export function chunkToPhonemeSound(chunk: string): string {
   const upper = chunk.toUpperCase().trim();
@@ -89,14 +170,23 @@ export function chunkToPhonemeSound(chunk: string): string {
 }
 
 export function phonemeSoundForTts(sound: string): string {
-  return CONTINUANT_ELONGATION[sound] ?? sound;
+  return PHONEME_GENERATION_PROMPTS[sound] ?? sound;
 }
 
 export function getPhonemeAudioUrls(sound: string): string[] {
   if (!sound || !ALL_PHONEME_SOUNDS.includes(sound as typeof ALL_PHONEME_SOUNDS[number])) {
     return [];
   }
-  return PHONEME_AUDIO_EXTENSIONS.map((ext) => `/audio/phonemes/${sound}${ext}`);
+  const urls: string[] = [];
+  if (isHumanCorePhoneme(sound)) {
+    for (const ext of PHONEME_AUDIO_EXTENSIONS) {
+      urls.push(`/audio/phonemes/${HUMAN_PHONEME_SUBDIR}/${sound}${ext}`);
+    }
+  }
+  for (const ext of PHONEME_AUDIO_EXTENSIONS) {
+    urls.push(`/audio/phonemes/${sound}${ext}`);
+  }
+  return urls;
 }
 
 export function getPhonemeAudioUrl(chunk: string): string | null {

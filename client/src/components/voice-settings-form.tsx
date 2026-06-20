@@ -24,7 +24,7 @@ export function VoiceSettingsForm() {
   const [generating, setGenerating] = useState(false);
 
   const { data: phonemeStatus, refetch: refetchPhonemeStatus } = useQuery<{
-    clips: { mp3: number; wav: number; total: number };
+    clips: { mp3: number; wav: number; human: number; total: number };
     expected: number;
     kokoroAvailable: boolean;
     upstream: string;
@@ -249,9 +249,10 @@ export function VoiceSettingsForm() {
           <div className="text-xs text-gray-700 space-y-1">
             <p>
               Clips on disk: <span className="font-bold">{phonemeStatus.clips.total}</span> / {phonemeStatus.expected}
-              {phonemeStatus.clips.mp3 > 0 && ` (${phonemeStatus.clips.mp3} mp3`}
+              {phonemeStatus.clips.human > 0 && ` (${phonemeStatus.clips.human} human`}
+              {phonemeStatus.clips.mp3 > 0 && `${phonemeStatus.clips.human > 0 ? ", " : " ("}${phonemeStatus.clips.mp3} synthesized mp3`}
               {phonemeStatus.clips.wav > 0 && `, ${phonemeStatus.clips.wav} wav`}
-              {phonemeStatus.clips.mp3 > 0 && ")"}
+              {(phonemeStatus.clips.human > 0 || phonemeStatus.clips.mp3 > 0) && ")"}
             </p>
             <p>
               Kokoro:{" "}

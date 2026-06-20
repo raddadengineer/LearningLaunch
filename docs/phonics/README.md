@@ -90,16 +90,18 @@ When **AI Reading Coach** is enabled (voice settings):
 
 **74 sounds** in `client/public/audio/phonemes/`:
 
+- **Human core (27):** single letters + digraphs in `phonemes/human/` — played first for C/A/T-style sounds
 - **Core (41):** consonants, vowels, digraphs, common blends (Levels 1–3)
 - **Extended (33):** vowel teams (`ay`, `eye`, `er`, `or`, …), blends (`sm`, `sp`, …), endings (`mp`, `nd`, …)
 
-Playback tries `.mp3` then `.wav`. Story syllable fragments (`PHANT`, `SAUR`, …) remain TTS-only.
+Playback tries `human/*.mp3`, then synthesized `.mp3`, then `.wav`. Clips play at 1.0×; pauses come from **Phonics Pace**. Story syllable fragments (`PHANT`, `SAUR`, …) remain TTS-only.
 
 Regenerate:
 
 ```bash
 npm run generate:phonemes
 npm run generate:phonemes -- --force
+npm run generate:phonemes -- --force-human
 ```
 
 ## Story integration
