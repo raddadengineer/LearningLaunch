@@ -9,6 +9,31 @@ This educational app for children can be run locally using Docker with persisten
 - At least 2GB of available RAM
 - Port 3456 and 5433 available on your machine
 
+### Running from Docker Hub (no clone required)
+
+Use `docker-compose.hub.yml` to pull the published image instead of building locally:
+
+```bash
+docker compose -f docker-compose.hub.yml up -d
+```
+
+Or with npm (from a cloned repo):
+
+```bash
+npm run docker:hub:up
+```
+
+Open **http://localhost:3456**. The app waits for Postgres, runs `drizzle-kit push` on startup, then serves.
+
+To update after a new image is published:
+
+```bash
+docker compose -f docker-compose.hub.yml pull
+docker compose -f docker-compose.hub.yml up -d
+```
+
+Change `SESSION_SECRET` and `POSTGRES_PASSWORD` in the compose file before any real deployment.
+
 ### Running the Application
 
 1. **Build and start the application:**

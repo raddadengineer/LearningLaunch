@@ -19,6 +19,8 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "docker:up": "docker compose up --build -d",
+    "docker:hub:up": "docker compose -f docker-compose.hub.yml up -d",
+    "docker:hub:pull": "docker compose -f docker-compose.hub.yml pull",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "docker:build": "docker build -t raddadengineer/learninglaunch:latest .",

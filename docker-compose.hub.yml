@@ -1,0 +1,56 @@
+# LearningLaunch — pull from Docker Hub (no local build required)
+#
+# Quick start:
+#   docker compose -f docker-compose.hub.yml up -d
+#   open http://localhost:3456
+#
+# Update to latest image:
+#   docker compose -f docker-compose.hub.yml pull
+#   docker compose -f docker-compose.hub.yml up -d
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: learninglaunch_db
+      POSTGRES_USER: learninglaunch_user
+      POSTGRES_PASSWORD: learninglaunch_password
+    volumes:
+      - learninglaunch_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learninglaunch_user -d learninglaunch_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: raddadengineer/learninglaunch:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "3456:5000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://learninglaunch_user:learninglaunch_password@postgres:5432/learninglaunch_db
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: learninglaunch_user
+      PGPASSWORD: learninglaunch_password
+      PGDATABASE: learninglaunch_db
+      SESSION_SECRET: change-this-session-secret-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  learninglaunch_postgres_data:
+    driver: local
