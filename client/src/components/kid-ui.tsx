@@ -59,12 +59,32 @@ export function KidActivityTile({
   );
 }
 
+type KidHelpButtonProps = {
+  helpText: string;
+  className?: string;
+};
+
+export function KidHelpButton({ helpText, className = "" }: KidHelpButtonProps) {
+  return (
+    <button
+      type="button"
+      aria-label="Help"
+      onClick={() => speak(helpText, { rate: 0.85, pitch: 1.2 })}
+      onTouchStart={() => speak("Help", { rate: 0.85, pitch: 1.2 })}
+      className={`kid-tap rounded-2xl kid-shadow bg-white border-2 border-gray-200 hover:bg-gray-50 w-12 h-12 flex items-center justify-center shrink-0 ${className}`}
+    >
+      <span className="text-2xl leading-none">🦉</span>
+    </button>
+  );
+}
+
 type KidPageHeaderProps = {
   backHref?: string;
   backLabel?: string;
   title: string;
   emoji?: string;
   stars?: number;
+  helpText?: string;
   children?: ReactNode;
 };
 
@@ -74,8 +94,11 @@ export function KidPageHeader({
   title,
   emoji,
   stars,
+  helpText,
   children,
 }: KidPageHeaderProps) {
+  const hasRightContent = helpText || stars !== undefined;
+
   return (
     <div className="flex items-center justify-between p-3 sm:p-4 bg-white kid-shadow sticky top-0 z-50 gap-2">
       <KidBackButton href={backHref} label={backLabel} />
@@ -86,9 +109,14 @@ export function KidPageHeader({
         </h2>
         {children}
       </div>
-      {stars !== undefined ? (
-        <div className="bg-sunnyellow px-3 py-2 rounded-2xl kid-shadow shrink-0">
-          <span className="text-lg font-bold">⭐ {stars}</span>
+      {hasRightContent ? (
+        <div className="flex items-center gap-2 shrink-0">
+          {helpText && <KidHelpButton helpText={helpText} />}
+          {stars !== undefined && (
+            <div className="bg-sunnyellow px-3 py-2 rounded-2xl kid-shadow shrink-0">
+              <span className="text-lg font-bold">⭐ {stars}</span>
+            </div>
+          )}
         </div>
       ) : (
         <div className="w-[88px] shrink-0" />

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { KidPageHeader } from "@/components/kid-ui";
+import { HELP_BOOKS } from "@/lib/page-help";
 
 function getImageSrc(imageUrl: string | null | undefined): string {
   if (!imageUrl) return "";
@@ -52,7 +53,7 @@ export default function Books() {
 
   return (
     <div className="min-h-screen pb-28">
-      <KidPageHeader title="Stories" emoji="📖" />
+      <KidPageHeader title="Stories" emoji="📖" helpText={HELP_BOOKS} />
 
       <main className="container mx-auto px-4 py-6">
         <p className="text-center text-lg font-fredoka font-bold text-gray-600 mb-6">

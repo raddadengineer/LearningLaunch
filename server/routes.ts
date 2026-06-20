@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserProgressSchema } from "@shared/schema";
+import { insertUserProgressSchema, userPreferencesSchema } from "@shared/schema";
+import { countPhonemeClips, generatePhonemeClips } from "./phoneme-generator";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
@@ -60,6 +61,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete user" });
+    }
+  });
+
+  app.patch("/api/user/:id/preferences", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const parsed = userPreferencesSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid preferences", errors: parsed.error.flatten() });
+      }
+      const user = await storage.updateUserPreferences(userId, parsed.data);
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update user preferences" });
     }
   });
 
@@ -264,6 +279,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
       timestamp: new Date().toISOString(),
       uptime: process.uptime() 
     });
+  });
+
+  const kokoroUpstreamUrl = () =>
+    process.env.KOKORO_URL ?? "http://192.168.10.7:8880/v1/audio/speech";
+
+  app.get("/api/speech/health", async (_req, res) => {
+    try {
+      const upstream = await fetch(kokoroUpstreamUrl(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "kokoro",
+          input: "test",
+          voice: process.env.KOKORO_VOICE ?? "af_heart",
+          response_format: "mp3",
+          speed: 1.0,
+        }),
+        signal: AbortSignal.timeout(5000),
+      });
+      res.status(upstream.ok ? 200 : 502).json({
+        available: upstream.ok,
+        upstream: kokoroUpstreamUrl(),
+      });
+    } catch {
+      res.status(502).json({ available: false, upstream: kokoroUpstreamUrl() });
+    }
+  });
+
+  app.post("/api/speech", async (req, res) => {
+    try {
+      const { input, voice, speed, response_format } = req.body ?? {};
+      if (!input || typeof input !== "string") {
+        return res.status(400).json({ message: "input is required" });
+      }
+      if (input.length > 500) {
+        return res.status(400).json({ message: "input exceeds 500 characters" });
+      }
+
+      const upstream = await fetch(kokoroUpstreamUrl(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "kokoro",
+          input,
+          voice: voice ?? process.env.KOKORO_VOICE ?? "af_heart",
+          response_format: response_format ?? "mp3",
+          speed: speed ?? 1.0,
+        }),
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (!upstream.ok) {
+        const detail = await upstream.text();
+        return res.status(upstream.status).json({ message: "Kokoro TTS failed", detail });
+      }
+
+      const contentType = upstream.headers.get("content-type") ?? "audio/mpeg";
+      const audio = Buffer.from(await upstream.arrayBuffer());
+      res.status(200).set("Content-Type", contentType).send(audio);
+    } catch {
+      res.status(502).json({ message: "Speech service unavailable" });
+    }
+  });
+
+  app.get("/api/phonemes/status", async (_req, res) => {
+    try {
+      const clips = countPhonemeClips();
+      let kokoroAvailable = false;
+      try {
+        const health = await fetch(kokoroUpstreamUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "kokoro",
+            input: "test",
+            voice: process.env.KOKORO_VOICE ?? "af_heart",
+            response_format: "mp3",
+            speed: 1.0,
+          }),
+          signal: AbortSignal.timeout(5000),
+        });
+        kokoroAvailable = health.ok;
+      } catch {
+        kokoroAvailable = false;
+      }
+      res.json({
+        clips,
+        expected: 74,
+        kokoroAvailable,
+        upstream: kokoroUpstreamUrl(),
+      });
+    } catch {
+      res.status(500).json({ message: "Failed to read phoneme status" });
+    }
+  });
+
+  app.post("/api/phonemes/generate", async (req, res) => {
+    try {
+      const { force, voice } = req.body ?? {};
+      const result = await generatePhonemeClips({
+        force: force === true,
+        kokoroUrl: kokoroUpstreamUrl(),
+        kokoroVoice: typeof voice === "string" ? voice : process.env.KOKORO_VOICE ?? "af_heart",
+      });
+      if (result.failed.length > 0 && result.generated.length === 0) {
+        return res.status(502).json({
+          message: "Phoneme generation failed",
+          ...result,
+        });
+      }
+      res.json(result);
+    } catch (error) {
+      res.status(502).json({
+        message: error instanceof Error ? error.message : "Phoneme generation failed",
+      });
+    }
   });
 
   const httpServer = createServer(app);

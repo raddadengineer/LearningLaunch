@@ -4,7 +4,8 @@ import { User } from "@shared/schema";
 import { useLocation, Link } from "wouter";
 import { motion } from "framer-motion";
 import { speak } from "@/lib/speech";
-import { KidActivityTile, ParentLink } from "@/components/kid-ui";
+import { KidActivityTile, ParentLink, KidHelpButton } from "@/components/kid-ui";
+import { HELP_HOME } from "@/lib/page-help";
 
 export default function Home() {
   const currentUserId = localStorage.getItem("currentUserId");
@@ -90,8 +91,11 @@ export default function Home() {
               <p className="text-sm font-bold text-gray-500">Tap to play</p>
             </div>
           </div>
-          <div className="bg-sunnyellow px-4 py-3 rounded-2xl kid-shadow">
-            <span className="text-xl font-bold">⭐ {user.totalStars || 0}</span>
+          <div className="flex items-center gap-2">
+            <KidHelpButton helpText={HELP_HOME} />
+            <div className="bg-sunnyellow px-4 py-3 rounded-2xl kid-shadow">
+              <span className="text-xl font-bold">⭐ {user.totalStars || 0}</span>
+            </div>
           </div>
         </div>
       </header>
@@ -115,14 +119,24 @@ export default function Home() {
           ))}
         </div>
 
-        <KidActivityTile
-          emoji="✨"
-          title="A Sounds"
-          subtitle="Short A & Long A"
-          colorClass="bg-yellow-50 hover:bg-yellow-100"
-          speakLabel="A Sounds practice"
-          onClick={() => setLocation("/vowel-contrast")}
-        />
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <KidActivityTile
+            emoji="✨"
+            title="A Sounds"
+            subtitle="Short & Long A"
+            colorClass="bg-yellow-50 hover:bg-yellow-100"
+            speakLabel="A Sounds practice"
+            onClick={() => setLocation("/vowel-contrast/a")}
+          />
+          <KidActivityTile
+            emoji="🪁"
+            title="I Sounds"
+            subtitle="Short & Long I"
+            colorClass="bg-sky-50 hover:bg-sky-100"
+            speakLabel="I Sounds practice"
+            onClick={() => setLocation("/vowel-contrast/i")}
+          />
+        </div>
 
         <div className="text-center mt-8 space-y-2">
           <ParentLink />

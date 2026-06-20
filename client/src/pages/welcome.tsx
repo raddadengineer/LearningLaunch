@@ -2,6 +2,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { speak } from "@/lib/speech";
+import { KidHelpButton } from "@/components/kid-ui";
+import { HELP_WELCOME } from "@/lib/page-help";
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
@@ -23,6 +25,9 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-coral via-turquoise to-sunnyellow flex flex-col justify-center py-12">
+      <div className="fixed top-4 right-4 z-50">
+        <KidHelpButton helpText={HELP_WELCOME} />
+      </div>
       <motion.div
         className="container mx-auto px-4"
         variants={containerVariants}

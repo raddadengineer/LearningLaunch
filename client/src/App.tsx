@@ -19,6 +19,17 @@ import Admin from "@/pages/admin";
 import UserManagement from "@/pages/user-management";
 import UserSelection from "@/pages/user-selection";
 import Navigation from "@/components/navigation";
+import { hydratePreferencesForUser } from "@/lib/voice-preferences";
+
+function PreferencesHydrator() {
+  useEffect(() => {
+    const userId = localStorage.getItem("currentUserId");
+    if (userId) {
+      hydratePreferencesForUser(parseInt(userId)).catch(() => {});
+    }
+  }, []);
+  return null;
+}
 
 function Router() {
   // Simplify the user selection logic to avoid React state issues
@@ -46,7 +57,7 @@ function Router() {
             <Route path="/reading" component={Reading} />
             <Route path="/books" component={Books} />
             <Route path="/books/:id" component={BookReader} />
-            <Route path="/vowel-contrast" component={VowelContrast} />
+            <Route path="/vowel-contrast/:vowel?" component={VowelContrast} />
             <Route path="/sight-words" component={SightWords} />
             <Route path="/math" component={MathPage} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
@@ -66,6 +77,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <PreferencesHydrator />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>

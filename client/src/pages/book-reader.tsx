@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import ProgressBar from "@/components/progress-bar";
 import { KidPageHeader, KidBigAction } from "@/components/kid-ui";
+import PhonicsBox from "@/components/phonics-box";
 import {
-  speak, speakPhonics, speakSightWord, speakFingerPoint, speakEcho, isAiCoachEnabled
+  speak, speakPhonics, speakChunkCoach, speakSightWord, speakFingerPoint, speakEcho, isAiCoachEnabled
 } from "@/lib/speech";
+import { HELP_BOOK_READER, HELP_BOOK_COMPREHENSION } from "@/lib/page-help";
 import { getPhonicsForWord } from "@shared/phonics";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -38,6 +40,7 @@ export default function BookReader() {
   const [showParentTips, setShowParentTips] = useState(false);
   const [showMoreHelp, setShowMoreHelp] = useState(false);
   const [highlightMode, setHighlightMode] = useState(false);
+  const [activeChunkIndex, setActiveChunkIndex] = useState(-1);
   const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
   const readingRef = useRef(false);
   const { toast } = useToast();
@@ -91,6 +94,7 @@ export default function BookReader() {
   useEffect(() => {
     setPointingIndex(-1);
     setFocusWord(null);
+    setActiveChunkIndex(-1);
     setShowComprehension(false);
   }, [currentPageIndex]);
 
@@ -163,17 +167,23 @@ export default function BookReader() {
     return letters.includes(book.vowelHighlight.toLowerCase());
   };
 
+  const soundOutWord = (word: string) => {
+    const clean = word.replace(/[^A-Za-z]/g, "");
+    const upper = clean.toUpperCase();
+    if (isSightWord(clean)) {
+      speakSightWord(clean, undefined, { rate: 0.8, pitch: 1.1 });
+      return;
+    }
+    const chunks = getWordPhonics(clean);
+    speakPhonics(chunks, { rate: 0.6, pitch: 1.2 }, clean, setActiveChunkIndex);
+  };
+
   const handleWordClick = (word: string, index: number) => {
     const clean = word.replace(/[^A-Za-z]/g, "");
     const upper = clean.toUpperCase();
     setFocusWord(upper);
     setPointingIndex(index);
-    if (isSightWord(clean)) {
-      speakSightWord(clean, undefined, { rate: 0.8, pitch: 1.1 });
-    } else {
-      const chunks = getWordPhonics(clean);
-      speakPhonics(chunks, { rate: 0.6, pitch: 1.2 }, clean);
-    }
+    soundOutWord(word);
   };
 
   const handleFingerPoint = async () => {
@@ -201,7 +211,7 @@ export default function BookReader() {
     if (isSightWord(word)) {
       speakSightWord(word, undefined, { rate: 0.8, pitch: 1.1 });
     } else {
-      speakPhonics(getWordPhonics(word), { rate: 0.6, pitch: 1.2 }, word);
+      speakPhonics(getWordPhonics(word), { rate: 0.6, pitch: 1.2 }, word, setActiveChunkIndex);
     }
   };
 
@@ -248,6 +258,7 @@ export default function BookReader() {
         title={book.title}
         emoji="📖"
         stars={currentProgress?.stars || 0}
+        helpText={showComprehension ? HELP_BOOK_COMPREHENSION : HELP_BOOK_READER}
       >
         <ProgressBar current={currentPageIndex + 1} total={pages.length} color="coral" />
       </KidPageHeader>
@@ -293,7 +304,8 @@ export default function BookReader() {
                       size="sm"
                       onClick={() => {
                         const chunks = getWordPhonics(w);
-                        speakPhonics(chunks, { rate: 0.55, pitch: 1.2 }, w);
+                        setFocusWord(w.toUpperCase());
+                        speakPhonics(chunks, { rate: 0.55, pitch: 1.2 }, w, setActiveChunkIndex);
                       }}
                       className="bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600"
                     >
@@ -389,6 +401,20 @@ export default function BookReader() {
                 Tap a word to hear it!
               </p>
 
+              {focusWord && !isSightWord(focusWord) && (
+                <div className="flex justify-center flex-wrap gap-3 mb-4">
+                  {getWordPhonics(focusWord).map((chunk, index) => (
+                    <PhonicsBox
+                      key={index}
+                      chunk={chunk}
+                      color={index === 0 ? "coral" : index === 1 ? "turquoise" : index === 2 ? "sunnyellow" : index === 3 ? "mintgreen" : "skyblue"}
+                      onClick={() => speakChunkCoach(chunk, { rate: 0.6, pitch: 1.1 })}
+                      isActive={activeChunkIndex === index}
+                    />
+                  ))}
+                </div>
+              )}
+
               {showMoreHelp && (
                 <>
                   <div className="flex flex-wrap gap-2 justify-center text-xs font-bold mb-3">
@@ -425,7 +451,7 @@ export default function BookReader() {
                         type="button"
                         onClick={() => {
                           const word = hint.replace(/-/g, "");
-                          speakPhonics(hint.split("-"), { rate: 0.55, pitch: 1.2 }, word);
+                          speakPhonics(hint.split("-"), { rate: 0.55, pitch: 1.2 }, word, setActiveChunkIndex);
                         }}
                         className="bg-green-500 text-white px-3 py-1 rounded-xl font-bold hover:bg-green-600 touch-friendly"
                       >

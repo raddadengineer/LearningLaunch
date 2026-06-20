@@ -35,12 +35,79 @@ const CHUNK_SOUNDS: Record<string, string> = {
   SAUR: "sawr", DINO: "dino", BUT: "but",
 };
 
+/** Core phoneme sounds with pre-recorded audio clips (Levels 1–3) */
+export const CORE_PHONEME_SOUNDS = [
+  "buh", "kuh", "duh", "fff", "guh", "huh", "juh", "lll", "mmm", "nnn",
+  "puh", "rrr", "sss", "tuh", "vvv", "wuh", "zzz",
+  "ah", "eh", "ih", "uh", "ee", "oo",
+  "sh", "ch", "th", "ng",
+  "bl", "br", "cl", "cr", "dr", "fl", "fr", "gr", "pl", "pr", "sk", "sl", "st", "tr",
+] as const;
+
+/** Extended sounds for Levels 4–5 and vowel teams */
+export const EXTENDED_PHONEME_SOUNDS = [
+  "ay", "eye", "er", "or", "ar", "aw", "oy", "ow", "oh",
+  "sm", "sn", "sp", "sw", "tw", "wh",
+  "mp", "nd", "nt", "nk", "mb", "ll", "ss",
+  "kwuh", "yuh", "j",
+  "un", "al", "all", "ack", "ell", "air", "own", "shun",
+] as const;
+
+export const ALL_PHONEME_SOUNDS = [
+  ...CORE_PHONEME_SOUNDS,
+  ...EXTENDED_PHONEME_SOUNDS,
+] as const;
+
+const PHONEME_AUDIO_EXTENSIONS = [".mp3", ".wav"] as const;
+
+/** Speakable sound keys that have clip files (mp3 preferred, wav fallback at playback) */
+export const PHONEME_AUDIO: Record<string, string> = Object.fromEntries(
+  ALL_PHONEME_SOUNDS.map((sound) => [
+    sound,
+    `/audio/phonemes/${sound}${PHONEME_AUDIO_EXTENSIONS[0]}`,
+  ]),
+);
+
+/** Elongate continuant sounds for TTS fallback when no clip exists */
+const CONTINUANT_ELONGATION: Record<string, string> = {
+  fff: "fffff",
+  sss: "sssss",
+  mmm: "mmmmm",
+  nnn: "nnnnn",
+  lll: "lllll",
+  rrr: "rrrrr",
+  vvv: "vvvvv",
+  zzz: "zzzzz",
+};
+
 export function chunkToPhonemeSound(chunk: string): string {
   const upper = chunk.toUpperCase().trim();
   if (!upper) return "";
   if (CHUNK_SOUNDS[upper]) return CHUNK_SOUNDS[upper];
   if (upper.length === 1) return CHUNK_SOUNDS[upper] ?? upper.toLowerCase();
   return upper.toLowerCase();
+}
+
+export function phonemeSoundForTts(sound: string): string {
+  return CONTINUANT_ELONGATION[sound] ?? sound;
+}
+
+export function getPhonemeAudioUrls(sound: string): string[] {
+  if (!sound || !ALL_PHONEME_SOUNDS.includes(sound as typeof ALL_PHONEME_SOUNDS[number])) {
+    return [];
+  }
+  return PHONEME_AUDIO_EXTENSIONS.map((ext) => `/audio/phonemes/${sound}${ext}`);
+}
+
+export function getPhonemeAudioUrl(chunk: string): string | null {
+  const sound = chunkToPhonemeSound(chunk);
+  const urls = getPhonemeAudioUrls(sound);
+  return urls[0] ?? null;
+}
+
+export function hasPhonemeClip(chunk: string): boolean {
+  const sound = chunkToPhonemeSound(chunk);
+  return ALL_PHONEME_SOUNDS.includes(sound as typeof ALL_PHONEME_SOUNDS[number]);
 }
 
 export function chunksToBlendScript(chunks: string[]): string {

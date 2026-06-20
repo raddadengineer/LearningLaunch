@@ -17,6 +17,7 @@
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
+    "generate:phonemes": "tsx scripts/generate-phoneme-audio.ts",
     "db:push": "drizzle-kit push",
     "docker:up": "docker compose up --build -d",
     "docker:hub:up": "docker compose -f docker-compose.hub.yml up -d",

@@ -4,9 +4,10 @@ interface LetterBoxProps {
   letter: string;
   color: 'coral' | 'turquoise' | 'sunnyellow' | 'mintgreen' | 'skyblue' | 'funpink';
   onClick: () => void;
+  isActive?: boolean;
 }
 
-export default function LetterBox({ letter, color, onClick }: LetterBoxProps) {
+export default function LetterBox({ letter, color, onClick, isActive = false }: LetterBoxProps) {
   const colorClasses = {
     coral: 'bg-coral hover:bg-red-400',
     turquoise: 'bg-turquoise hover:bg-teal-400',
@@ -25,6 +26,7 @@ export default function LetterBox({ letter, color, onClick }: LetterBoxProps) {
         rounded-2xl cursor-pointer hover:scale-110 
         transition-all duration-200 touch-friendly
         shadow-lg hover:shadow-xl
+        ${isActive ? "ring-4 ring-white scale-125 shadow-2xl animate-pulse" : ""}
       `}
     >
       {letter}

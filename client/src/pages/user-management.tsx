@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { hydratePreferencesForUser } from "@/lib/voice-preferences";
 import type { User, UserProgress } from "@shared/schema";
 import { Link } from "wouter";
 
@@ -60,8 +61,13 @@ export default function UserManagement() {
 
   const switchUserMutation = useMutation({
     mutationFn: (userId: number) => apiRequest(`/api/user/${userId}/activate`, "POST"),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       localStorage.setItem("currentUserId", data.id.toString());
+      try {
+        await hydratePreferencesForUser(data.id);
+      } catch (error) {
+        console.warn("Could not load voice preferences:", error);
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({ title: "Switched user successfully" });
     },

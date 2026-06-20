@@ -111,7 +111,7 @@ export default function ParentSettings() {
                   <CardContent>
                     <VoiceSettingsForm />
                     <p className="text-xs text-gray-500 mt-4 pt-4 border-t">
-                      Settings are saved on this device and browser only.
+                      Voice settings are saved per child profile and sync when you switch users.
                     </p>
                   </CardContent>
                 </Card>

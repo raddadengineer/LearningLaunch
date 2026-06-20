@@ -83,7 +83,7 @@ export default function ParentDashboard() {
       level,
       activityType: "reading",
       completedItems: [],
-      totalItems: 12, // Standard reading word count per level
+      totalItems: level === 6 ? 24 : 30,
       stars: 0,
       updatedAt: null
     };

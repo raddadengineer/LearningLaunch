@@ -13,11 +13,26 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+export type UserPreferences = {
+  kokoroEnabled?: boolean;
+  aiReadingCoachEnabled?: boolean;
+  phonicsPace?: "slow" | "normal";
+  kokoroVoiceId?: string;
+};
+
+export const userPreferencesSchema = z.object({
+  kokoroEnabled: z.boolean().optional(),
+  aiReadingCoachEnabled: z.boolean().optional(),
+  phonicsPace: z.enum(["slow", "normal"]).optional(),
+  kokoroVoiceId: z.string().max(64).optional(),
+});
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   age: integer("age").notNull(),
   totalStars: integer("total_stars").notNull().default(0),
+  preferences: jsonb("preferences").$type<UserPreferences>().notNull().default({}),
   createdAt: timestamp("created_at").defaultNow(),
   lastActive: timestamp("last_active").defaultNow(),
 });
@@ -104,7 +119,7 @@ export const achievements = pgTable("achievements", {
   earnedAt: text("earned_at").notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({ id: true, totalStars: true });
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, totalStars: true, preferences: true });
 export const insertUserProgressSchema = createInsertSchema(userProgress).omit({ id: true });
 export const insertReadingWordSchema = createInsertSchema(readingWords).omit({ id: true });
 export const insertReadingBookSchema = createInsertSchema(readingBooks).omit({ id: true });

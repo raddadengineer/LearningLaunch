@@ -11,6 +11,9 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 import { useLocation } from "wouter";
 import { speak } from "@/lib/speech";
+import { hydratePreferencesForUser } from "@/lib/voice-preferences";
+import { KidHelpButton } from "@/components/kid-ui";
+import { HELP_USER_SELECTION } from "@/lib/page-help";
 
 const KID_EMOJIS = ["🐻", "🐰", "🦊", "🐱", "🐶", "🦁", "🐼", "🐸"];
 
@@ -35,11 +38,15 @@ export default function UserSelection() {
   const createUserMutation = useMutation({
     mutationFn: (userData: { name: string; age: number }) =>
       apiRequest("/api/users", "POST", userData),
-    onSuccess: (newUser) => {
+    onSuccess: async (newUser) => {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       localStorage.setItem("currentUserId", newUser.id.toString());
+      try {
+        await hydratePreferencesForUser(newUser.id);
+      } catch (error) {
+        console.warn("Could not load voice preferences:", error);
+      }
       toast({ title: `Welcome ${newUser.name}!` });
-      // Force reload to ensure state is updated
       window.location.href = "/";
     },
     onError: (error) => {
@@ -52,11 +59,15 @@ export default function UserSelection() {
     },
   });
 
-  const selectUser = (userId: number) => {
+  const selectUser = async (userId: number) => {
     localStorage.setItem("currentUserId", userId.toString());
+    try {
+      await hydratePreferencesForUser(userId);
+    } catch (error) {
+      console.warn("Could not load voice preferences:", error);
+    }
     queryClient.invalidateQueries({ queryKey: ["/api/user"] });
     toast({ title: `Welcome back!` });
-    // Force reload to ensure state is updated
     window.location.href = "/";
   };
 
@@ -100,6 +111,9 @@ export default function UserSelection() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100">
+      <div className="fixed top-4 right-4 z-50">
+        <KidHelpButton helpText={HELP_USER_SELECTION} />
+      </div>
       {/* Header */}
       <header className="text-center py-8 px-4">
         <div className="text-6xl mb-3">👋</div>

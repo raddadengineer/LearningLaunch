@@ -4,9 +4,10 @@ interface PhonicsBoxProps {
   chunk: string;
   color: 'coral' | 'turquoise' | 'sunnyellow' | 'mintgreen' | 'skyblue' | 'funpink';
   onClick: () => void;
+  isActive?: boolean;
 }
 
-export default function PhonicsBox({ chunk, color, onClick }: PhonicsBoxProps) {
+export default function PhonicsBox({ chunk, color, onClick, isActive = false }: PhonicsBoxProps) {
   const colorClasses = {
     coral: 'bg-coral hover:bg-red-400',
     turquoise: 'bg-turquoise hover:bg-teal-400',
@@ -29,6 +30,7 @@ export default function PhonicsBox({ chunk, color, onClick }: PhonicsBoxProps) {
         rounded-2xl cursor-pointer hover:scale-110
         transition-all duration-200 touch-friendly
         shadow-lg hover:shadow-xl
+        ${isActive ? "ring-4 ring-white scale-125 shadow-2xl animate-pulse" : ""}
       `}
     >
       {chunk}

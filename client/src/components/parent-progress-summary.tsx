@@ -47,7 +47,7 @@ export function ParentProgressSummary() {
   const books = progress?.filter((p) => p.activityType === "books") ?? [];
 
   const readingCompleted = reading.reduce((sum, p) => sum + completedCount(p.completedItems), 0);
-  const readingTotal = reading.reduce((sum, p) => sum + (p.totalItems ?? 12), 0) || 72;
+  const readingTotal = reading.reduce((sum, p) => sum + (p.totalItems ?? 12), 0) || 174;
 
   const mathCompleted = math.reduce((sum, p) => sum + completedCount(p.completedItems), 0);
   const mathTotal = math.reduce((sum, p) => sum + (p.totalItems ?? 5), 0) || 30;

@@ -20,7 +20,9 @@ export const THE_BIG_FISH_STORY = {
       "Say two words — one has Short I (ih) and one does not. Can your child pick the Short I word?",
     words: ["fish", "swim", "hid", "sit", "big"],
     parentTip:
-      "Try: Sit vs Seat, Bin vs Bean, Pig vs Page. Short I is a quick 'ih' — not a long E!",
+      "Try: Sit vs Seat, Bin vs Bean, Pig vs Page. Short I is a quick 'ih' — not a long E! Open I Sounds practice for Magic E pairs like kit → kite!",
+    linkPath: "/vowel-contrast/i",
+    linkLabel: "Open Short I vs Long I Practice 🪁",
   },
   pages: [
     {

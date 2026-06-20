@@ -20,7 +20,7 @@ export const THE_CAKE_AT_THE_LAKE_STORY = {
     words: ["cap", "cape", "cake", "lake", "bake", "gate"],
     parentTip:
       "Cover the silent E with your finger on cap, then reveal it for cape. Ask: Did the A change from 'ah' to 'Aaa'? Try the full Word Family practice for all Magic E pairs and games!",
-    linkPath: "/vowel-contrast",
+    linkPath: "/vowel-contrast/a",
     linkLabel: "Open Short A vs Long A Practice ✨",
   },
   pages: [

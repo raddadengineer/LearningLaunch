@@ -4,11 +4,16 @@ A modern, highly engaging early-learning platform designed specifically for youn
 
 **Repository:** [github.com/raddadengineer/LearningLaunch](https://github.com/raddadengineer/LearningLaunch)
 
+📚 **[Full documentation →](./docs/README.md)** — words, stories, math, sight words, phonics, voice, API, deployment, and more.
+
 ## ✨ Features
 
 - **Reading Activities:** Word and letter recognition with satisfying visual feedback and verbal pronunciation.
+- **Phonics Stories:** Leveled books with parent teaching notes, comprehension questions, and vowel-focused readers.
+- **Sight Words:** High-frequency word practice with example sentences.
+- **Vowel Contrast:** Short vs long vowel games for **A Sounds** and **I Sounds** — word pairs, Magic E, and mini-games.
 - **Math Activities:** Counting and basic addition challenges featuring playful visual objects.
-- **Kid-Friendly UI/UX:** Features a bright, vibrant color palette, chunky "pressable" 3D-style buttons, and large readable typography (`Nunito`, `Balsamiq Sans`, `Fredoka`).
+- **Kid-Friendly UI/UX:** Features a bright, vibrant color palette, chunky "pressable" 3D-style buttons, large readable typography (`Nunito`, `Balsamiq Sans`, `Fredoka`), and a 🦉 **Help** button on every activity that speaks instructions aloud.
 - **Interactive Animations:** Powered by **Framer Motion**, the app includes bouncy staggered entrances, satisfying hover scales, and fun completion state confetti/animations.
 - **Parent Dashboard:** A comprehensive view of the child's learning progress, including weekly activity charts, stars earned, and recent achievements.
 - **Grown-ups Settings:** Parent-facing hub (bottom nav ⚙️) for voice/TTS config, progress overview, and admin word management.
@@ -61,7 +66,22 @@ To easily deploy this application to a home lab server or VPS:
    - Review/update the environment variable values if desired
    - Deploy!
    
-*For detailed Docker instructions, see [README-Docker.md](./README-Docker.md).*
+*For detailed Docker instructions, see [README-Docker.md](./README-Docker.md) or [docs/deployment](./docs/deployment/README.md).*
+
+## 📖 Documentation
+
+| Topic | Link |
+|-------|------|
+| Overview & routes | [docs/README.md](./docs/README.md) |
+| Words & phonics practice | [docs/words](./docs/words/README.md) |
+| Story books | [docs/stories](./docs/stories/README.md) |
+| Sight words | [docs/sight-words](./docs/sight-words/README.md) |
+| Math | [docs/math](./docs/math/README.md) |
+| Phonics system | [docs/phonics](./docs/phonics/README.md) |
+| Voice / Kokoro TTS | [docs/voice](./docs/voice/README.md) |
+| Parents & admin | [docs/parents](./docs/parents/README.md) |
+| Architecture | [docs/architecture](./docs/architecture/README.md) |
+| API reference | [docs/api](./docs/api/README.md) |
 
 ## 🛠️ Tech Stack
 
