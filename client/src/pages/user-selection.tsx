@@ -10,12 +10,21 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 import { useLocation } from "wouter";
+import { speak } from "@/lib/speech";
+
+const KID_EMOJIS = ["🐻", "🐰", "🦊", "🐱", "🐶", "🦁", "🐼", "🐸"];
+
+function kidEmoji(name: string) {
+  const code = name.charCodeAt(0) + (name.charCodeAt(name.length - 1) || 0);
+  return KID_EMOJIS[code % KID_EMOJIS.length];
+}
 
 export default function UserSelection() {
   const [location, setLocation] = useLocation();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newUser, setNewUser] = useState({ name: "", age: 5 });
   const [showGuestOptions, setShowGuestOptions] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const { toast } = useToast();
 
   const { data: users, isLoading } = useQuery<User[]>({
@@ -92,190 +101,98 @@ export default function UserSelection() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100">
       {/* Header */}
-      <header className="text-center py-8">
-        <h1 className="text-5xl font-bold text-gray-800 mb-4">
-          🌟 Learning Adventure 🌟
-        </h1>
-        <p className="text-xl text-gray-600">Choose your profile to start learning!</p>
+      <header className="text-center py-8 px-4">
+        <div className="text-6xl mb-3">👋</div>
+        <h1 className="text-4xl font-fredoka text-gray-800 mb-2">Who are you?</h1>
+        <p className="text-lg font-bold text-gray-500">Tap your name to play!</p>
       </header>
 
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Existing Users */}
+      <div className="container mx-auto px-4 max-w-lg pb-12">
         {users && users.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-700 text-center mb-8">
-              Welcome Back! 👋
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <section className="mb-10">
+            <div className="grid grid-cols-2 gap-4">
               {users.map((user) => (
-                <Card 
-                  key={user.id} 
-                  className="cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white border-2 border-gray-200 hover:border-blue-300"
+                <button
+                  key={user.id}
+                  type="button"
                   onClick={() => selectUser(user.id)}
+                  onTouchStart={() => speak(`Hi ${user.name}!`, { rate: 0.85, pitch: 1.2 })}
+                  className="kid-tile bg-white rounded-[2rem] p-6 kid-shadow text-center hover:scale-[1.02] active:scale-95 transition-transform border-2 border-transparent hover:border-coral/30"
                 >
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-3xl font-bold text-white">
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                    <CardTitle className="text-2xl font-bold text-gray-800">
-                      {user.name}
-                    </CardTitle>
-                    <div className="flex items-center justify-center gap-2">
-                      <Badge variant="secondary">{user.age} years old</Badge>
-                      <Badge variant="outline" className="text-yellow-600">
-                        ⭐ {user.totalStars}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-sm text-gray-500 mb-4">
-                      {formatLastActive(user.lastActive)}
-                    </p>
-                    <Button 
-                      className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 rounded-xl"
-                    >
-                      Continue Learning
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <div className="text-5xl mb-3">{kidEmoji(user.name)}</div>
+                  <p className="text-2xl font-fredoka font-bold text-gray-800">{user.name}</p>
+                  <p className="text-sm font-bold text-yellow-600 mt-1">⭐ {user.totalStars}</p>
+                </button>
               ))}
             </div>
           </section>
         )}
 
-        {/* Create New User or Guest Options */}
-        <section className="text-center">
-          <h2 className="text-3xl font-bold text-gray-700 mb-8">
-            {users && users.length > 0 ? "Or Start Fresh!" : "Let's Get Started!"}
+        <section className="space-y-4">
+          <h2 className="text-xl font-fredoka text-gray-700 text-center">
+            {users && users.length > 0 ? "New friend?" : "Let's start!"}
           </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Create New Profile */}
-            <Card className="bg-white border-2 border-green-200 hover:border-green-400 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-2xl">
-                    👤
-                  </div>
-                  Create New Profile
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {showCreateForm ? (
-                  <>
-                    <div>
-                      <Label htmlFor="name">Child's Name</Label>
-                      <Input
-                        id="name"
-                        value={newUser.name}
-                        onChange={(e) => setNewUser({...newUser, name: e.target.value})}
-                        placeholder="Enter name"
-                        className="text-center text-lg"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="age">Age</Label>
-                      <div className="flex justify-center gap-2 mt-2">
-                        {[3, 4, 5, 6, 7].map((age) => (
-                          <Button
-                            key={age}
-                            variant={newUser.age === age ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setNewUser({...newUser, age})}
-                            className="w-12 h-12 rounded-full"
-                          >
-                            {age}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={handleCreateUser}
-                        disabled={createUserMutation.isPending}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl"
-                      >
-                        Create Profile
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        onClick={() => setShowCreateForm(false)}
-                        className="px-4"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <Button 
-                    onClick={() => setShowCreateForm(true)}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-lg"
-                  >
-                    Create New Profile
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Guest Mode */}
-            <Card className="bg-white border-2 border-orange-200 hover:border-orange-400 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-2xl">
-                    👋
-                  </div>
-                  Try as Guest
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-gray-600 text-center">
-                  Perfect for trying out the app. Your progress will be saved with a guest profile.
-                </p>
-                <Button 
-                  onClick={() => setShowGuestOptions(true)}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl text-lg"
-                >
-                  Continue as Guest
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* Admin Login */}
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-700 text-center mb-6">
-            Administrator Access
-          </h2>
-          
-          <div className="max-w-md mx-auto">
-            <Card className="bg-white border-2 border-red-200 hover:border-red-400 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-2xl">
-                    🔐
-                  </div>
-                  Admin Panel
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center text-sm text-gray-600 mb-4">
-                  <p><strong>Default Credentials:</strong></p>
-                  <p>Username: <code className="bg-gray-100 px-2 py-1 rounded">admin</code></p>
-                  <p>Password: <code className="bg-gray-100 px-2 py-1 rounded">admin123</code></p>
+          {!showCreateForm ? (
+            <div className="grid grid-cols-1 gap-4">
+              <Button
+                onClick={() => setShowCreateForm(true)}
+                className="kid-tap w-full bg-green-500 hover:bg-green-600 text-white font-fredoka font-bold text-xl py-6 rounded-2xl kid-shadow"
+              >
+                ➕ Add My Name
+              </Button>
+              <Button
+                onClick={() => setShowGuestOptions(true)}
+                variant="outline"
+                className="kid-tap w-full font-fredoka font-bold text-lg py-5 rounded-2xl border-2"
+              >
+                👋 Try as Guest
+              </Button>
+            </div>
+          ) : (
+            <Card className="bg-white rounded-2xl p-6 kid-shadow">
+              <CardContent className="space-y-4 pt-2">
+                <div>
+                  <Label htmlFor="name" className="text-lg font-bold">Your name</Label>
+                  <Input
+                    id="name"
+                    value={newUser.name}
+                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                    placeholder="Type your name"
+                    className="text-center text-2xl font-fredoka py-6 mt-2"
+                  />
                 </div>
-                <Button 
-                  onClick={() => setLocation("/admin")}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl text-lg"
-                >
-                  Access Admin Panel
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleCreateUser}
+                    disabled={createUserMutation.isPending}
+                    className="flex-1 kid-tap bg-green-500 hover:bg-green-600 text-white font-fredoka font-bold text-lg py-5 rounded-2xl"
+                  >
+                    Let's Go! 🎉
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowCreateForm(false)} className="kid-tap px-4 rounded-2xl">
+                    ✕
+                  </Button>
+                </div>
               </CardContent>
             </Card>
-          </div>
+          )}
         </section>
+
+        <div className="text-center mt-10 space-y-2">
+          <button
+            type="button"
+            onClick={() => setShowAdmin(!showAdmin)}
+            className="text-xs font-bold text-gray-400"
+          >
+            Grown-ups {showAdmin ? "▲" : "▼"}
+          </button>
+          {showAdmin && (
+            <Button onClick={() => setLocation("/admin")} variant="outline" size="sm" className="rounded-xl text-xs">
+              Admin Panel
+            </Button>
+          )}
+        </div>
 
         {/* Guest User Options Dialog */}
         <Dialog open={showGuestOptions} onOpenChange={setShowGuestOptions}>

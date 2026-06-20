@@ -1,7 +1,7 @@
 interface ProgressBarProps {
   current: number;
   total: number;
-  color: 'coral' | 'turquoise' | 'sunnyellow' | 'mintgreen';
+  color: 'coral' | 'turquoise' | 'sunnyellow' | 'mintgreen' | 'funpink';
 }
 
 export default function ProgressBar({ current, total, color }: ProgressBarProps) {
@@ -10,6 +10,7 @@ export default function ProgressBar({ current, total, color }: ProgressBarProps)
     turquoise: 'bg-turquoise',
     sunnyellow: 'bg-sunnyellow',
     mintgreen: 'bg-mintgreen',
+    funpink: 'bg-funpink',
   };
 
   return (

@@ -1,38 +1,38 @@
 import { Link, useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { speak } from "@/lib/speech";
 
 export default function Navigation() {
   const [location] = useLocation();
 
   const navItems = [
-    { path: "/", icon: "🏠", label: "Home" },
-    { path: "/reading", icon: "📚", label: "Reading" },
-    { path: "/math", icon: "🔢", label: "Math" },
-    { path: "/parent-dashboard", icon: "📊", label: "Progress" },
-    { path: "/select-user", icon: "👤", label: "Switch User" },
+    { path: "/", icon: "🏠", label: "Home", speak: "Home" },
+    { path: "/books", icon: "📖", label: "Stories", speak: "Stories" },
+    { path: "/reading", icon: "🔤", label: "Words", speak: "Words" },
+    { path: "/math", icon: "🔢", label: "Math", speak: "Math" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-gray-100 p-4 z-40">
-      <div className="flex justify-around items-center max-w-md mx-auto">
-        {navItems.map((item) => (
-          <Link key={item.path} href={item.path}>
-            <Button
-              variant="ghost"
-              className={`flex flex-col items-center space-y-1 touch-friendly p-2 rounded-xl ${
-                location === item.path ? "bg-blue-50 text-blue-600" : "text-gray-600"
-              }`}
-              onClick={() => {
-                if (item.path === "/select-user") {
-                  localStorage.removeItem("currentUserId");
-                }
-              }}
-            >
-              <span className="text-2xl">{item.icon}</span>
-              <span className="text-xs font-bold">{item.label}</span>
-            </Button>
-          </Link>
-        ))}
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-gray-100 px-2 py-3 z-40 safe-area-pb">
+      <div className="flex justify-around items-stretch max-w-lg mx-auto gap-1">
+        {navItems.map((item) => {
+          const active = location === item.path;
+          return (
+            <Link key={item.path} href={item.path}>
+              <button
+                type="button"
+                onTouchStart={() => speak(item.speak, { rate: 0.85, pitch: 1.2 })}
+                className={`kid-nav-item flex flex-col items-center justify-center rounded-2xl px-3 py-2 transition-all ${
+                  active
+                    ? "bg-coral/15 text-coral scale-105 kid-shadow"
+                    : "text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                <span className="text-3xl leading-none mb-1">{item.icon}</span>
+                <span className="text-xs font-fredoka font-bold">{item.label}</span>
+              </button>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { MathActivity, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import ProgressBar from "@/components/progress-bar";
+import { KidPageHeader } from "@/components/kid-ui";
 import { speak } from "@/lib/speech";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -22,9 +23,19 @@ export default function MathPage() {
 
   const currentUserId = localStorage.getItem("currentUserId");
 
+  useEffect(() => {
+    if (!currentUserId) {
+      const t = setTimeout(() => {
+        window.location.href = "/select-user";
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [currentUserId]);
+
   const { data: activities, isLoading: activitiesLoading } = useQuery<MathActivity[]>({
     queryKey: ["/api/math/activities", activityType, currentLevel],
     queryFn: () => fetch(`/api/math/activities?type=${activityType}&level=${currentLevel}`).then(res => res.json()),
+    enabled: !!currentUserId,
   });
 
   const { data: progress } = useQuery<UserProgress[]>({
@@ -40,7 +51,8 @@ export default function MathPage() {
         activityType: "math",
         level: currentLevel,
         completedItems,
-        stars
+        stars,
+        totalItems: activities?.length ?? 5,
       });
     },
     onSuccess: () => {
@@ -65,6 +77,16 @@ export default function MathPage() {
       setCountdown(null);
     }
   }, [countdown, currentActivityIndex, activities]);
+
+  useEffect(() => {
+    const currentActivity = activities?.[currentActivityIndex];
+    if (currentActivity?.question) {
+      const timeoutId = setTimeout(() => {
+        speak(currentActivity.question, { rate: 0.8, pitch: 1.1 });
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activities, currentActivityIndex]);
 
   // Generate answer options - simplified approach
   const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
@@ -95,11 +117,6 @@ export default function MathPage() {
   };
 
   if (!currentUserId) {
-    // Show error and redirect after a few seconds
-    setTimeout(() => {
-      window.location.href = "/select-user";
-    }, 3000);
-
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
         <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
@@ -151,6 +168,9 @@ export default function MathPage() {
   const isActivityCompleted = completedActivities.includes(currentActivity.id);
 
   const answerOptions = generateAnswerOptions(currentActivity.answer, currentActivity.id);
+  const activityObjects = Array.isArray(currentActivity.objects)
+    ? (currentActivity.objects as string[])
+    : [];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -164,16 +184,6 @@ export default function MathPage() {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } }
   };
-
-  useEffect(() => {
-    // Whenever a new activity loads, announce the question automatically 
-    if (currentActivity && currentActivity.question) {
-      const timeoutId = setTimeout(() => {
-        speak(currentActivity.question, { rate: 0.8, pitch: 1.1 });
-      }, 500);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [currentActivity]);
 
   const handleAnswerSelect = (answer: number) => {
     setSelectedAnswer(answer);
@@ -213,40 +223,14 @@ export default function MathPage() {
 
 
   return (
-    <div className="min-h-screen pb-24">
-      {/* Activity Header */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", bounce: 0.5 }}
-        className="flex items-center justify-between p-4 bg-white kid-shadow sticky top-0 z-50"
+    <div className="min-h-screen pb-28">
+      <KidPageHeader
+        title={activityType === "counting" ? "Counting" : "Adding"}
+        emoji="🔢"
+        stars={currentProgress?.stars || 0}
       >
-        <Link href="/">
-          <Button variant="outline" size="sm" className="rounded-2xl touch-friendly">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Button>
-        </Link>
-
-        <div className="text-center">
-          <h2 className="text-2xl font-fredoka text-turquoise">
-            {activityType === "counting" ? "Counting Fun" : "Addition Adventures"}
-          </h2>
-          <ProgressBar
-            current={currentActivityIndex + 1}
-            total={activities.length}
-            color="turquoise"
-          />
-        </div>
-
-        <motion.div
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          className="bg-sunnyellow px-4 py-2 rounded-2xl kid-shadow"
-        >
-          <span className="text-lg font-bold text-gray-800">⭐ {currentProgress?.stars || 0}</span>
-        </motion.div>
-      </motion.div>
+        <ProgressBar current={currentActivityIndex + 1} total={activities.length} color="turquoise" />
+      </KidPageHeader>
 
       {/* Level and Type Selection */}
       <motion.div
@@ -366,10 +350,10 @@ export default function MathPage() {
 
           {/* Objects Display */}
           <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto mb-8 bg-white/90 backdrop-blur">
-            <div className={`grid gap-4 mb-8 justify-items-center ${currentActivity.objects.length <= 5 ? 'grid-cols-5' :
-              currentActivity.objects.length <= 8 ? 'grid-cols-4' : 'grid-cols-5'
+            <div className={`grid gap-4 mb-8 justify-items-center ${activityObjects.length <= 5 ? 'grid-cols-5' :
+              activityObjects.length <= 8 ? 'grid-cols-4' : 'grid-cols-5'
               }`}>
-              {currentActivity.objects.map((object, index) => (
+              {activityObjects.map((object, index) => (
                 <div
                   key={index}
                   className="cursor-pointer hover:scale-110 transition-transform"

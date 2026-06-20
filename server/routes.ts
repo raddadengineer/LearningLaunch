@@ -108,8 +108,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/progress", async (req, res) => {
     try {
-      const { userId, activityType, level, completedItems, stars } = req.body;
-      const progress = await storage.updateProgress(userId, activityType, level, completedItems, stars);
+      const { userId, activityType, level, completedItems, stars, totalItems } = req.body;
+      const progress = await storage.updateProgress(userId, activityType, level, completedItems, stars, totalItems);
       res.json(progress);
     } catch (error) {
       res.status(500).json({ message: "Failed to update progress" });
@@ -191,6 +191,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete reading word" });
+    }
+  });
+
+  // Book routes
+  app.get("/api/books", async (req, res) => {
+    try {
+      const books = await storage.getBooks();
+      res.json(books);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get books" });
+    }
+  });
+
+  app.get("/api/books/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const book = await storage.getBookWithPages(id);
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+      res.json(book);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get book" });
+    }
+  });
+
+  // Sight word routes
+  app.get("/api/sight-words", async (req, res) => {
+    try {
+      const level = req.query.level ? parseInt(req.query.level as string) : undefined;
+      const words = level ? await storage.getSightWords(level) : await storage.getAllSightWords();
+      res.json(words);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get sight words" });
     }
   });
 

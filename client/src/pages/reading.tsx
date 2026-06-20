@@ -6,59 +6,81 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import LetterBox from "@/components/letter-box";
+import PhonicsBox from "@/components/phonics-box";
 import ProgressBar from "@/components/progress-bar";
-import { speak, speakWord, speakLetters } from "@/lib/speech";
+import { KidPageHeader, KidBigAction } from "@/components/kid-ui";
+import { speak, speakWord, speakLetters, speakPhonics, speakLetterCoach, speakChunkCoach, isAiCoachEnabled } from "@/lib/speech";
+import { getPhonicsForWord } from "@shared/phonics";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
+function getImageSrc(imageUrl: string | null | undefined): string {
+  if (!imageUrl) return "";
+  return imageUrl.includes("unsplash.com")
+    ? `${imageUrl}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300`
+    : imageUrl;
+}
+
+function UserNotFound() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
+      <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
+        <div className="text-center">
+          <div className="text-6xl mb-4">❌</div>
+          <h2 className="text-2xl font-fredoka text-gray-800 mb-4">User not found</h2>
+          <p className="text-gray-600 mb-6">Please select a user first.</p>
+          <p className="text-sm text-gray-500 mb-4">Redirecting in 3 seconds...</p>
+          <Link href="/select-user">
+            <Button className="bg-coral hover:bg-coral/90 text-white px-6 py-3 rounded-2xl">
+              Select User Now
+            </Button>
+          </Link>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 export default function Reading() {
-  // Check for pre-selected level from home page
   const preSelectedLevel = localStorage.getItem("selectedReadingLevel");
   const [currentLevel, setCurrentLevel] = useState(preSelectedLevel ? parseInt(preSelectedLevel) : 1);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [showMoreLevels, setShowMoreLevels] = useState(false);
   const { toast } = useToast();
 
   const currentUserId = localStorage.getItem("currentUserId");
 
-  // Clear the selected level after using it
-  if (preSelectedLevel) {
-    localStorage.removeItem("selectedReadingLevel");
-  }
+  useEffect(() => {
+    if (preSelectedLevel) {
+      localStorage.removeItem("selectedReadingLevel");
+    }
+  }, [preSelectedLevel]);
 
-  if (!currentUserId) {
-    // Show error and redirect after a few seconds
-    setTimeout(() => {
-      window.location.href = "/select-user";
-    }, 3000);
-
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
-        <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
-          <div className="text-center">
-            <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-2xl font-fredoka text-gray-800 mb-4">User not found</h2>
-            <p className="text-gray-600 mb-6">Please select a user first.</p>
-            <p className="text-sm text-gray-500 mb-4">Redirecting in 3 seconds...</p>
-            <Link href="/select-user">
-              <Button className="bg-coral hover:bg-coral/90 text-white px-6 py-3 rounded-2xl">
-                Select User Now
-              </Button>
-            </Link>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!currentUserId) {
+      const t = setTimeout(() => {
+        window.location.href = "/select-user";
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [currentUserId]);
 
   const { data: words, isLoading: wordsLoading } = useQuery<ReadingWord[]>({
     queryKey: ["/api/reading/words", currentLevel],
     queryFn: () => fetch(`/api/reading/words?level=${currentLevel}`).then(res => res.json()),
+    enabled: !!currentUserId,
   });
 
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/reading", currentUserId, currentLevel],
     queryFn: () => fetch(`/api/user/${currentUserId}/progress/reading`).then(res => res.json()),
     enabled: !!currentUserId,
+  });
+
+  const { data: allWords } = useQuery<ReadingWord[]>({
+    queryKey: ["/api/reading/words/all"],
+    queryFn: () => fetch("/api/reading/words/all").then(res => res.json()),
+    enabled: !!currentUserId && currentLevel === 6,
   });
 
   const updateProgressMutation = useMutation({
@@ -68,7 +90,8 @@ export default function Reading() {
         activityType: "reading",
         level: currentLevel,
         completedItems,
-        stars
+        stars,
+        totalItems: words?.length ?? 12,
       });
     },
     onSuccess: () => {
@@ -81,7 +104,21 @@ export default function Reading() {
     }
   });
 
-  if (wordsLoading || !words || words.length === 0) {
+  useEffect(() => {
+    if (words && words.length > 0 && currentWordIndex < words.length) {
+      const word = words[currentWordIndex].word;
+      const timeoutId = setTimeout(() => {
+        speakWord(word, { rate: 0.8, pitch: 1.1 });
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentWordIndex, words]);
+
+  if (!currentUserId) {
+    return <UserNotFound />;
+  }
+
+  if (wordsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-2xl font-fredoka text-coral">Loading words...</div>
@@ -89,17 +126,72 @@ export default function Reading() {
     );
   }
 
+  if (!words || words.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow text-center">
+          <div className="text-4xl mb-4">📚</div>
+          <h2 className="text-2xl font-fredoka text-gray-800 mb-4">No words for this level yet</h2>
+          <p className="text-gray-600 mb-6">Try choosing a different level or check back later.</p>
+          <Link href="/">
+            <Button className="bg-coral text-white px-6 py-3 rounded-2xl">Back to Home</Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
+
   const currentWord = words[currentWordIndex];
+  const wordPhonics = (Array.isArray(currentWord.phonics) && currentWord.phonics.length > 0)
+    ? currentWord.phonics as string[]
+    : getPhonicsForWord(currentWord.word);
+  const hasPhonics = wordPhonics.length > 0 && currentLevel !== 6;
+
+  const phonicsLookup = new Map<string, string[]>();
+  if (allWords) {
+    for (const w of allWords) {
+      const chunks = Array.isArray(w.phonics) && w.phonics.length > 0
+        ? w.phonics as string[]
+        : getPhonicsForWord(w.word);
+      if (w.word.includes(" ")) {
+        w.word.split(" ").forEach(part => {
+          phonicsLookup.set(part.toUpperCase(), getPhonicsForWord(part));
+        });
+      } else {
+        phonicsLookup.set(w.word.toUpperCase(), chunks);
+      }
+    }
+  }
+
+  const handleWordInSentenceClick = (word: string) => {
+    const clean = word.replace(/[^A-Za-z]/g, "").toUpperCase();
+    const chunks = phonicsLookup.get(clean) ?? getPhonicsForWord(clean);
+    if (chunks.length > 1 || (chunks.length === 1 && chunks[0].length > 1)) {
+      speakPhonics(chunks, { rate: 0.6, pitch: 1.2 }, clean);
+    } else if (chunks.length > 0) {
+      speakPhonics(chunks, { rate: 0.6, pitch: 1.2 }, clean);
+    } else {
+      speakWord(clean, { rate: 0.8, pitch: 1.1 });
+    }
+  };
   const currentProgress = progress?.find(p => p.level === currentLevel);
   const completedWords = Array.isArray(currentProgress?.completedItems) ? currentProgress.completedItems as number[] : [];
   const isWordCompleted = completedWords.includes(currentWord.id);
 
   const handleLetterClick = (letter: string) => {
-    speak(letter.toLowerCase(), { rate: 0.6, pitch: 1.1 });
+    speakLetterCoach(letter, { rate: 0.6, pitch: 1.1 });
   };
 
   const handleSpellWord = () => {
-    speakLetters(currentWord.word, { rate: 0.6, pitch: 1.2 });
+    if (hasPhonics) {
+      speakPhonics(wordPhonics, { rate: 0.6, pitch: 1.2 }, currentWord.word);
+    } else {
+      speakLetters(currentWord.word, { rate: 0.6, pitch: 1.2 });
+    }
+  };
+
+  const handleChunkClick = (chunk: string) => {
+    speakChunkCoach(chunk, { rate: 0.6, pitch: 1.1 });
   };
 
   const handleSayWord = () => {
@@ -120,7 +212,6 @@ export default function Reading() {
         title: "Level Complete! 🎉",
         description: "You've finished all words in this level!",
       });
-      // Navigate back to home after completing the level
       setTimeout(() => {
         window.location.href = "/";
       }, 2000);
@@ -132,18 +223,6 @@ export default function Reading() {
       setCurrentWordIndex(currentWordIndex - 1);
     }
   };
-
-  useEffect(() => {
-    // Whenever the current word changes, read it aloud automatically
-    if (words && words.length > 0 && currentWordIndex < words.length) {
-      const word = words[currentWordIndex].word;
-      // Slight delay so the user sees the image appear first
-      const timeoutId = setTimeout(() => {
-        speakWord(word, { rate: 0.8, pitch: 1.1 });
-      }, 500);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [currentWordIndex, words]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -158,48 +237,24 @@ export default function Reading() {
     show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } }
   };
 
+  const LEVELS = [
+    { n: 1, emoji: "🌱", name: "Start" },
+    { n: 2, emoji: "🌿", name: "Easy" },
+    { n: 3, emoji: "🌳", name: "Good" },
+    { n: 4, emoji: "⭐", name: "Super" },
+    { n: 5, emoji: "🚀", name: "Wow" },
+    { n: 6, emoji: "📖", name: "Read" },
+  ];
+
   return (
-    <div className="min-h-screen pb-24">
-      {/* Activity Header */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", bounce: 0.5 }}
-        className="flex items-center justify-between p-4 bg-white kid-shadow sticky top-0 z-50"
+    <div className="min-h-screen pb-28">
+      <KidPageHeader
+        title="Words"
+        emoji="🔤"
+        stars={currentProgress?.stars || 0}
       >
-        <Link href="/">
-          <Button variant="outline" size="sm" className="rounded-2xl touch-friendly">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Button>
-        </Link>
-
-        <div className="text-center">
-          <h2 className="text-2xl font-fredoka text-coral">
-            Level {currentLevel}: {
-              currentLevel === 1 ? "Three Letter Words" :
-                currentLevel === 2 ? "Four Letter Words" :
-                  currentLevel === 3 ? "Five Letter Words" :
-                    currentLevel === 4 ? "Complex Words" :
-                      currentLevel === 5 ? "Advanced Words" :
-                        "Simple Sentences"
-            }
-          </h2>
-          <ProgressBar
-            current={currentWordIndex + 1}
-            total={words.length}
-            color="coral"
-          />
-        </div>
-
-        <motion.div
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          className="bg-sunnyellow px-4 py-2 rounded-2xl kid-shadow"
-        >
-          <span className="text-lg font-bold text-gray-800">⭐ {currentProgress?.stars || 0}</span>
-        </motion.div>
-      </motion.div>
+        <ProgressBar current={currentWordIndex + 1} total={words.length} color="coral" />
+      </KidPageHeader>
 
       <motion.main
         className="container mx-auto px-4 py-8"
@@ -216,7 +271,7 @@ export default function Reading() {
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               exit={{ scale: 0.8, opacity: 0, rotate: 5 }}
               transition={{ type: "spring", bounce: 0.5 }}
-              src={`${currentWord.imageUrl}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300`}
+              src={getImageSrc(currentWord.imageUrl)}
               alt={`Image for the word ${currentWord.word}`}
               className="w-64 h-48 object-cover rounded-[2rem] mx-auto mb-8 kid-shadow"
             />
@@ -224,11 +279,15 @@ export default function Reading() {
 
           <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto bg-white/90 backdrop-blur">
             {currentLevel === 6 ? (
-              // Sentence display for level 6
               <div className="text-center mb-8">
                 <div className="text-4xl font-bold text-gray-800 mb-6 leading-relaxed">
                   {currentWord.word.split(' ').map((word, wordIndex) => (
-                    <span key={wordIndex} className="inline-block mx-2 mb-2">
+                    <button
+                      key={wordIndex}
+                      type="button"
+                      onClick={() => handleWordInSentenceClick(word)}
+                      className="inline-block mx-2 mb-2 cursor-pointer hover:scale-105 transition-transform touch-friendly"
+                    >
                       {word.split('').map((letter, letterIndex) => (
                         <span
                           key={letterIndex}
@@ -239,12 +298,23 @@ export default function Reading() {
                           {letter}
                         </span>
                       ))}
-                    </span>
+                    </button>
                   ))}
                 </div>
+                <p className="text-sm text-gray-500 font-bold">Tap any word to sound it out!</p>
+              </div>
+            ) : hasPhonics ? (
+              <div className="flex justify-center flex-wrap gap-4 mb-8">
+                {wordPhonics.map((chunk, index) => (
+                  <PhonicsBox
+                    key={index}
+                    chunk={chunk}
+                    color={index === 0 ? 'coral' : index === 1 ? 'turquoise' : index === 2 ? 'sunnyellow' : index === 3 ? 'mintgreen' : 'skyblue'}
+                    onClick={() => handleChunkClick(chunk)}
+                  />
+                ))}
               </div>
             ) : (
-              // Individual word display for levels 1-5
               <div className="flex justify-center space-x-4 mb-8">
                 {currentWord.word.split('').map((letter, index) => (
                   <LetterBox
@@ -257,58 +327,25 @@ export default function Reading() {
               </div>
             )}
 
-            {/* Audio Controls */}
-            <div className="flex justify-center space-x-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
               {currentLevel === 6 ? (
-                // Sentence-specific controls
                 <>
-                  <Button
-                    onClick={() => speak(currentWord.word, { rate: 0.7, pitch: 1.1 })}
-                    className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M13 16a3 3 0 01-6 0V8a3 3 0 016 0v8z" />
-                    </svg>
-                    Read Sentence
-                  </Button>
-                  <Button
+                  <KidBigAction emoji="🔊" label="Hear Sentence" onClick={() => speak(currentWord.word, { rate: 0.7, pitch: 1.1 })} className="bg-blue-500 text-white hover:bg-blue-600" />
+                  <KidBigAction
+                    emoji="👆"
+                    label="Each Word"
                     onClick={() => {
-                      const words = currentWord.word.split(' ');
-                      words.forEach((word, index) => {
-                        setTimeout(() => {
-                          speak(word, { rate: 0.6, pitch: 1.2 });
-                        }, index * 800);
+                      currentWord.word.split(" ").forEach((word, index) => {
+                        setTimeout(() => speak(word, { rate: 0.6, pitch: 1.2 }), index * 800);
                       });
                     }}
-                    className="bg-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-green-600 transition-colors touch-friendly"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Read Each Word
-                  </Button>
+                    className="bg-green-500 text-white hover:bg-green-600"
+                  />
                 </>
               ) : (
-                // Word-specific controls for levels 1-5
                 <>
-                  <Button
-                    onClick={handleSpellWord}
-                    className="bg-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-green-600 transition-colors touch-friendly"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Spell It
-                  </Button>
-                  <Button
-                    onClick={handleSayWord}
-                    className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-colors touch-friendly"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M13 16a3 3 0 01-6 0V8a3 3 0 016 0v8z" />
-                    </svg>
-                    Say Word
-                  </Button>
+                  <KidBigAction emoji="🔤" label="Sound It Out" onClick={handleSpellWord} className="bg-green-500 text-white hover:bg-green-600" />
+                  <KidBigAction emoji="🔊" label="Hear Word" onClick={handleSayWord} className="bg-blue-500 text-white hover:bg-blue-600" />
                 </>
               )}
             </div>
@@ -321,64 +358,76 @@ export default function Reading() {
           </Card>
         </motion.div>
 
-        {/* Action Buttons */}
-        <motion.div variants={itemVariants} className="flex justify-center space-x-4 mb-8">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <motion.div variants={itemVariants} className="flex justify-center gap-4 mb-8">
+          <motion.div whileTap={{ scale: 0.95 }}>
             <Button
               onClick={handlePreviousWord}
               disabled={currentWordIndex === 0}
               variant="outline"
-              className="px-8 py-6 rounded-2xl font-bold text-xl transition-colors touch-friendly kid-shadow border-2"
+              className="kid-tap px-6 py-6 rounded-2xl font-fredoka font-bold text-lg kid-shadow border-2"
             >
-              ← Previous
+              ⬅️ Back
             </Button>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div whileTap={{ scale: 0.95 }}>
             <Button
               onClick={handleNextWord}
-              className="bg-coral text-white border-coral/80 px-8 py-6 rounded-2xl font-bold text-xl hover:bg-red-500 transition-colors touch-friendly kid-shadow"
+              className="kid-tap bg-coral text-white px-8 py-6 rounded-2xl font-fredoka font-bold text-xl kid-shadow btn-pressable"
             >
-              {currentWordIndex === words.length - 1 ? "Finish Level! 🎉" : "Next Word →"}
+              {currentWordIndex === words.length - 1 ? "Done! 🎉" : "Next ➡️"}
             </Button>
           </motion.div>
         </motion.div>
 
-        {/* Level Selection */}
-        <motion.div variants={itemVariants} className="bg-white rounded-[2.5rem] p-8 kid-shadow max-w-2xl mx-auto">
-          <h3 className="text-2xl font-fredoka text-gray-800 mb-6 text-center">Choose Your Level</h3>
-          <div className="grid grid-cols-5 gap-3">
-            {[1, 2, 3, 4, 5].map((level) => (
+        <motion.div variants={itemVariants} className="bg-white rounded-[2.5rem] p-6 kid-shadow max-w-2xl mx-auto">
+          <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Pick a Level</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {LEVELS.filter(l => l.n <= 3).map(({ n, emoji, name }) => (
               <Button
-                key={level}
+                key={n}
                 onClick={() => {
-                  setCurrentLevel(level);
+                  setCurrentLevel(n);
                   setCurrentWordIndex(0);
-                  // Invalidate queries to refetch data for new level
                   queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
                   queryClient.invalidateQueries({ queryKey: ["/api/user/progress/reading"] });
                 }}
-                className={`
-                  py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly kid-shadow
-                  ${currentLevel === level
-                    ? 'bg-coral text-white border-coral/80'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'
-                  }
-                `}
+                className={`kid-tap flex flex-col py-5 rounded-2xl font-fredoka font-bold kid-shadow ${
+                  currentLevel === n ? "bg-coral text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
-                Lvl {level}
+                <span className="text-2xl">{emoji}</span>
+                <span className="text-sm">{name}</span>
               </Button>
             ))}
           </div>
-
-          <div className="mt-4 text-center text-sm text-gray-600 font-bold">
-            <div className="grid grid-cols-5 gap-3 text-xs">
-              <span>3-letter</span>
-              <span>4-letter</span>
-              <span>5-letter</span>
-              <span>Complex</span>
-              <span>Advanced</span>
+          <button
+            type="button"
+            onClick={() => setShowMoreLevels(!showMoreLevels)}
+            className="w-full mt-3 text-xs font-bold text-gray-400 py-2"
+          >
+            {showMoreLevels ? "Hide harder levels ▲" : "More levels (grown-ups) ▼"}
+          </button>
+          {showMoreLevels && (
+            <div className="grid grid-cols-3 gap-3 mt-2">
+              {LEVELS.filter(l => l.n > 3).map(({ n, emoji, name }) => (
+                <Button
+                  key={n}
+                  onClick={() => {
+                    setCurrentLevel(n);
+                    setCurrentWordIndex(0);
+                    queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+                    queryClient.invalidateQueries({ queryKey: ["/api/user/progress/reading"] });
+                  }}
+                  className={`kid-tap flex flex-col py-5 rounded-2xl font-fredoka font-bold kid-shadow ${
+                    currentLevel === n ? "bg-coral text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  <span className="text-2xl">{emoji}</span>
+                  <span className="text-sm">{name}</span>
+                </Button>
+              ))}
             </div>
-          </div>
+          )}
         </motion.div>
       </motion.main>
     </div>

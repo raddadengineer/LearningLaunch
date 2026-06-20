@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { User, UserProgress, Achievement } from "@shared/schema";
+import { useEffect } from "react";
+import { User, UserProgress, Achievement, ReadingBookSummary } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -7,13 +8,40 @@ import { Link } from "wouter";
 export default function ParentDashboard() {
   const currentUserId = localStorage.getItem("currentUserId");
 
-  // Add user check for parent dashboard
-  if (!currentUserId) {
-    // Show error and redirect after a few seconds
-    setTimeout(() => {
-      window.location.href = "/select-user";
-    }, 3000);
+  useEffect(() => {
+    if (!currentUserId) {
+      const t = setTimeout(() => {
+        window.location.href = "/select-user";
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [currentUserId]);
 
+  const { data: user, isLoading: userLoading } = useQuery<User>({
+    queryKey: ["/api/user", currentUserId],
+    queryFn: () => fetch(`/api/user/${currentUserId}`).then(res => res.json()),
+    enabled: !!currentUserId,
+  });
+
+  const { data: progress, isLoading: progressLoading } = useQuery<UserProgress[]>({
+    queryKey: ["/api/user/progress", currentUserId],
+    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/progress`).then(res => res.json()) : [],
+    enabled: !!currentUserId,
+  });
+
+  const { data: achievements, isLoading: achievementsLoading } = useQuery<Achievement[]>({
+    queryKey: ["/api/user/achievements", currentUserId],
+    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/achievements`).then(res => res.json()) : [],
+    enabled: !!currentUserId,
+  });
+
+  const { data: books } = useQuery<ReadingBookSummary[]>({
+    queryKey: ["/api/books"],
+    queryFn: () => fetch("/api/books").then(res => res.json()),
+    enabled: !!currentUserId,
+  });
+
+  if (!currentUserId) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
         <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
@@ -33,24 +61,6 @@ export default function ParentDashboard() {
     );
   }
 
-  const { data: user, isLoading: userLoading } = useQuery<User>({
-    queryKey: ["/api/user", currentUserId],
-    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}`).then(res => res.json()) : null,
-    enabled: !!currentUserId,
-  });
-
-  const { data: progress, isLoading: progressLoading } = useQuery<UserProgress[]>({
-    queryKey: ["/api/user/progress", currentUserId],
-    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/progress`).then(res => res.json()) : [],
-    enabled: !!currentUserId,
-  });
-
-  const { data: achievements, isLoading: achievementsLoading } = useQuery<Achievement[]>({
-    queryKey: ["/api/user/achievements", currentUserId],
-    queryFn: () => currentUserId ? fetch(`/api/user/${currentUserId}/achievements`).then(res => res.json()) : [],
-    enabled: !!currentUserId,
-  });
-
   if (userLoading || progressLoading || achievementsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -61,6 +71,8 @@ export default function ParentDashboard() {
 
   const readingProgress = progress?.filter(p => p.activityType === "reading") || [];
   const mathProgress = progress?.filter(p => p.activityType === "math") || [];
+  const booksProgress = progress?.filter(p => p.activityType === "books") || [];
+  const sightWordsProgress = progress?.filter(p => p.activityType === "sight-words") || [];
 
   // Generate complete reading progress (levels 1-6)
   const completeReadingProgress = Array.from({ length: 6 }, (_, i) => {
@@ -86,7 +98,7 @@ export default function ParentDashboard() {
       level,
       activityType: "math",
       completedItems: [],
-      totalItems: 10, // Standard math activity count per level
+      totalItems: 5, // Standard math activity count per level
       stars: 0,
       updatedAt: null
     };
@@ -185,7 +197,7 @@ export default function ParentDashboard() {
         </Card>
 
         {/* Progress Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
           <Card className="rounded-3xl p-6 kid-shadow">
             <h3 className="text-xl font-bold text-coral mb-4">Reading Progress</h3>
             <div className="space-y-4">
@@ -216,6 +228,73 @@ export default function ParentDashboard() {
               <div className="text-xs text-gray-500 text-center mt-4">
                 Levels 1-5: Individual words • Level 6: Simple sentences
               </div>
+            </div>
+          </Card>
+
+          <Card className="rounded-3xl p-6 kid-shadow">
+            <h3 className="text-xl font-bold text-indigo-600 mb-4">Story Books</h3>
+            <div className="space-y-4">
+              {books?.map((book) => {
+                const bookProg = booksProgress.find(p => p.level === book.id);
+                const completed = Array.isArray(bookProg?.completedItems) ? bookProg.completedItems.length : 0;
+                const total = book.pageCount || bookProg?.totalItems || 1;
+                return (
+                  <div key={book.id}>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-semibold">{book.title}</span>
+                      <span className="text-sm text-gray-600">{completed}/{total}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div
+                        className="bg-indigo-500 h-3 rounded-full transition-all duration-300"
+                        style={{ width: `${(completed / total) * 100}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between mt-1 text-xs text-gray-500">
+                      <span>⭐ {bookProg?.stars ?? 0} stars</span>
+                      {bookProg?.updatedAt && (
+                        <span>Updated: {new Date(bookProg.updatedAt).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {(!books || books.length === 0) && (
+                <p className="text-sm text-gray-500 text-center">No books available yet.</p>
+              )}
+            </div>
+          </Card>
+
+          <Card className="rounded-3xl p-6 kid-shadow">
+            <h3 className="text-xl font-bold text-purple-600 mb-4">Sight Words</h3>
+            <div className="space-y-4">
+              {Array.from({ length: 3 }, (_, i) => {
+                const level = i + 1;
+                const prog = sightWordsProgress.find(p => p.level === level);
+                const completed = Array.isArray(prog?.completedItems) ? prog.completedItems.length : 0;
+                const total = prog?.totalItems ?? 12;
+                const labels = ["First Words", "Common Words", "More Words"];
+                return (
+                  <div key={level}>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-semibold">Level {level}: {labels[i]}</span>
+                      <span className="text-sm text-gray-600">{completed}/{total}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div
+                        className="bg-purple-500 h-3 rounded-full transition-all duration-300"
+                        style={{ width: `${(completed / total) * 100}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between mt-1 text-xs text-gray-500">
+                      <span>⭐ {prog?.stars ?? 0} stars</span>
+                      {prog?.updatedAt && (
+                        <span>Updated: {new Date(prog.updatedAt).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </Card>
 
@@ -299,10 +378,20 @@ export default function ParentDashboard() {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Link href="/reading">
             <Button className="w-full bg-coral text-white py-4 rounded-2xl font-bold text-lg hover:bg-red-500 transition-colors">
               Start Reading Session
+            </Button>
+          </Link>
+          <Link href="/sight-words">
+            <Button className="w-full bg-purple-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-purple-700 transition-colors">
+              Sight Words
+            </Button>
+          </Link>
+          <Link href="/books">
+            <Button className="w-full bg-indigo-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-indigo-600 transition-colors">
+              Story Books
             </Button>
           </Link>
           <Link href="/math">

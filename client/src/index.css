@@ -142,6 +142,20 @@
     min-width: 60px;
   }
 
+  .kid-tap {
+    min-height: 72px;
+    min-width: 72px;
+  }
+
+  .kid-tile {
+    min-height: 160px;
+  }
+
+  .kid-nav-item {
+    min-height: 80px;
+    min-width: 80px;
+  }
+
   .kid-shadow {
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     border: 3px solid rgba(255, 255, 255, 0.5);

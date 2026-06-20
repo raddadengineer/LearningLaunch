@@ -8,6 +8,10 @@ import NotFound from "@/pages/not-found";
 import Welcome from "@/pages/welcome";
 import Home from "@/pages/home";
 import Reading from "@/pages/reading";
+import Books from "@/pages/books";
+import BookReader from "@/pages/book-reader";
+import SightWords from "@/pages/sight-words";
+import VowelContrast from "@/pages/vowel-contrast";
 import MathPage from "@/pages/math";
 import ParentDashboard from "@/pages/parent-dashboard";
 import Admin from "@/pages/admin";
@@ -39,6 +43,10 @@ function Router() {
           <>
             <Route path="/" component={Home} />
             <Route path="/reading" component={Reading} />
+            <Route path="/books" component={Books} />
+            <Route path="/books/:id" component={BookReader} />
+            <Route path="/vowel-contrast" component={VowelContrast} />
+            <Route path="/sight-words" component={SightWords} />
             <Route path="/math" component={MathPage} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
             <Route path="/select-user" component={UserSelection} />

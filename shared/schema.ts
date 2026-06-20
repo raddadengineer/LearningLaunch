@@ -38,6 +38,52 @@ export const readingWords = pgTable("reading_words", {
   word: text("word").notNull(),
   level: integer("level").notNull(),
   imageUrl: text("image_url"),
+  phonics: jsonb("phonics").$type<string[]>().default([]),
+});
+
+export const readingBooks = pgTable("reading_books", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  level: integer("level").notNull(),
+  coverImageUrl: text("cover_image_url"),
+  description: text("description"),
+  phonicsFocus: text("phonics_focus"),
+  vowelHighlight: text("vowel_highlight"),
+  sightWordsList: jsonb("sight_words_list").$type<string[]>().default([]),
+  comprehensionQuestions: jsonb("comprehension_questions").$type<{ question: string; answer: string }[]>().default([]),
+  readingActivity: jsonb("reading_activity").$type<{
+    title: string;
+    description: string;
+    words: string[];
+    parentTip?: string;
+    linkPath?: string;
+    linkLabel?: string;
+  }>(),
+});
+
+export type BookPageTeachingMeta = {
+  parentNote?: string;
+  phonicsHints?: string[];
+  focusWords?: string[];
+  readTogether?: boolean;
+  actionHint?: string;
+};
+
+export const readingBookPages = pgTable("reading_book_pages", {
+  id: serial("id").primaryKey(),
+  bookId: integer("book_id").notNull(),
+  pageNumber: integer("page_number").notNull(),
+  text: text("text").notNull(),
+  imageUrl: text("image_url"),
+  teachingMeta: jsonb("teaching_meta").$type<BookPageTeachingMeta>(),
+});
+
+export const sightWords = pgTable("sight_words", {
+  id: serial("id").primaryKey(),
+  word: text("word").notNull(),
+  level: integer("level").notNull(),
+  sentence: text("sentence").notNull(),
+  imageUrl: text("image_url"),
 });
 
 export const mathActivities = pgTable("math_activities", {
@@ -61,17 +107,29 @@ export const achievements = pgTable("achievements", {
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, totalStars: true });
 export const insertUserProgressSchema = createInsertSchema(userProgress).omit({ id: true });
 export const insertReadingWordSchema = createInsertSchema(readingWords).omit({ id: true });
+export const insertReadingBookSchema = createInsertSchema(readingBooks).omit({ id: true });
+export const insertReadingBookPageSchema = createInsertSchema(readingBookPages).omit({ id: true });
+export const insertSightWordSchema = createInsertSchema(sightWords).omit({ id: true });
 export const insertMathActivitySchema = createInsertSchema(mathActivities).omit({ id: true });
 export const insertAchievementSchema = createInsertSchema(achievements).omit({ id: true });
 
 export type User = typeof users.$inferSelect;
 export type UserProgress = typeof userProgress.$inferSelect;
 export type ReadingWord = typeof readingWords.$inferSelect;
+export type ReadingBook = typeof readingBooks.$inferSelect;
+export type ReadingBookPage = typeof readingBookPages.$inferSelect;
+export type SightWord = typeof sightWords.$inferSelect;
 export type MathActivity = typeof mathActivities.$inferSelect;
 export type Achievement = typeof achievements.$inferSelect;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
 export type InsertReadingWord = z.infer<typeof insertReadingWordSchema>;
+export type InsertReadingBook = z.infer<typeof insertReadingBookSchema>;
+export type InsertReadingBookPage = z.infer<typeof insertReadingBookPageSchema>;
+export type InsertSightWord = z.infer<typeof insertSightWordSchema>;
 export type InsertMathActivity = z.infer<typeof insertMathActivitySchema>;
+
+export type ReadingBookWithPages = ReadingBook & { pages: ReadingBookPage[] };
+export type ReadingBookSummary = ReadingBook & { pageCount: number };
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;

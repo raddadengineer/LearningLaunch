@@ -24,18 +24,21 @@ export default function Admin() {
   const [kokoroUrl, setKokoroUrl] = useState("");
   const [kokoroVoiceId, setKokoroVoiceId] = useState("");
   const [kokoroEnabled, setKokoroEnabled] = useState(false);
+  const [aiCoachEnabled, setAiCoachEnabled] = useState(true);
 
   // Load initial settings
   useEffect(() => {
     setKokoroUrl(localStorage.getItem("kokoroApiUrl") || "http://localhost:8880/v1/audio/speech");
     setKokoroVoiceId(localStorage.getItem("kokoroVoiceId") || "af_heart");
     setKokoroEnabled(localStorage.getItem("kokoroEnabled") === "true");
+    setAiCoachEnabled(localStorage.getItem("aiReadingCoachEnabled") !== "false");
   }, []);
 
   const saveSettings = () => {
     localStorage.setItem("kokoroApiUrl", kokoroUrl);
     localStorage.setItem("kokoroVoiceId", kokoroVoiceId);
     localStorage.setItem("kokoroEnabled", kokoroEnabled.toString());
+    localStorage.setItem("aiReadingCoachEnabled", aiCoachEnabled.toString());
 
     toast({
       title: "Settings Saved",
@@ -61,7 +64,9 @@ export default function Admin() {
         },
         body: JSON.stringify({
           model: "kokoro",
-          input: "Hello! This is a test of the Kokoro voice system.",
+          input: aiCoachEnabled
+            ? "Let's sound it out together! Buh... oo... kuh... Now blend them. The word is book!"
+            : "Hello! This is a test of the Kokoro voice system.",
           voice: kokoroVoiceId,
           response_format: "mp3",
           speed: 1.0
@@ -106,11 +111,16 @@ export default function Admin() {
     enabled: isAuthenticated, // Only fetch when authenticated
   });
 
+  const invalidateWordsQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/reading/words/all"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+  };
+
   const updateWordMutation = useMutation({
     mutationFn: (data: { id: number; word: string; imageUrl: string; level: number }) =>
       apiRequest(`/api/reading/words/${data.id}`, "PUT", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+      invalidateWordsQueries();
       setEditingWord(null);
       toast({ title: "Word updated successfully" });
     },
@@ -120,7 +130,7 @@ export default function Admin() {
     mutationFn: (data: { word: string; imageUrl: string; level: number }) =>
       apiRequest("/api/reading/words", "POST", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+      invalidateWordsQueries();
       setNewWord({ word: "", imageUrl: "", level: 1 });
       toast({ title: "Word added successfully" });
     },
@@ -129,7 +139,7 @@ export default function Admin() {
   const deleteWordMutation = useMutation({
     mutationFn: (id: number) => apiRequest(`/api/reading/words/${id}`, "DELETE"),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reading/words"] });
+      invalidateWordsQueries();
       toast({ title: "Word deleted successfully" });
     },
   });
@@ -161,7 +171,7 @@ export default function Admin() {
     updateWordMutation.mutate({
       id: word.id,
       word: word.word,
-      imageUrl: word.imageUrl,
+      imageUrl: word.imageUrl ?? "",
       level: word.level
     });
   };
@@ -293,6 +303,7 @@ export default function Admin() {
                   <SelectItem value="3">Level 3</SelectItem>
                   <SelectItem value="4">Level 4</SelectItem>
                   <SelectItem value="5">Level 5</SelectItem>
+                  <SelectItem value="6">Level 6: Simple Sentences</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -306,7 +317,7 @@ export default function Admin() {
                   <CardContent className="space-y-4">
                     <div className="aspect-square w-full bg-gray-100 rounded-lg overflow-hidden">
                       <img
-                        src={word.imageUrl}
+                        src={word.imageUrl ?? ""}
                         alt={word.word}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -323,7 +334,7 @@ export default function Admin() {
                           placeholder="Word"
                         />
                         <Input
-                          value={editingWord.imageUrl}
+                          value={editingWord.imageUrl ?? ""}
                           onChange={(e) => setEditingWord({ ...editingWord, imageUrl: e.target.value })}
                           placeholder="Image URL"
                         />
@@ -418,6 +429,7 @@ export default function Admin() {
                       <SelectItem value="3">Level 3</SelectItem>
                       <SelectItem value="4">Level 4</SelectItem>
                       <SelectItem value="5">Level 5</SelectItem>
+                      <SelectItem value="6">Level 6: Simple Sentences</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -473,6 +485,25 @@ export default function Admin() {
                     <Label htmlFor="enableKokoro" className="text-gray-800 font-medium cursor-pointer">
                       Enable Kokoro High-Quality Voices
                     </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2 mb-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                    <input
+                      type="checkbox"
+                      id="enableAiCoach"
+                      checked={aiCoachEnabled}
+                      onChange={(e) => setAiCoachEnabled(e.target.checked)}
+                      className="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                    />
+                    <div>
+                      <Label htmlFor="enableAiCoach" className="text-gray-800 font-medium cursor-pointer">
+                        🤖 Enable AI Reading Coach
+                      </Label>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Guides kids through sounding out letters and words with phoneme sounds
+                        (buh, sh, oo) instead of letter names. Works with Kokoro or browser voice.
+                      </p>
+                    </div>
                   </div>
 
                   <div className={`space-y-4 transition-opacity duration-200 ${!kokoroEnabled ? 'opacity-50 pointer-events-none' : ''}`}>
