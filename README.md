@@ -11,6 +11,7 @@ A modern, highly engaging early-learning platform designed specifically for youn
 - **Kid-Friendly UI/UX:** Features a bright, vibrant color palette, chunky "pressable" 3D-style buttons, and large readable typography (`Nunito`, `Balsamiq Sans`, `Fredoka`).
 - **Interactive Animations:** Powered by **Framer Motion**, the app includes bouncy staggered entrances, satisfying hover scales, and fun completion state confetti/animations.
 - **Parent Dashboard:** A comprehensive view of the child's learning progress, including weekly activity charts, stars earned, and recent achievements.
+- **Grown-ups Settings:** Parent-facing hub (bottom nav ⚙️) for voice/TTS config, progress overview, and admin word management.
 
 ## 🎙️ High-Quality Voice Support (Kokoro-FastAPI)
 
@@ -18,11 +19,13 @@ The application supports seamless integration with [Kokoro-FastAPI](https://gith
 
 **How to set up Kokoro:**
 1. Run your local Kokoro-FastAPI server (e.g., via Docker on port 8880).
-2. Open the App and navigate to the **Admin Panel** (`/admin`).
-3. Click on the **Voice Settings** tab.
-4. Check **Enable Kokoro High-Quality Voices**.
+2. Open the app, select a child profile, and tap **⚙️ Grown-ups** in the bottom navigation (or go to `/parent-settings`).
+3. Confirm the grown-ups dialog, then open the **Voice** tab.
+4. Enable **Kokoro High-Quality Voices**.
 5. Set your API URL (default: `http://localhost:8880/v1/audio/speech`) and Voice ID (e.g., `af_heart` or `af_bella`).
-6. Click **Save Settings** and use the **Test Voice Setup** button to confirm it works!
+6. Click **Save Settings** and use **Test Voice Setup** to confirm it works!
+
+Word management and user administration are also available under **Grown-ups Settings** → **Words** tab (admin login required).
 
 *Note: The app includes a resilient fallback system. If Kokoro is disabled or unreachable, it will automatically switch back to the best available browser Web Speech API voice.*
 

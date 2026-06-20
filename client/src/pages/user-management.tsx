@@ -91,9 +91,9 @@ export default function UserManagement() {
           <div className="flex gap-2">
             <Button 
               variant="outline"
-              onClick={() => window.location.href = "/admin"}
+              onClick={() => window.location.href = "/parent-settings?tab=words"}
             >
-              Admin Panel
+              Grown-ups Settings
             </Button>
             <Button 
               variant="outline"

@@ -378,6 +378,13 @@ export default function ParentDashboard() {
         </Card>
 
         {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <Link href="/parent-settings">
+            <Button variant="outline" className="w-full py-4 rounded-2xl font-bold text-lg border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+              ⚙️ Grown-ups Settings
+            </Button>
+          </Link>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Link href="/reading">
             <Button className="w-full bg-coral text-white py-4 rounded-2xl font-bold text-lg hover:bg-red-500 transition-colors">

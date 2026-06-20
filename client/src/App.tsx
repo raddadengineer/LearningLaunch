@@ -14,6 +14,7 @@ import SightWords from "@/pages/sight-words";
 import VowelContrast from "@/pages/vowel-contrast";
 import MathPage from "@/pages/math";
 import ParentDashboard from "@/pages/parent-dashboard";
+import ParentSettings from "@/pages/parent-settings";
 import Admin from "@/pages/admin";
 import UserManagement from "@/pages/user-management";
 import UserSelection from "@/pages/user-selection";
@@ -49,6 +50,7 @@ function Router() {
             <Route path="/sight-words" component={SightWords} />
             <Route path="/math" component={MathPage} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
+            <Route path="/parent-settings" component={ParentSettings} />
             <Route path="/select-user" component={UserSelection} />
             <Route component={Home} />
           </>

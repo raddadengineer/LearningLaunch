@@ -119,12 +119,12 @@ export function KidBigAction({ emoji, label, onClick, className = "bg-coral text
 
 export function ParentLink() {
   return (
-    <Link href="/parent-dashboard">
+    <Link href="/parent-settings">
       <button
         type="button"
         className="text-xs font-bold text-gray-400 hover:text-gray-600 underline underline-offset-2"
       >
-        Grown-ups 👨‍👩‍👧
+        Grown-ups 👨‍👩‍👧 Settings
       </button>
     </Link>
   );

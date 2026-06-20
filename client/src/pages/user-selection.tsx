@@ -188,8 +188,8 @@ export default function UserSelection() {
             Grown-ups {showAdmin ? "▲" : "▼"}
           </button>
           {showAdmin && (
-            <Button onClick={() => setLocation("/admin")} variant="outline" size="sm" className="rounded-xl text-xs">
-              Admin Panel
+            <Button onClick={() => setLocation("/parent-settings?tab=words")} variant="outline" size="sm" className="rounded-xl text-xs">
+              Grown-ups Settings
             </Button>
           )}
         </div>
