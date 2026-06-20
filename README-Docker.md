@@ -65,6 +65,26 @@ For a GUI-managed deployment, we've provided a ready-to-use `portainer-stack.yml
 4. Modify any environment variables or passwords directly in the YAML or utilizing Portainer's "Environment variables" tools at the bottom.
 5. Click **Deploy the stack**.
 
+The stack pulls the published image **`raddadengineer/learninglaunch:latest`** from Docker Hub.
+
+### Publishing to Docker Hub
+
+To build and publish a new image under the LearningLaunch name:
+
+```bash
+npm run docker:build
+npm run docker:push
+```
+
+Or manually:
+
+```bash
+docker build -t raddadengineer/learninglaunch:latest .
+docker push raddadengineer/learninglaunch:latest
+```
+
+*Note: The legacy `raddadengineer/kidlearn` image has been replaced by `raddadengineer/learninglaunch`.*
+
 ### Development vs Production
 
 This Docker setup is configured for local development with production-like settings. For actual production deployment, you should:

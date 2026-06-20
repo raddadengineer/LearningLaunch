@@ -52,7 +52,7 @@ The application supports seamless integration with [Kokoro-FastAPI](https://gith
 To easily deploy this application to a home lab server or VPS:
 
 1. **Docker Compose:** Use the provided `docker-compose.yml` for a standard Docker Compose deployment.
-2. **Portainer:** For GUI-based management, we have provided a ready-to-use `portainer-stack.yml` file. 
+2. **Portainer:** For GUI-based management, we have provided a ready-to-use `portainer-stack.yml` file. It uses the Docker Hub image `raddadengineer/learninglaunch:latest`.
    - Open Portainer -> Stacks -> Add stack
    - Copy the contents of `portainer-stack.yml` into the Web editor
    - Review/update the environment variable values if desired
