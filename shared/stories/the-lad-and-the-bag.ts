@@ -5,7 +5,7 @@ export const THE_LAD_AND_THE_BAG_STORY = {
   level: 2,
   phonicsFocus: "Short A — more words! (lad, bag, van, nap, tap)",
   vowelHighlight: "a",
-  sightWordsList: ["A", "THE", "IS", "ON", "HAS", "TO", "IN", "HAD"],
+  sightWordsList: ["A", "THE", "IS", "ON", "HAS", "TO", "IN"],
   description: "A second Short A story with new words — lad, bag, van, nap, and tap!",
   coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Huskiesatrest.jpg",
   comprehensionQuestions: [

@@ -9,6 +9,7 @@ import LetterBox from "@/components/letter-box";
 import PhonicsBox from "@/components/phonics-box";
 import ProgressBar from "@/components/progress-bar";
 import { KidPageHeader, KidBigAction } from "@/components/kid-ui";
+import SpellingGame from "@/components/spelling-game";
 import { speak, speakWord, speakLetters, speakPhonics, speakLetterCoach, speakChunkCoach } from "@/lib/speech";
 import { HELP_READING_SETUP, HELP_READING_PLAY } from "@/lib/page-help";
 import { getPhonicsForWord } from "@shared/phonics";
@@ -62,6 +63,7 @@ function UserNotFound() {
 export default function Reading() {
   const preSelectedLevel = localStorage.getItem("selectedReadingLevel");
   const [phase, setPhase] = useState<ReadingPhase>("setup");
+  const [activityMode, setActivityMode] = useState<"read" | "spell">("read");
   const [currentLevel, setCurrentLevel] = useState(preSelectedLevel ? parseInt(preSelectedLevel) : 1);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showMoreLevels, setShowMoreLevels] = useState(false);
@@ -141,6 +143,7 @@ export default function Reading() {
   const resetPlayState = () => {
     setCurrentWordIndex(0);
     setShowLevelComplete(false);
+    setActivityMode("read");
   };
 
   const startChallenge = () => {
@@ -323,6 +326,7 @@ export default function Reading() {
 
       if (currentWordIndex < words.length - 1) {
         setCurrentWordIndex(currentWordIndex + 1);
+        setActivityMode("read");
       } else {
         toast({
           title: "Level Complete! 🎉",
@@ -336,6 +340,7 @@ export default function Reading() {
       if (currentWordIndex > 0) {
         setShowLevelComplete(false);
         setCurrentWordIndex(currentWordIndex - 1);
+        setActivityMode("read");
       }
     };
 
@@ -414,60 +419,83 @@ export default function Reading() {
                   </AnimatePresence>
 
                   <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto bg-white/90 backdrop-blur">
-                    {currentLevel === 6 ? (
-                      <div className="text-center mb-8">
-                        <div className="text-4xl font-bold text-gray-800 mb-6 leading-relaxed">
-                          {currentWord.word.split(" ").map((word, wordIndex) => (
-                            <button
-                              key={wordIndex}
-                              type="button"
-                              onClick={() => handleWordInSentenceClick(word)}
-                              className="inline-block mx-2 mb-2 cursor-pointer hover:scale-105 transition-transform touch-friendly"
-                            >
-                              {word.split("").map((letter, letterIndex) => (
-                                <span
-                                  key={letterIndex}
-                                  className={`inline-block px-2 py-1 mx-1 rounded-lg text-white font-bold ${
-                                    letterIndex % 3 === 0 ? "bg-coral" :
-                                      letterIndex % 3 === 1 ? "bg-turquoise" : "bg-sunnyellow"
-                                  }`}
-                                >
-                                  {letter}
-                                </span>
-                              ))}
-                            </button>
-                          ))}
+                    {activityMode === "spell" && currentLevel !== 6 ? (
+                      <div className="mb-8">
+                        <div className="text-center mb-4">
+                          <Button variant="ghost" onClick={() => setActivityMode("read")} className="mb-2">
+                            ← Back to Reading
+                          </Button>
+                          <h3 className="text-2xl font-fredoka text-gray-700">Spell the word!</h3>
                         </div>
-                        <p className="text-sm text-gray-500 font-bold">Tap any word to sound it out!</p>
-                      </div>
-                    ) : hasPhonics ? (
-                      <div className="flex justify-center flex-wrap gap-4 mb-8">
-                        {wordPhonics.map((chunk, index) => (
-                          <PhonicsBox
-                            key={index}
-                            chunk={chunk}
-                            color={index === 0 ? "coral" : index === 1 ? "turquoise" : index === 2 ? "sunnyellow" : index === 3 ? "mintgreen" : "skyblue"}
-                            onClick={() => handleChunkClick(chunk)}
-                            isActive={activeChunkIndex === index}
-                          />
-                        ))}
+                        <SpellingGame 
+                          word={currentWord.word} 
+                          onComplete={() => {
+                            // Celebrate and switch back to read mode
+                            setTimeout(() => {
+                              setActivityMode("read");
+                            }, 2000);
+                          }} 
+                        />
                       </div>
                     ) : (
-                      <div className="flex justify-center space-x-4 mb-8">
-                        {currentWord.word.split("").map((letter, index) => (
-                          <LetterBox
-                            key={index}
-                            letter={letter}
-                            color={index === 0 ? "coral" : index === 1 ? "turquoise" : "sunnyellow"}
-                            onClick={() => handleLetterClick(letter)}
-                            isActive={activeChunkIndex === index}
-                          />
-                        ))}
-                      </div>
+                      <>
+                        {currentLevel === 6 ? (
+                          <div className="text-center mb-8">
+                            <div className="text-4xl font-bold text-gray-800 mb-6 leading-relaxed">
+                              {currentWord.word.split(" ").map((word, wordIndex) => (
+                                <button
+                                  key={wordIndex}
+                                  type="button"
+                                  onClick={() => handleWordInSentenceClick(word)}
+                                  className="inline-block mx-2 mb-2 cursor-pointer hover:scale-105 transition-transform touch-friendly"
+                                >
+                                  {word.split("").map((letter, letterIndex) => (
+                                    <span
+                                      key={letterIndex}
+                                      className={`inline-block px-2 py-1 mx-1 rounded-lg text-white font-bold ${
+                                        letterIndex % 3 === 0 ? "bg-coral" :
+                                          letterIndex % 3 === 1 ? "bg-turquoise" : "bg-sunnyellow"
+                                      }`}
+                                    >
+                                      {letter}
+                                    </span>
+                                  ))}
+                                </button>
+                              ))}
+                            </div>
+                            <p className="text-sm text-gray-500 font-bold">Tap any word to sound it out!</p>
+                          </div>
+                        ) : hasPhonics ? (
+                          <div className="flex justify-center flex-wrap gap-4 mb-8">
+                            {wordPhonics.map((chunk, index) => (
+                              <PhonicsBox
+                                key={index}
+                                chunk={chunk}
+                                color={index === 0 ? "coral" : index === 1 ? "turquoise" : index === 2 ? "sunnyellow" : index === 3 ? "mintgreen" : "skyblue"}
+                                onClick={() => handleChunkClick(chunk)}
+                                isActive={activeChunkIndex === index}
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex justify-center space-x-4 mb-8">
+                            {currentWord.word.split("").map((letter, index) => (
+                              <LetterBox
+                                key={index}
+                                letter={letter}
+                                color={index === 0 ? "coral" : index === 1 ? "turquoise" : "sunnyellow"}
+                                onClick={() => handleLetterClick(letter)}
+                                isActive={activeChunkIndex === index}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                      {currentLevel === 6 ? (
+                    {activityMode !== "spell" && (
+                      <div className={`grid grid-cols-1 ${currentLevel === 6 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3 mb-6`}>
+                        {currentLevel === 6 ? (
                         <>
                           <KidBigAction emoji="🔊" label="Hear Sentence" onClick={() => speak(currentWord.word, { rate: 0.7, pitch: 1.1 })} className="bg-blue-500 text-white hover:bg-blue-600" />
                           <KidBigAction
@@ -483,11 +511,13 @@ export default function Reading() {
                         </>
                       ) : (
                         <>
-                          <KidBigAction emoji="🔤" label="Sound It Out" onClick={handleSpellWord} className="bg-green-500 text-white hover:bg-green-600" />
-                          <KidBigAction emoji="🔊" label="Hear Word" onClick={handleSayWord} className="bg-blue-500 text-white hover:bg-blue-600" />
+                          <KidBigAction emoji="📢" label="Say it!" onClick={handleSayWord} className="bg-coral text-white hover:bg-coral/90" />
+                          <KidBigAction emoji="🔤" label="Sound it out!" onClick={handleSpellWord} className="bg-turquoise text-white hover:bg-turquoise/90" />
+                          <KidBigAction emoji="🧩" label="Spell it!" onClick={() => setActivityMode("spell")} className="bg-sunnyellow text-gray-800 hover:bg-sunnyellow/90" />
                         </>
                       )}
                     </div>
+                  )}
 
                     {isWordCompleted && (
                       <div className="text-center text-green-600 font-bold text-lg mb-4">

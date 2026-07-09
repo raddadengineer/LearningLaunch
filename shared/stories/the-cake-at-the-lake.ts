@@ -4,7 +4,7 @@ export const THE_CAKE_AT_THE_LAKE_STORY = {
   title: "The Cake at the Lake",
   level: 3,
   phonicsFocus: "Long A with Magic E — contrast Short A (cap) vs Long A (cape, cake, lake)",
-  sightWordsList: ["THE", "A", "HAS", "IT", "IS", "BUT", "HE", "CAN", "BY", "FOR", "HIS", "SEES", "WANTS"],
+  sightWordsList: ["THE", "A", "HAS", "IT", "IS", "HE", "BY", "FOR", "HIS", "SEES", "WANTS"],
   description:
     "A vowel contrast story — hear Short A (ah) in cap, then Long A (Aaa) when Magic E appears in cape, cake, and lake.",
   coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/04/Pound_layer_cake.jpg",

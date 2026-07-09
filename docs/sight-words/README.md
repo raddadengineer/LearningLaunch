@@ -7,8 +7,8 @@ The **Sight Words** activity (`/sight-words`) helps children memorize high-frequ
 | Level | Theme | Example words |
 |-------|-------|---------------|
 | 1 | Dolch pre-primer core | THE, A, I, IS, IT, IN, ON, AT, MY, WE, TO, GO |
-| 2 | Common sight words | YOU, SEE, CAN, AND, HAS, WITH, DID, HAD, TEN, SAID, LOOK, COME, PLAY, RUN, UP, BIG, RED |
-| 3 | Extended set | WHERE, HELP, JUMP, MAKE, FIND, HERE, AWAY, DOWN, LITTLE, ONE, TWO, THREE |
+| 2 | Common sight words | YOU, SEE, AND, HAS, WITH, SAID, LOOK, COME, PLAY |
+| 3 | Extended set | WHERE, HELP, FIND, HERE, AWAY, DOWN, LITTLE, ONE, TWO, THREE |
 
 Each sight word includes:
 

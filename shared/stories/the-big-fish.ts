@@ -5,7 +5,7 @@ export const THE_BIG_FISH_STORY = {
   level: 2,
   phonicsFocus: "Short I — more words! (fish, swim, hid, sit, big)",
   vowelHighlight: "i",
-  sightWordsList: ["THE", "IS", "A", "IT", "CAN", "IN", "DID"],
+  sightWordsList: ["THE", "IS", "A", "IT", "IN"],
   description:
     "A second Short I story with new words — fish, swim, hid, and more /ĭ/ practice beyond pig and bin.",
   coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Balantiocheilos_melanopterus_-_Karlsruhe_Zoo_02_%28cropped%29.jpg",

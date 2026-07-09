@@ -5,7 +5,7 @@ export const THE_DOG_ON_THE_LOG_STORY = {
   level: 1,
   phonicsFocus: "Short O (like in dog, log, hop)",
   vowelHighlight: "o",
-  sightWordsList: ["THE", "IS", "A", "ON", "SAW", "DID"],
+  sightWordsList: ["THE", "IS", "A", "ON", "SAW"],
   description: "A Short O CVC story — practice dog, log, fox, hop, and more!",
   coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Huskiesatrest.jpg",
   comprehensionQuestions: [

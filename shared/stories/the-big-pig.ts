@@ -5,7 +5,7 @@ export const THE_BIG_PIG_STORY = {
   level: 1,
   phonicsFocus: "Short I (like in pig, sit, bin)",
   vowelHighlight: "i",
-  sightWordsList: ["THE", "IS", "A", "HAS", "SAW", "CAN", "WITH"],
+  sightWordsList: ["THE", "IS", "A", "HAS", "SAW", "WITH"],
   description: "A Short I phonics story — practice pig, sit, bin, and more!",
   coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pig_farm_Vampula_1.jpg",
   comprehensionQuestions: [

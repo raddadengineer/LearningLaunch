@@ -299,15 +299,10 @@ export async function speakPhonics(
         await speak("Now blend!", { ...options, rate: 0.85, pitch: 1.1 });
         await sleep(250);
 
-        const blendGaps = getBlendGaps(chunks.length);
-        for (let i = 0; i < chunks.length; i++) {
-          onChunkIndex?.(i);
-          await playChunkSound(chunks[i], options, useCoach);
-          if (i < chunks.length - 1) {
-            await sleep(blendGaps[i] ?? 150);
-          }
-        }
         onChunkIndex?.(-1);
+        const blendString = chunks.map(c => phonemeSoundForTts(chunkToPhonemeSound(c))).join("");
+        await speak(blendString, { ...options, rate: 0.45, pitch: 1.15 });
+
         await sleep(300);
         await speak(wholeWord.toLowerCase(), { ...options, rate: 0.8, pitch: 1.0 });
       } else {

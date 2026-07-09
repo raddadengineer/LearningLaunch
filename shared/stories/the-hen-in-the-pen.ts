@@ -5,7 +5,7 @@ export const THE_HEN_IN_THE_PEN_STORY = {
   level: 2,
   phonicsFocus: "Short E (like in hen, pen, red, bed)",
   vowelHighlight: "e",
-  sightWordsList: ["THE", "IS", "A", "IN", "ON", "SAT", "TEN"],
+  sightWordsList: ["THE", "IS", "A", "IN", "ON"],
   description:
     "A Short E CVC story — practice hen, pen, red, and bed with strong rhymes and clear /ĕ/ sounds.",
   coverImageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Hen_at_Lourmarin.jpg",
