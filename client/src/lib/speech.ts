@@ -238,8 +238,62 @@ export async function speakVowelStretch(
   }
 }
 
-export function speakWord(word: string, options: SpeechOptions = {}) {
-  return speak(word.toLowerCase(), options);
+export async function playWordFromDictionaryAPI(word: string, options: SpeechOptions = {}): Promise<boolean> {
+  const generation = ++speechGeneration;
+  
+  try {
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`);
+    if (!response.ok) return false;
+    const data = await response.json();
+    
+    let audioUrl = "";
+    for (const entry of data) {
+      if (entry.phonetics) {
+        for (const phonetic of entry.phonetics) {
+          if (phonetic.audio) {
+            audioUrl = phonetic.audio;
+            break;
+          }
+        }
+      }
+      if (audioUrl) break;
+    }
+
+    if (!audioUrl) return false;
+    
+    if (generation !== speechGeneration) return true;
+    
+    stopCurrentAudio();
+    
+    await new Promise<void>((resolve, reject) => {
+      const audio = new Audio(audioUrl);
+      currentAudio = audio;
+      if (options.volume !== undefined) audio.volume = options.volume;
+      if (options.rate !== undefined) audio.playbackRate = options.rate;
+      
+      audio.onended = () => {
+        if (generation === speechGeneration) currentAudio = null;
+        resolve();
+      };
+      audio.onerror = () => {
+        if (generation === speechGeneration) currentAudio = null;
+        reject(new Error(`Dictionary API audio failed: ${audioUrl}`));
+      };
+      audio.play().catch(reject);
+    });
+    
+    return true;
+  } catch (err) {
+    console.warn("Failed to fetch from Dictionary API:", err);
+    return false;
+  }
+}
+
+export async function speakWord(word: string, options: SpeechOptions = {}) {
+  const success = await playWordFromDictionaryAPI(word, options);
+  if (!success) {
+    return speak(word.toLowerCase(), options);
+  }
 }
 
 export async function speakLetters(
@@ -267,7 +321,7 @@ export async function speakLetters(
       await speak("Now say the whole word.", { ...options, rate: 0.85 });
       await sleep(200);
     }
-    await speak(word.toLowerCase(), { ...options, rate: 0.8, pitch: 1.0 });
+    await speakWord(word, { ...options, rate: 0.8, pitch: 1.0 });
   } finally {
     onChunkIndex?.(-1);
   }
@@ -300,14 +354,16 @@ export async function speakPhonics(
         await sleep(250);
 
         onChunkIndex?.(-1);
-        const blendString = chunks.map(c => phonemeSoundForTts(chunkToPhonemeSound(c))).join("");
-        await speak(blendString, { ...options, rate: 0.45, pitch: 1.15 });
+        for (let i = 0; i < chunks.length; i++) {
+          await playChunkSound(chunks[i], { ...options, rate: 1.2 }, useCoach);
+          await sleep(50);
+        }
 
         await sleep(300);
-        await speak(wholeWord.toLowerCase(), { ...options, rate: 0.8, pitch: 1.0 });
+        await speakWord(wholeWord, { ...options, rate: 0.8, pitch: 1.0 });
       } else {
         await sleep(300);
-        await speak(wholeWord.toLowerCase(), { ...options, rate: 0.8, pitch: 1.0 });
+        await speakWord(wholeWord, { ...options, rate: 0.8, pitch: 1.0 });
       }
     }
   } finally {
@@ -339,13 +395,13 @@ export async function speakSightWord(word: string, sentence?: string, options: S
   if (isAiCoachEnabled()) {
     await speak(`Remember this sight word: ${word.toLowerCase()}.`, { ...options, rate: 0.85, pitch: 1.1 });
     await sleep(400);
-    await speak(word.toLowerCase(), { ...options, rate: 0.75, pitch: 1.0 });
+    await speakWord(word, { ...options, rate: 0.75, pitch: 1.0 });
     if (sentence) {
       await sleep(500);
       await speak(`In a sentence: ${sentence}`, { ...options, rate: 0.8, pitch: 1.1 });
     }
   } else {
-    await speak(word.toLowerCase(), { ...options, rate: 0.8, pitch: 1.1 });
+    await speakWord(word, { ...options, rate: 0.8, pitch: 1.1 });
     if (sentence) {
       await sleep(600);
       await speak(sentence, { ...options, rate: 0.75, pitch: 1.0 });
