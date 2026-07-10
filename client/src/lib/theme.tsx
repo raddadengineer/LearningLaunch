@@ -3,6 +3,70 @@ import { motion } from "framer-motion";
 
 export type Theme = "space" | "forest" | "arcade";
 
+export type IconKey = 
+  | "theme" | "voice" | "progress" | "words" 
+  | "gate" | "star" | "time" | "achievement"
+  | "reading" | "math" | "sight-words" | "books" 
+  | "activity" | "settings" | "back";
+
+const THEME_ICONS: Record<Theme, Record<IconKey, string>> = {
+  space: {
+    theme: "🌌",
+    voice: "📡",
+    progress: "🚀",
+    words: "🛸",
+    gate: "👽",
+    star: "⭐",
+    time: "⏳",
+    achievement: "🪐",
+    reading: "🛰️",
+    math: "🧮",
+    "sight-words": "👾",
+    books: "🛸",
+    activity: "📅",
+    settings: "☄️",
+    back: "🛸",
+  },
+  forest: {
+    theme: "🍂",
+    voice: "🦉",
+    progress: "🌱",
+    words: "🪵",
+    gate: "🐿️",
+    star: "🌟",
+    time: "🌿",
+    achievement: "🍄",
+    reading: "🍃",
+    math: "🌰",
+    "sight-words": "🦊",
+    books: "📜",
+    activity: "🌼",
+    settings: "🍃",
+    back: "🐿️",
+  },
+  arcade: {
+    theme: "🎨",
+    voice: "🎤",
+    progress: "🏆",
+    words: "🕹️",
+    gate: "👾",
+    star: "⭐",
+    time: "⏱️",
+    achievement: "👑",
+    reading: "👾",
+    math: "👾",
+    "sight-words": "👾",
+    books: "🎮",
+    activity: "👾",
+    settings: "🕹️",
+    back: "👾",
+  },
+};
+
+export function getThemeIcon(theme: Theme, key: IconKey): string {
+  return THEME_ICONS[theme]?.[key] ?? "✨";
+}
+
 export const THEME_META: Record<Theme, { name: string; emoji: string; desc: string; previewBg: string; previewText: string }> = {
   space:  { name: "Space",  emoji: "🚀", desc: "Dark & cosmic",     previewBg: "linear-gradient(135deg,#0e0830,#2d1b69)", previewText: "#a78bfa" },
   forest: { name: "Forest", emoji: "🌳", desc: "Warm & storybook",  previewBg: "linear-gradient(180deg,#FDE68A,#DCFCE7)", previewText: "#78350F" },
