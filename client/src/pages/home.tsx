@@ -138,6 +138,17 @@ export default function Home() {
           />
         </div>
 
+        <div className="grid grid-cols-1 gap-4 mb-4">
+          <KidActivityTile
+            emoji="🎵"
+            title="Letter Sounds"
+            subtitle="Watch and Learn"
+            colorClass="bg-pink-50 hover:bg-pink-100"
+            speakLabel="Letter Sounds Video"
+            onClick={() => setLocation("/letter-sounds")}
+          />
+        </div>
+
         <div className="text-center mt-8 space-y-2">
           <ParentLink />
           <p className="text-xs text-gray-400 font-bold">

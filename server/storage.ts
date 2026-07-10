@@ -111,7 +111,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     const existingMath = await this.getAllMathActivities();
-    if (existingMath.length < 50) {
+    if (existingMath.length < 210) {
       await db.delete(mathActivities);
       await this.seedMathActivities();
     }
@@ -693,6 +693,12 @@ export class DatabaseStorage implements IStorage {
       { type: "counting", level: 2, question: "How many trees do you see?", answer: 4, objects: ["🌳", "🌳", "🌳", "🌳"] },
       { type: "counting", level: 2, question: "How many hearts do you see?", answer: 9, objects: ["❤️", "❤️", "❤️", "❤️", "❤️", "❤️", "❤️", "❤️", "❤️"] },
       { type: "counting", level: 2, question: "How many moons do you see?", answer: 3, objects: ["🌙", "🌙", "🌙"] },
+      // Counting level 3
+      { type: "counting", level: 3, question: "How many blocks do you see?", answer: 11, objects: ["🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊"] },
+      { type: "counting", level: 3, question: "How many books do you see?", answer: 10, objects: ["📚", "📚", "📚", "📚", "📚", "📚", "📚", "📚", "📚", "📚"] },
+      { type: "counting", level: 3, question: "How many pencils do you see?", answer: 12, objects: ["✏️", "✏️", "✏️", "✏️", "✏️", "✏️", "✏️", "✏️", "✏️", "✏️", "✏️", "✏️"] },
+      { type: "counting", level: 3, question: "How many crayons do you see?", answer: 15, objects: ["🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️", "🖍️"] },
+      { type: "counting", level: 3, question: "How many paints do you see?", answer: 14, objects: ["🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨", "🎨"] },
       // Addition level 3
       { type: "addition", level: 3, question: "2 + 1 = ?", answer: 3, objects: ["2", "+", "1"] },
       { type: "addition", level: 3, question: "1 + 2 = ?", answer: 3, objects: ["1", "+", "2"] },
@@ -717,6 +723,18 @@ export class DatabaseStorage implements IStorage {
       { type: "addition", level: 6, question: "8 + 3 = ?", answer: 11, objects: ["8", "+", "3"] },
       { type: "addition", level: 6, question: "9 + 2 = ?", answer: 11, objects: ["9", "+", "2"] },
       { type: "addition", level: 6, question: "5 + 6 = ?", answer: 11, objects: ["5", "+", "6"] },
+      // Addition level 7
+      { type: "addition", level: 7, question: "8 + 5 = ?", answer: 13, objects: ["8", "+", "5"] },
+      { type: "addition", level: 7, question: "9 + 4 = ?", answer: 13, objects: ["9", "+", "4"] },
+      { type: "addition", level: 7, question: "7 + 7 = ?", answer: 14, objects: ["7", "+", "7"] },
+      { type: "addition", level: 7, question: "6 + 8 = ?", answer: 14, objects: ["6", "+", "8"] },
+      { type: "addition", level: 7, question: "9 + 6 = ?", answer: 15, objects: ["9", "+", "6"] },
+      // Addition level 8
+      { type: "addition", level: 8, question: "10 + 5 = ?", answer: 15, objects: ["10", "+", "5"] },
+      { type: "addition", level: 8, question: "12 + 4 = ?", answer: 16, objects: ["12", "+", "4"] },
+      { type: "addition", level: 8, question: "11 + 7 = ?", answer: 18, objects: ["11", "+", "7"] },
+      { type: "addition", level: 8, question: "13 + 6 = ?", answer: 19, objects: ["13", "+", "6"] },
+      { type: "addition", level: 8, question: "15 + 5 = ?", answer: 20, objects: ["15", "+", "5"] },
       // Subtraction level 1
       { type: "subtraction", level: 1, question: "3 - 1 = ?", answer: 2, objects: ["3", "-", "1"] },
       { type: "subtraction", level: 1, question: "4 - 2 = ?", answer: 2, objects: ["4", "-", "2"] },
@@ -735,6 +753,18 @@ export class DatabaseStorage implements IStorage {
       { type: "subtraction", level: 3, question: "11 - 3 = ?", answer: 8, objects: ["11", "-", "3"] },
       { type: "subtraction", level: 3, question: "9 - 7 = ?", answer: 2, objects: ["9", "-", "7"] },
       { type: "subtraction", level: 3, question: "10 - 6 = ?", answer: 4, objects: ["10", "-", "6"] },
+      // Subtraction level 4
+      { type: "subtraction", level: 4, question: "15 - 5 = ?", answer: 10, objects: ["15", "-", "5"] },
+      { type: "subtraction", level: 4, question: "14 - 7 = ?", answer: 7, objects: ["14", "-", "7"] },
+      { type: "subtraction", level: 4, question: "13 - 6 = ?", answer: 7, objects: ["13", "-", "6"] },
+      { type: "subtraction", level: 4, question: "12 - 8 = ?", answer: 4, objects: ["12", "-", "8"] },
+      { type: "subtraction", level: 4, question: "16 - 9 = ?", answer: 7, objects: ["16", "-", "9"] },
+      // Subtraction level 5
+      { type: "subtraction", level: 5, question: "20 - 5 = ?", answer: 15, objects: ["20", "-", "5"] },
+      { type: "subtraction", level: 5, question: "18 - 9 = ?", answer: 9, objects: ["18", "-", "9"] },
+      { type: "subtraction", level: 5, question: "19 - 7 = ?", answer: 12, objects: ["19", "-", "7"] },
+      { type: "subtraction", level: 5, question: "17 - 8 = ?", answer: 9, objects: ["17", "-", "8"] },
+      { type: "subtraction", level: 5, question: "20 - 12 = ?", answer: 8, objects: ["20", "-", "12"] },
       // Mixed level 1 (Progressively harder)
       { type: "mixed", level: 1, question: "2 + 2 = ?", answer: 4, objects: ["2", "+", "2"] },
       { type: "mixed", level: 1, question: "4 - 1 = ?", answer: 3, objects: ["4", "-", "1"] },
@@ -747,6 +777,154 @@ export class DatabaseStorage implements IStorage {
       { type: "mixed", level: 2, question: "12 - 5 = ?", answer: 7, objects: ["12", "-", "5"] },
       { type: "mixed", level: 2, question: "9 + 4 = ?", answer: 13, objects: ["9", "+", "4"] },
       { type: "mixed", level: 2, question: "15 - 6 = ?", answer: 9, objects: ["15", "-", "6"] },
+      // Mixed level 3 (Progressively harder)
+      { type: "mixed", level: 3, question: "11 + 5 = ?", answer: 16, objects: ["11", "+", "5"] },
+      { type: "mixed", level: 3, question: "18 - 7 = ?", answer: 11, objects: ["18", "-", "7"] },
+      { type: "mixed", level: 3, question: "8 + 9 = ?", answer: 17, objects: ["8", "+", "9"] },
+      { type: "mixed", level: 3, question: "16 - 8 = ?", answer: 8, objects: ["16", "-", "8"] },
+      { type: "mixed", level: 3, question: "12 + 6 = ?", answer: 18, objects: ["12", "+", "6"] },
+      // Mixed level 4 (Progressively harder)
+      { type: "mixed", level: 4, question: "20 - 9 = ?", answer: 11, objects: ["20", "-", "9"] },
+      { type: "mixed", level: 4, question: "14 + 5 = ?", answer: 19, objects: ["14", "+", "5"] },
+      { type: "mixed", level: 4, question: "17 - 12 = ?", answer: 5, objects: ["17", "-", "12"] },
+      { type: "mixed", level: 4, question: "13 + 7 = ?", answer: 20, objects: ["13", "+", "7"] },
+      { type: "mixed", level: 4, question: "20 - 15 = ?", answer: 5, objects: ["20", "-", "15"] },
+      // Shapes level 1
+      { type: "shapes", level: 1, question: "How many sides does a triangle have?", answer: 3, objects: ["🔺"] },
+      { type: "shapes", level: 1, question: "How many sides does a square have?", answer: 4, objects: ["🟩"] },
+      { type: "shapes", level: 1, question: "How many corners does a triangle have?", answer: 3, objects: ["🔺"] },
+      { type: "shapes", level: 1, question: "How many corners does a square have?", answer: 4, objects: ["🟩"] },
+      { type: "shapes", level: 1, question: "How many sides does a diamond have?", answer: 4, objects: ["🔶"] },
+      // Shapes level 2
+      { type: "shapes", level: 2, question: "How many points does a star have?", answer: 5, objects: ["⭐"] },
+      { type: "shapes", level: 2, question: "How many sides does a stop sign have?", answer: 8, objects: ["🛑"] },
+      { type: "shapes", level: 2, question: "How many faces does a block have?", answer: 6, objects: ["🧊"] },
+      { type: "shapes", level: 2, question: "How many corners does a star have?", answer: 5, objects: ["⭐"] },
+      { type: "shapes", level: 2, question: "How many sides do 2 triangles have together?", answer: 6, objects: ["🔺", "🔺"] },
+      // Shapes level 3 (Kindergarten)
+      { type: "shapes", level: 3, question: "How many sides does a hexagon have?", answer: 6, objects: ["⬡"] },
+      { type: "shapes", level: 3, question: "How many sides does an octagon have?", answer: 8, objects: ["🛑"] },
+      { type: "shapes", level: 3, question: "How many corners does a hexagon have?", answer: 6, objects: ["⬡"] },
+      { type: "shapes", level: 3, question: "How many faces does a box have?", answer: 6, objects: ["📦"] },
+      { type: "shapes", level: 3, question: "How many points does a 6-pointed star have?", answer: 6, objects: ["✡️"] },
+      // Shapes level 4 (1st Grade)
+      { type: "shapes", level: 4, question: "How many sides do 2 squares have together?", answer: 8, objects: ["🟩", "🟩"] },
+      { type: "shapes", level: 4, question: "How many corners do a square and a triangle have in total?", answer: 7, objects: ["🟩", "🔺"] },
+      { type: "shapes", level: 4, question: "How many sides do 3 triangles have together?", answer: 9, objects: ["🔺", "🔺", "🔺"] },
+      { type: "shapes", level: 4, question: "How many faces do 2 blocks have in total?", answer: 12, objects: ["🧊", "🧊"] },
+      { type: "shapes", level: 4, question: "How many points on a star and corners on a square together?", answer: 9, objects: ["⭐", "🟩"] },
+      // Story Problems Level 1 (Kindergarten)
+      { type: "story", level: 1, question: "1 dog is playing. 1 more dog joins. How many dogs?", answer: 2, objects: ["🐶", "🐶"] },
+      { type: "story", level: 1, question: "2 cats are sleeping. 1 more cat sleeps. How many cats?", answer: 3, objects: ["🐱", "🐱", "🐱"] },
+      { type: "story", level: 1, question: "3 fish are swimming. 1 more fish swims. How many fish?", answer: 4, objects: ["🐟", "🐟", "🐟", "🐟"] },
+      { type: "story", level: 1, question: "2 birds are singing. 2 more birds sing. How many birds?", answer: 4, objects: ["🐦", "🐦", "🐦", "🐦"] },
+      { type: "story", level: 1, question: "1 bug is crawling. 3 more bugs crawl. How many bugs?", answer: 4, objects: ["🐛", "🐛", "🐛", "🐛"] },
+      { type: "story", level: 1, question: "4 ants are walking. 1 more ant walks. How many ants?", answer: 5, objects: ["🐜", "🐜", "🐜", "🐜", "🐜"] },
+      // Story Problems Level 2 (Kindergarten)
+      { type: "story", level: 2, question: "3 apples are on a tree. 1 apple falls. How many apples are left?", answer: 2, objects: ["🍎", "🍎"] },
+      { type: "story", level: 2, question: "4 pears are in a bowl. You eat 2. How many pears are left?", answer: 2, objects: ["🍐", "🍐"] },
+      { type: "story", level: 2, question: "5 plums are here. You take 1. How many plums are left?", answer: 4, objects: ["🍑", "🍑", "🍑", "🍑"] },
+      { type: "story", level: 2, question: "2 bananas are on the table. You eat 1. How many bananas are left?", answer: 1, objects: ["🍌"] },
+      { type: "story", level: 2, question: "5 grapes are in your hand. You eat 3. How many grapes are left?", answer: 2, objects: ["🍇", "🍇"] },
+      { type: "story", level: 2, question: "4 cherries are on a plate. You eat 3. How many cherries are left?", answer: 1, objects: ["🍒"] },
+      // Story Problems Level 3 (Kindergarten)
+      { type: "story", level: 3, question: "4 frogs jump. 3 more frogs jump. How many frogs jump in total?", answer: 7, objects: ["🐸", "🐸", "🐸", "🐸", "🐸", "🐸", "🐸"] },
+      { type: "story", level: 3, question: "5 turtles swim. 4 more turtles swim. How many turtles in all?", answer: 9, objects: ["🐢", "🐢", "🐢", "🐢", "🐢", "🐢", "🐢", "🐢", "🐢"] },
+      { type: "story", level: 3, question: "6 ducks quack. 2 more ducks quack. How many ducks?", answer: 8, objects: ["🦆", "🦆", "🦆", "🦆", "🦆", "🦆", "🦆", "🦆"] },
+      { type: "story", level: 3, question: "3 bears eat. 5 more bears eat. How many bears in total?", answer: 8, objects: ["🐻", "🐻", "🐻", "🐻", "🐻", "🐻", "🐻", "🐻"] },
+      { type: "story", level: 3, question: "7 bees buzz. 3 more bees buzz. How many bees?", answer: 10, objects: ["🐝", "🐝", "🐝", "🐝", "🐝", "🐝", "🐝", "🐝", "🐝", "🐝"] },
+      { type: "story", level: 3, question: "2 owls hoot. 7 more owls hoot. How many owls in all?", answer: 9, objects: ["🦉", "🦉", "🦉", "🦉", "🦉", "🦉", "🦉", "🦉", "🦉"] },
+      // Story Problems Level 4 (Kindergarten)
+      { type: "story", level: 4, question: "8 leaves fall. You pick up 3. How many leaves are left on the ground?", answer: 5, objects: ["🍂", "🍂", "🍂", "🍂", "🍂"] },
+      { type: "story", level: 4, question: "9 nuts are hidden. A squirrel eats 4. How many nuts are left?", answer: 5, objects: ["🌰", "🌰", "🌰", "🌰", "🌰"] },
+      { type: "story", level: 4, question: "10 seeds are planted. 2 are dug up. How many seeds are left?", answer: 8, objects: ["🌱", "🌱", "🌱", "🌱", "🌱", "🌱", "🌱", "🌱"] },
+      { type: "story", level: 4, question: "7 trees are growing. 5 are cut down. How many trees are left?", answer: 2, objects: ["🌲", "🌲"] },
+      { type: "story", level: 4, question: "6 flowers bloom. You pick 4. How many flowers are left?", answer: 2, objects: ["🌻", "🌻"] },
+      { type: "story", level: 4, question: "10 mushrooms grow. 7 are picked. How many mushrooms are left?", answer: 3, objects: ["🍄", "🍄", "🍄"] },
+      // Story Problems Level 5 (Kindergarten)
+      { type: "story", level: 5, question: "5 shells are on the beach. You find 5 more. How many shells?", answer: 10, objects: ["🐚", "🐚", "🐚", "🐚", "🐚", "🐚", "🐚", "🐚", "🐚", "🐚"] },
+      { type: "story", level: 5, question: "9 rocks are in a pile. You throw 6 away. How many rocks are left?", answer: 3, objects: ["🪨", "🪨", "🪨"] },
+      { type: "story", level: 5, question: "3 crabs walk. 6 more crabs walk. How many crabs in total?", answer: 9, objects: ["🦀", "🦀", "🦀", "🦀", "🦀", "🦀", "🦀", "🦀", "🦀"] },
+      { type: "story", level: 5, question: "8 fish swim. 5 swim away. How many fish are left?", answer: 3, objects: ["🐠", "🐠", "🐠"] },
+      { type: "story", level: 5, question: "4 stars shine. 4 more stars shine. How many stars?", answer: 8, objects: ["✨", "✨", "✨", "✨", "✨", "✨", "✨", "✨"] },
+      { type: "story", level: 5, question: "10 boats sail. 9 boats dock. How many boats are still sailing?", answer: 1, objects: ["⛵"] },
+      // Story Problems Level 6 (First Grade)
+      { type: "story", level: 6, question: "8 cars are parked. 5 more cars park. How many cars in total?", answer: 13, objects: ["🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗", "🚗"] },
+      { type: "story", level: 6, question: "9 trucks drive by. 3 more trucks follow. How many trucks?", answer: 12, objects: ["🚚", "🚚", "🚚", "🚚", "🚚", "🚚", "🚚", "🚚", "🚚", "🚚", "🚚", "🚚"] },
+      { type: "story", level: 6, question: "7 bikes are moving. 6 more bikes join. How many bikes?", answer: 13, objects: ["🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲", "🚲"] },
+      { type: "story", level: 6, question: "10 buses wait. 4 more buses arrive. How many buses in all?", answer: 14, objects: ["🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌", "🚌"] },
+      { type: "story", level: 6, question: "6 trains pass. 8 more trains pass. How many trains?", answer: 14, objects: ["🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂", "🚂"] },
+      { type: "story", level: 6, question: "5 planes fly. 10 more planes fly. How many planes in total?", answer: 15, objects: ["✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️", "✈️"] },
+      // Story Problems Level 7 (First Grade)
+      { type: "story", level: 7, question: "15 cups are on the table. 5 cups fall off. How many cups are left?", answer: 10, objects: ["🥤", "🥤", "🥤", "🥤", "🥤", "🥤", "🥤", "🥤", "🥤", "🥤"] },
+      { type: "story", level: 7, question: "14 plates are stacked. You use 6. How many plates are left?", answer: 8, objects: ["🍽️", "🍽️", "🍽️", "🍽️", "🍽️", "🍽️", "🍽️", "🍽️"] },
+      { type: "story", level: 7, question: "12 spoons are clean. 4 are dirty. How many are still clean?", answer: 8, objects: ["🥄", "🥄", "🥄", "🥄", "🥄", "🥄", "🥄", "🥄"] },
+      { type: "story", level: 7, question: "13 forks are in the drawer. You take out 7. How many forks are left?", answer: 6, objects: ["🍴", "🍴", "🍴", "🍴", "🍴", "🍴"] },
+      { type: "story", level: 7, question: "11 bowls are full. 5 are emptied. How many bowls are full?", answer: 6, objects: ["🥣", "🥣", "🥣", "🥣", "🥣", "🥣"] },
+      { type: "story", level: 7, question: "15 mugs are hot. 9 cool down. How many mugs are hot?", answer: 6, objects: ["☕", "☕", "☕", "☕", "☕", "☕"] },
+      // Story Problems Level 8 (First Grade)
+      { type: "story", level: 8, question: "10 stars shine. 8 more appear. How many stars in total?", answer: 18, objects: ["⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐", "⭐"] },
+      { type: "story", level: 8, question: "12 moons are bright. 7 more get bright. How many moons?", answer: 19, objects: ["🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙", "🌙"] },
+      { type: "story", level: 8, question: "9 suns rise. 9 more rise. How many suns in all?", answer: 18, objects: ["☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️", "☀️"] },
+      { type: "story", level: 8, question: "11 planets spin. 6 more planets spin. How many planets?", answer: 17, objects: ["🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐", "🪐"] },
+      { type: "story", level: 8, question: "14 comets fly. 5 more comets fly. How many comets?", answer: 19, objects: ["☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️", "☄️"] },
+      { type: "story", level: 8, question: "10 rockets launch. 10 more launch. How many rockets?", answer: 20, objects: ["🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀", "🚀"] },
+      // Story Problems Level 9 (First Grade)
+      { type: "story", level: 9, question: "20 blocks are in a tower. 8 blocks fall. How many blocks are left?", answer: 12, objects: ["🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊", "🧊"] },
+      { type: "story", level: 9, question: "18 toys are in the box. 9 are taken out. How many toys are left?", answer: 9, objects: ["🧸", "🧸", "🧸", "🧸", "🧸", "🧸", "🧸", "🧸", "🧸"] },
+      { type: "story", level: 9, question: "19 dolls are sitting. 7 fall over. How many dolls are sitting?", answer: 12, objects: ["🪆", "🪆", "🪆", "🪆", "🪆", "🪆", "🪆", "🪆", "🪆", "🪆", "🪆", "🪆"] },
+      { type: "story", level: 9, question: "17 balls bounce. 11 stop bouncing. How many bounce?", answer: 6, objects: ["🏀", "🏀", "🏀", "🏀", "🏀", "🏀"] },
+      { type: "story", level: 9, question: "16 games are open. 8 are closed. How many games are open?", answer: 8, objects: ["🎲", "🎲", "🎲", "🎲", "🎲", "🎲", "🎲", "🎲"] },
+      { type: "story", level: 9, question: "20 rings are shiny. 15 get dirty. How many are still shiny?", answer: 5, objects: ["💍", "💍", "💍", "💍", "💍"] },
+      // Story Problems Level 10 (First Grade)
+      { type: "story", level: 10, question: "15 hats are on heads. 4 more hats are worn. How many hats in total?", answer: 19, objects: ["🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩", "🎩"] },
+      { type: "story", level: 10, question: "20 shoes are outside. 12 are brought inside. How many are left outside?", answer: 8, objects: ["👟", "👟", "👟", "👟", "👟", "👟", "👟", "👟"] },
+      { type: "story", level: 10, question: "13 coats hang up. 6 more coats are hung up. How many coats?", answer: 19, objects: ["🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥", "🧥"] },
+      { type: "story", level: 10, question: "19 socks are in the laundry. 14 are washed. How many need washing?", answer: 5, objects: ["🧦", "🧦", "🧦", "🧦", "🧦"] },
+      { type: "story", level: 10, question: "11 shirts are folded. 8 more are folded. How many shirts in all?", answer: 19, objects: ["👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕", "👕"] },
+      { type: "story", level: 10, question: "18 pants are clean. 11 get dirty. How many pants are clean?", answer: 7, objects: ["👖", "👖", "👖", "👖", "👖", "👖", "👖"] },
+      // Place Value Level 1
+      { type: "place_value", level: 1, question: "What is 1 ten and 4 ones?", answer: 14, objects: ["10", "+", "4"] },
+      { type: "place_value", level: 1, question: "What is 2 tens and 5 ones?", answer: 25, objects: ["20", "+", "5"] },
+      { type: "place_value", level: 1, question: "What digit is in the tens place of 34?", answer: 3, objects: ["34"] },
+      { type: "place_value", level: 1, question: "What digit is in the ones place of 17?", answer: 7, objects: ["17"] },
+      { type: "place_value", level: 1, question: "What is 3 tens and 0 ones?", answer: 30, objects: ["30", "+", "0"] },
+      { type: "place_value", level: 1, question: "What digit is in the tens place of 50?", answer: 5, objects: ["50"] },
+      // Place Value Level 2
+      { type: "place_value", level: 2, question: "What is 1 hundred, 2 tens, and 3 ones?", answer: 123, objects: ["100", "20", "3"] },
+      { type: "place_value", level: 2, question: "What digit is in the hundreds place of 456?", answer: 4, objects: ["456"] },
+      { type: "place_value", level: 2, question: "What digit is in the tens place of 280?", answer: 8, objects: ["280"] },
+      { type: "place_value", level: 2, question: "What digit is in the ones place of 199?", answer: 9, objects: ["199"] },
+      { type: "place_value", level: 2, question: "What is 5 hundreds and 5 ones?", answer: 505, objects: ["500", "+", "5"] },
+      { type: "place_value", level: 2, question: "What digit is in the hundreds place of 900?", answer: 9, objects: ["900"] },
+      // Geometry Level 1
+      { type: "geometry", level: 1, question: "How many sides does a pentagon have?", answer: 5, objects: ["⬟"] },
+      { type: "geometry", level: 1, question: "How many sides does a hexagon have?", answer: 6, objects: ["⬡"] },
+      { type: "geometry", level: 1, question: "How many right angles does a square have?", answer: 4, objects: ["🟩"] },
+      { type: "geometry", level: 1, question: "How many sides does an octagon have?", answer: 8, objects: ["🛑"] },
+      { type: "geometry", level: 1, question: "How many pairs of parallel sides on a rectangle?", answer: 2, objects: ["🟧"] },
+      { type: "geometry", level: 1, question: "How many corners does a triangle have?", answer: 3, objects: ["🔺"] },
+      // Geometry Level 2
+      { type: "geometry", level: 2, question: "How many faces does a cube have?", answer: 6, objects: ["🧊"] },
+      { type: "geometry", level: 2, question: "How many edges does a cube have?", answer: 12, objects: ["🧊"] },
+      { type: "geometry", level: 2, question: "How many corners (vertices) does a cube have?", answer: 8, objects: ["🧊"] },
+      { type: "geometry", level: 2, question: "How many flat faces on a cylinder?", answer: 2, objects: ["🥫"] },
+      { type: "geometry", level: 2, question: "How many flat faces on a cone?", answer: 1, objects: ["🍦"] },
+      { type: "geometry", level: 2, question: "How many flat faces on a sphere?", answer: 0, objects: ["⚽"] },
+      // Measurement Level 1
+      { type: "measurement", level: 1, question: "How many inches are in 1 foot?", answer: 12, objects: ["📏"] },
+      { type: "measurement", level: 1, question: "How many feet are in 1 yard?", answer: 3, objects: ["📏"] },
+      { type: "measurement", level: 1, question: "How many centimeters in 1 meter?", answer: 100, objects: ["📏"] },
+      { type: "measurement", level: 1, question: "If a book is 8 inches and a pen is 5 inches, how much longer is the book?", answer: 3, objects: ["📚", "🖊️"] },
+      { type: "measurement", level: 1, question: "How many days are in 1 week?", answer: 7, objects: ["📅"] },
+      { type: "measurement", level: 1, question: "How many months are in 1 year?", answer: 12, objects: ["🗓️"] },
+      // Measurement Level 2
+      { type: "measurement", level: 2, question: "How many minutes are in 1 hour?", answer: 60, objects: ["⏱️"] },
+      { type: "measurement", level: 2, question: "How many hours are in 1 day?", answer: 24, objects: ["☀️", "🌙"] },
+      { type: "measurement", level: 2, question: "How many pennies make 1 dime?", answer: 10, objects: ["🪙"] },
+      { type: "measurement", level: 2, question: "How many quarters make 1 dollar?", answer: 4, objects: ["💵"] },
+      { type: "measurement", level: 2, question: "How many nickels make 1 dime?", answer: 2, objects: ["🪙"] },
+      { type: "measurement", level: 2, question: "How many pennies in 1 quarter?", answer: 25, objects: ["🪙"] },
     ];
 
     for (const activity of activities) {

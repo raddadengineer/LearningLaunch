@@ -11,13 +11,15 @@ import { speak } from "@/lib/speech";
 import { HELP_MATH_SETUP, HELP_MATH_PLAY } from "@/lib/page-help";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { MATH_OVERVIEWS } from "@/lib/math-overviews";
 
-type MathPhase = "setup" | "play";
+type MathPhase = "setup" | "overview" | "play";
 
 export default function MathPage() {
   const [phase, setPhase] = useState<MathPhase>("setup");
+  const [overviewFinished, setOverviewFinished] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(1);
-  const [activityType, setActivityType] = useState<"counting" | "addition" | "subtraction" | "mixed">("counting");
+  const [activityType, setActivityType] = useState<"counting" | "addition" | "subtraction" | "mixed" | "shapes" | "story" | "place_value" | "geometry" | "measurement">("counting");
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string>("");
@@ -70,7 +72,12 @@ export default function MathPage() {
       toast({
         title: activityType === "counting" ? "Great counting!" : 
                activityType === "addition" ? "Awesome addition!" : 
-               activityType === "subtraction" ? "Super subtraction!" : "Marvelous math!",
+               activityType === "subtraction" ? "Super subtraction!" : 
+               activityType === "shapes" ? "Super shapes!" : 
+               activityType === "story" ? "Super story math!" : 
+               activityType === "place_value" ? "Perfect place value!" : 
+               activityType === "geometry" ? "Great geometry!" : 
+               activityType === "measurement" ? "Marvelous measurement!" : "Marvelous math!",
         description: "Your progress has been saved!",
       });
     }
@@ -98,6 +105,22 @@ export default function MathPage() {
       return () => clearTimeout(timeoutId);
     }
   }, [activities, currentActivityIndex, phase]);
+
+  useEffect(() => {
+    let isActive = true;
+    if (phase === "overview") {
+      const text = MATH_OVERVIEWS[activityType]?.[currentLevel] || "Let's learn some math!";
+      speak(text, { rate: 0.85 }).then(() => {
+        if (isActive) setOverviewFinished(true);
+      });
+    }
+    return () => {
+      isActive = false;
+      if (phase === "overview" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [phase, activityType, currentLevel]);
 
   const generateAnswerOptions = (correctAnswer: number, activityId: number) => {
     const options = [correctAnswer];
@@ -134,8 +157,8 @@ export default function MathPage() {
 
   const startChallenge = () => {
     resetPlayState();
-    setPhase("play");
-    setPlaySessionId(id => id + 1);
+    setOverviewFinished(false);
+    setPhase("overview");
   };
 
   const backToSetup = () => {
@@ -185,6 +208,82 @@ export default function MathPage() {
   const currentProgress = progress?.find(p => p.level === currentLevel && p.activityType === "math");
   const setupStars = currentProgress?.stars || 0;
 
+  if (phase === "overview") {
+    const titleMap = {
+      counting: "Counting",
+      addition: "Adding",
+      subtraction: "Subtracting",
+      shapes: "Shapes",
+      story: "Story Problems",
+      place_value: "Place Value",
+      geometry: "Geometry",
+      measurement: "Measurement",
+      mixed: "Mixed Math"
+    };
+    
+    return (
+      <div className="min-h-screen pb-28">
+        <KidPageHeader title={titleMap[activityType]} emoji="🔢" stars={setupStars} helpText={HELP_MATH_PLAY} />
+        <motion.div
+          key="overview"
+          variants={screenVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="container mx-auto px-4 mt-8 flex flex-col items-center max-w-2xl"
+        >
+          <Card className="p-8 rounded-[2.5rem] kid-shadow w-full text-center bg-white/90 backdrop-blur mb-8">
+            <div className="text-6xl mb-6">👩‍🏫</div>
+            <h2 className="text-3xl font-fredoka text-gray-800 mb-6">Lesson Time!</h2>
+            <p className="text-xl text-gray-600 leading-relaxed">
+              {MATH_OVERVIEWS[activityType]?.[currentLevel] || "Let's learn some math!"}
+            </p>
+          </Card>
+
+          <AnimatePresence mode="popLayout">
+            {overviewFinished ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full max-w-md"
+              >
+                <KidBigAction
+                  emoji="🎮"
+                  label="Let's Play!"
+                  onClick={() => {
+                    setPhase("play");
+                    setPlaySessionId(id => id + 1);
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white text-2xl py-8 w-full"
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: 20 }}
+              >
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    if ("speechSynthesis" in window) {
+                      window.speechSynthesis.cancel();
+                    }
+                    setPhase("play");
+                    setPlaySessionId(id => id + 1);
+                  }}
+                  className="text-gray-500 hover:text-gray-700 font-bold"
+                >
+                  Skip to Game
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (phase === "play") {
     if (activitiesLoading) {
       return (
@@ -192,7 +291,12 @@ export default function MathPage() {
           <KidPageHeader
             title={activityType === "counting" ? "Counting" : 
                    activityType === "addition" ? "Adding" : 
-                   activityType === "subtraction" ? "Subtracting" : "Mixed Math"}
+                   activityType === "subtraction" ? "Subtracting" : 
+                   activityType === "shapes" ? "Shapes" : 
+                   activityType === "story" ? "Story Problems" : 
+                   activityType === "place_value" ? "Place Value" : 
+                   activityType === "geometry" ? "Geometry" : 
+                   activityType === "measurement" ? "Measurement" : "Mixed Math"}
             emoji="🔢"
             stars={setupStars}
             helpText={HELP_MATH_PLAY}
@@ -299,7 +403,12 @@ export default function MathPage() {
             <KidPageHeader
               title={activityType === "counting" ? "Counting" : 
                      activityType === "addition" ? "Adding" : 
-                     activityType === "subtraction" ? "Subtracting" : "Mixed Math"}
+                     activityType === "subtraction" ? "Subtracting" : 
+                     activityType === "shapes" ? "Shapes" : 
+                     activityType === "story" ? "Story Problems" : 
+                     activityType === "place_value" ? "Place Value" : 
+                     activityType === "geometry" ? "Geometry" : 
+                     activityType === "measurement" ? "Measurement" : "Mixed Math"}
               emoji="🔢"
               stars={currentProgress?.stars || 0}
               helpText={HELP_MATH_PLAY}
@@ -518,7 +627,7 @@ export default function MathPage() {
           >
             <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Choose Your Challenge</h3>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <Button
                 onClick={() => {
                   setActivityType("counting");
@@ -575,17 +684,98 @@ export default function MathPage() {
               >
                 🔀 Mixed
               </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("shapes");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "shapes"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                🔺 Shapes
+              </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("story");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "story"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                📖 Story
+              </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("place_value");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "place_value"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                1️⃣0️⃣ Place Value
+              </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("geometry");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "geometry"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                🧊 Geometry
+              </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("measurement");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "measurement"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                📏 Measurement
+              </Button>
             </div>
 
             <div className="text-center">
               <h4 className="text-lg font-bold text-gray-700 mb-3">Level</h4>
               <div className={`grid gap-3 max-w-md mx-auto ${
-                activityType === "addition" ? "grid-cols-4" : 
-                activityType === "subtraction" ? "grid-cols-3" : "grid-cols-2"
+                activityType === "addition" ? "grid-cols-3" : 
+                activityType === "subtraction" ? "grid-cols-3" : 
+                activityType === "mixed" ? "grid-cols-2" : 
+                activityType === "shapes" ? "grid-cols-2" : 
+                activityType === "story" ? "grid-cols-2" : 
+                activityType === "place_value" ? "grid-cols-2" : 
+                activityType === "geometry" ? "grid-cols-2" : 
+                activityType === "measurement" ? "grid-cols-2" : "grid-cols-3"
               }`}>
-                {(activityType === "counting" ? [1, 2] : 
-                  activityType === "addition" ? [3, 4, 5, 6] : 
-                  activityType === "subtraction" ? [1, 2, 3] : [1, 2]
+                {(activityType === "counting" ? [1, 2, 3] : 
+                  activityType === "addition" ? [3, 4, 5, 6, 7, 8] : 
+                  activityType === "subtraction" ? [1, 2, 3, 4, 5] : 
+                  activityType === "shapes" ? [1, 2, 3, 4] : 
+                  activityType === "story" ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : 
+                  activityType === "place_value" ? [1, 2] : 
+                  activityType === "geometry" ? [1, 2] : 
+                  activityType === "measurement" ? [1, 2] : [1, 2, 3, 4]
                 ).map((level) => (
                   <Button
                     key={level}
@@ -605,27 +795,52 @@ export default function MathPage() {
               </div>
               <div className="mt-3 text-center text-sm text-gray-600">
                 {activityType === "counting" ? (
-                  <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="grid grid-cols-3 gap-3 text-xs">
                     <span>Count 1-5</span>
                     <span>Count 6-10</span>
+                    <span>Count 11-15</span>
                   </div>
                 ) : activityType === "addition" ? (
-                  <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="grid grid-cols-3 gap-2 text-xs mt-2">
                     <span>Level 3</span>
                     <span>Level 4</span>
                     <span>Level 5</span>
                     <span>Level 6</span>
+                    <span>Level 7</span>
+                    <span>Level 8</span>
                   </div>
                 ) : activityType === "subtraction" ? (
-                  <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="grid grid-cols-3 gap-2 text-xs mt-2">
                     <span>Level 1</span>
                     <span>Level 2</span>
                     <span>Level 3</span>
+                    <span>Level 4</span>
+                    <span>Level 5</span>
+                    <span></span>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                ) : activityType === "shapes" ? (
+                  <div className="grid grid-cols-2 gap-2 text-xs mt-2">
                     <span>Level 1</span>
                     <span>Level 2</span>
+                    <span>Level 3</span>
+                    <span>Level 4</span>
+                  </div>
+                ) : activityType === "story" ? (
+                  <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                    <span>Kindie (1-5)</span>
+                    <span>1st Gr (6-10)</span>
+                  </div>
+                ) : activityType === "place_value" || activityType === "geometry" || activityType === "measurement" ? (
+                  <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                    <span>Level 1</span>
+                    <span>Level 2</span>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                    <span>Level 1</span>
+                    <span>Level 2</span>
+                    <span>Level 3</span>
+                    <span>Level 4</span>
                   </div>
                 )}
               </div>

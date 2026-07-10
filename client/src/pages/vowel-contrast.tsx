@@ -5,11 +5,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { KidPageHeader, KidBigAction } from "@/components/kid-ui";
 import { getPhonicsForWord } from "@shared/phonics";
-import { speak, speakPhonics, speakPhonemeSound } from "@/lib/speech";
+import { speak, speakPhonics, speakPhonemeSound, speakLetters } from "@/lib/speech";
 import { HELP_VOWEL_SETUP, getVowelContrastHelp } from "@/lib/page-help";
 import { SHORT_A_LONG_A } from "@shared/phonics/short-long-a";
 import { SHORT_I_LONG_I } from "@shared/phonics/short-long-i";
 import type { VowelContrastContent, VowelPair } from "@shared/phonics/vowel-contrast-types";
+import SpellingGame from "@/components/spelling-game";
 
 type VowelPhase = "setup" | "play";
 type ActiveTab = "pairs" | "games";
@@ -129,6 +130,7 @@ function SoundSortGame({ content }: { content: VowelContrastContent }) {
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
+  const [isSpelling, setIsSpelling] = useState(false);
   const current = content.soundSortWords[index % content.soundSortWords.length];
 
   const handleGuess = (sound: "short" | "long") => {
@@ -138,55 +140,80 @@ function SoundSortGame({ content }: { content: VowelContrastContent }) {
     setTimeout(() => {
       setFeedback(null);
       setIndex((i) => i + 1);
+      setIsSpelling(false);
     }, 1200);
   };
 
   return (
     <Card className="rounded-2xl p-5 bg-blue-50 border-2 border-blue-200">
-      <h4 className="text-lg font-fredoka text-blue-800 mb-1 text-center">🪣 Game B: Sound Sort</h4>
-      <p className="text-xs font-bold text-gray-600 text-center mb-4">
-        Which bucket does this word go in?
-      </p>
-      <div className="text-center mb-4">
-        <motion.p
-          key={index}
-          initial={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
-          className="text-4xl font-fredoka text-gray-800 mb-2"
-        >
-          {current.word}
-        </motion.p>
-        <Button size="sm" variant="outline" onClick={() => speakWord(current.word)} className="rounded-xl font-bold">
-          🔊 Hear word
-        </Button>
-        {feedback === "correct" && <p className="text-green-600 font-bold mt-2">✓ Great job!</p>}
-        {feedback === "wrong" && (
-          <p className="text-orange-600 font-bold mt-2">
-            Try again — {current.sound === "short" ? `${content.shortLabel} (${content.shortSound})` : `${content.longLabel} (${content.longSound})`}!
+      {isSpelling ? (
+        <div className="mb-4">
+          <div className="text-center mb-4">
+            <Button variant="ghost" onClick={() => setIsSpelling(false)} className="mb-2">
+              ← Back to Sort
+            </Button>
+            <h4 className="text-lg font-fredoka text-blue-800">Spell the word!</h4>
+          </div>
+          <SpellingGame 
+            word={current.word} 
+            onComplete={() => {
+              setTimeout(() => setIsSpelling(false), 2000);
+            }} 
+          />
+        </div>
+      ) : (
+        <>
+          <h4 className="text-lg font-fredoka text-blue-800 mb-1 text-center">🪣 Game B: Sound Sort</h4>
+          <p className="text-xs font-bold text-gray-600 text-center mb-4">
+            Which bucket does this word go in?
           </p>
-        )}
-        <p className="text-xs font-bold text-gray-500 mt-2">Score: {score}</p>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Button
-          onClick={() => handleGuess("short")}
-          disabled={feedback !== null}
-          className="flex flex-col h-auto py-4 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-2 border-yellow-300 rounded-2xl"
-        >
-          <span className="text-3xl mb-1">{content.shortEmoji}</span>
-          <span className="font-fredoka text-sm">{content.shortLabel}</span>
-          <span className="text-xs font-bold">{content.shortSound}</span>
-        </Button>
-        <Button
-          onClick={() => handleGuess("long")}
-          disabled={feedback !== null}
-          className="flex flex-col h-auto py-4 bg-green-100 hover:bg-green-200 text-green-800 border-2 border-green-300 rounded-2xl"
-        >
-          <span className="text-3xl mb-1">{content.longEmoji}</span>
-          <span className="font-fredoka text-sm">{content.longLabel}</span>
-          <span className="text-xs font-bold">{content.longSound}</span>
-        </Button>
-      </div>
+          <div className="text-center mb-4">
+            <motion.p
+              key={index}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="text-4xl font-fredoka text-gray-800 mb-2"
+            >
+              {current.word}
+            </motion.p>
+            <div className="flex justify-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => speakWord(current.word)} className="rounded-xl font-bold">
+                🔊 Hear word
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setIsSpelling(true)} className="rounded-xl font-bold">
+                🧩 Spell it
+              </Button>
+            </div>
+            {feedback === "correct" && <p className="text-green-600 font-bold mt-2">✓ Great job!</p>}
+            {feedback === "wrong" && (
+              <p className="text-orange-600 font-bold mt-2">
+                Try again — {current.sound === "short" ? `${content.shortLabel} (${content.shortSound})` : `${content.longLabel} (${content.longSound})`}!
+              </p>
+            )}
+            <p className="text-xs font-bold text-gray-500 mt-2">Score: {score}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              onClick={() => handleGuess("short")}
+              disabled={feedback !== null}
+              className="flex flex-col h-auto py-4 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-2 border-yellow-300 rounded-2xl"
+            >
+              <span className="text-3xl mb-1">{content.shortEmoji}</span>
+              <span className="font-fredoka text-sm">{content.shortLabel}</span>
+              <span className="text-xs font-bold">{content.shortSound}</span>
+            </Button>
+            <Button
+              onClick={() => handleGuess("long")}
+              disabled={feedback !== null}
+              className="flex flex-col h-auto py-4 bg-green-100 hover:bg-green-200 text-green-800 border-2 border-green-300 rounded-2xl"
+            >
+              <span className="text-3xl mb-1">{content.longEmoji}</span>
+              <span className="font-fredoka text-sm">{content.longLabel}</span>
+              <span className="text-xs font-bold">{content.longSound}</span>
+            </Button>
+          </div>
+        </>
+      )}
     </Card>
   );
 }

@@ -49,7 +49,7 @@ export const EXTENDED_PHONEME_SOUNDS = [
   "ay", "eye", "er", "or", "ar", "aw", "oy", "ow", "oh",
   "sm", "sn", "sp", "sw", "tw", "wh",
   "mp", "nd", "nt", "nk", "mb", "ll", "ss",
-  "kwuh", "yuh", "j",
+  "kwuh", "yuh", "j", "ks",
   "un", "al", "all", "ack", "ell", "air", "own", "shun",
 ] as const;
 
@@ -63,7 +63,7 @@ export const HUMAN_CORE_PHONEME_SOUNDS = [
   "buh", "kuh", "duh", "fff", "guh", "huh", "juh", "lll", "mmm", "nnn",
   "puh", "rrr", "sss", "tuh", "vvv", "wuh", "zzz",
   "ah", "eh", "ih", "uh", "ee", "oo",
-  "sh", "ch", "th", "ng",
+  "sh", "ch", "th", "ng", "kwuh", "yuh", "ks",
 ] as const;
 
 export type PhonemeCategory = "stop" | "continuant" | "vowel" | "digraph" | "blend" | "extended";
@@ -82,7 +82,7 @@ const PHONEME_CATEGORIES: Record<string, PhonemeCategory> = {
   oy: "vowel", ow: "vowel", oh: "vowel",
   sm: "blend", sn: "blend", sp: "blend", sw: "blend", tw: "blend", wh: "blend",
   mp: "extended", nd: "extended", nt: "extended", nk: "extended", mb: "extended",
-  ll: "extended", ss: "extended", kwuh: "extended", yuh: "extended", j: "extended",
+  ll: "extended", ss: "extended", kwuh: "extended", yuh: "extended", j: "extended", ks: "extended",
   un: "extended", al: "extended", all: "extended", ack: "extended", ell: "extended",
   air: "extended", own: "extended", shun: "extended",
 };
@@ -107,7 +107,7 @@ export const PHONEME_GENERATION_PROMPTS: Record<string, string> = {
   tw: "tww", wh: "whh",
   // Extended / endings
   mp: "mp", nd: "nd", nt: "nt", nk: "nk", mb: "mb", ll: "lll", ss: "sss",
-  kwuh: "kw", yuh: "yuh", j: "j",
+  kwuh: "kw", yuh: "yuh", j: "j", ks: "ks",
   un: "un", al: "al", all: "alll", ack: "ack", ell: "ell", air: "air",
   own: "own", shun: "shun",
 };

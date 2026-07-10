@@ -18,6 +18,7 @@ import ParentSettings from "@/pages/parent-settings";
 import Admin from "@/pages/admin";
 import UserManagement from "@/pages/user-management";
 import UserSelection from "@/pages/user-selection";
+import LetterSounds from "@/pages/letter-sounds";
 import Navigation from "@/components/navigation";
 import { hydratePreferencesForUser } from "@/lib/voice-preferences";
 
@@ -59,6 +60,7 @@ function Router() {
             <Route path="/books/:id" component={BookReader} />
             <Route path="/vowel-contrast/:vowel?" component={VowelContrast} />
             <Route path="/sight-words" component={SightWords} />
+            <Route path="/letter-sounds" component={LetterSounds} />
             <Route path="/math" component={MathPage} />
             <Route path="/parent-dashboard" component={ParentDashboard} />
             <Route path="/parent-settings" component={ParentSettings} />

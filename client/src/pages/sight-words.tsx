@@ -9,6 +9,7 @@ import ProgressBar from "@/components/progress-bar";
 import { KidPageHeader, KidBigAction } from "@/components/kid-ui";
 import { speakSightWord, speak } from "@/lib/speech";
 import { HELP_SIGHT_WORDS_SETUP, HELP_SIGHT_WORDS_PLAY } from "@/lib/page-help";
+import SpellingGame from "@/components/spelling-game";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,6 +50,7 @@ function highlightWordInSentence(sentence: string, word: string) {
 export default function SightWords() {
   const preSelectedLevel = localStorage.getItem("selectedSightWordLevel");
   const [phase, setPhase] = useState<SightWordsPhase>("setup");
+  const [activityMode, setActivityMode] = useState<"read" | "spell">("read");
   const [currentLevel, setCurrentLevel] = useState(preSelectedLevel ? parseInt(preSelectedLevel) : 1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showLevelComplete, setShowLevelComplete] = useState(false);
@@ -113,6 +115,7 @@ export default function SightWords() {
   const resetPlayState = () => {
     setCurrentIndex(0);
     setShowLevelComplete(false);
+    setActivityMode("read");
   };
 
   const startChallenge = () => {
@@ -180,6 +183,7 @@ export default function SightWords() {
         const stars = Math.min(5, Math.floor(newCompleted.length / 2));
         updateProgressMutation.mutate({ completedItems: newCompleted, stars });
       }
+      setActivityMode("read");
       if (currentIndex < words.length - 1) {
         setCurrentIndex(currentIndex + 1);
       } else {
@@ -260,38 +264,69 @@ export default function SightWords() {
                     )}
 
                     <Card className="rounded-[2.5rem] p-10 kid-shadow bg-gradient-to-br from-purple-50 to-pink-50 mb-6">
-                      <p className="text-sm font-bold text-purple-500 mb-4 uppercase tracking-wider">Sight Word</p>
-                      <button
-                        type="button"
-                        onClick={() => speakSightWord(currentWord.word, undefined, { rate: 0.8, pitch: 1.1 })}
-                        className="text-7xl font-fredoka font-bold text-purple-700 mb-6 hover:scale-105 transition-transform touch-friendly cursor-pointer"
-                      >
-                        {currentWord.word}
-                      </button>
-                      <p className="text-sm text-gray-500 font-bold mb-2">Tap the word to hear it!</p>
+                      {activityMode === "spell" ? (
+                        <div className="mb-8">
+                          <div className="text-center mb-4">
+                            <Button variant="ghost" onClick={() => setActivityMode("read")} className="mb-2">
+                              ← Back to Reading
+                            </Button>
+                            <h3 className="text-2xl font-fredoka text-gray-700">Spell the word!</h3>
+                          </div>
+                          <SpellingGame 
+                            word={currentWord.word} 
+                            onComplete={() => {
+                              setTimeout(() => {
+                                setActivityMode("read");
+                              }, 2000);
+                            }} 
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-sm font-bold text-purple-500 mb-4 uppercase tracking-wider">Sight Word</p>
+                          <button
+                            type="button"
+                            onClick={() => speakSightWord(currentWord.word, undefined, { rate: 0.8, pitch: 1.1 })}
+                            className="text-7xl font-fredoka font-bold text-purple-700 mb-6 hover:scale-105 transition-transform touch-friendly cursor-pointer"
+                          >
+                            {currentWord.word}
+                          </button>
+                          <p className="text-sm text-gray-500 font-bold mb-2">Tap the word to hear it!</p>
 
-                      <div className="bg-white/80 rounded-2xl p-5 mt-4">
-                        <p className="text-sm font-bold text-gray-500 mb-2">In a sentence:</p>
-                        <p className="text-2xl font-bold text-gray-800 leading-relaxed">
-                          {highlightWordInSentence(currentWord.sentence, currentWord.word)}
-                        </p>
-                      </div>
+                          <div className="bg-white/80 rounded-2xl p-5 mt-4">
+                            <p className="text-sm font-bold text-gray-500 mb-2">In a sentence:</p>
+                            <p className="text-2xl font-bold text-gray-800 leading-relaxed">
+                              {highlightWordInSentence(currentWord.sentence, currentWord.word)}
+                            </p>
+                          </div>
+                        </>
+                      )}
                     </Card>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                      <KidBigAction
-                        emoji="🔊"
-                        label="Hear Word"
-                        onClick={() => speakSightWord(currentWord.word, undefined, { rate: 0.8, pitch: 1.1 })}
-                        className="bg-purple-500 text-white hover:bg-purple-600"
-                      />
-                      <KidBigAction
-                        emoji="📖"
-                        label="Hear Sentence"
-                        onClick={() => speak(currentWord.sentence, { rate: 0.75, pitch: 1.1 })}
-                        className="bg-blue-500 text-white hover:bg-blue-600"
-                      />
-                    </div>
+                    {activityMode !== "spell" && (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                          <KidBigAction
+                            emoji="🔊"
+                            label="Hear Word"
+                            onClick={() => speakSightWord(currentWord.word, undefined, { rate: 0.8, pitch: 1.1 })}
+                            className="bg-purple-500 text-white hover:bg-purple-600"
+                          />
+                          <KidBigAction
+                            emoji="📖"
+                            label="Hear Sentence"
+                            onClick={() => speak(currentWord.sentence, { rate: 0.75, pitch: 1.1 })}
+                            className="bg-blue-500 text-white hover:bg-blue-600"
+                          />
+                        </div>
+                        <KidBigAction
+                          emoji="🧩"
+                          label="Spell it!"
+                          onClick={() => setActivityMode("spell")}
+                          className="bg-sunnyellow text-gray-800 hover:bg-sunnyellow/90 mb-8"
+                        />
+                      </>
+                    )}
 
                     {isCompleted && (
                       <p className="text-green-600 font-bold text-lg mb-4">✅ You know this word!</p>
@@ -304,6 +339,7 @@ export default function SightWords() {
                     onClick={() => {
                       setShowLevelComplete(false);
                       setCurrentIndex(Math.max(0, currentIndex - 1));
+                      setActivityMode("read");
                     }}
                     disabled={currentIndex === 0}
                     variant="outline"
