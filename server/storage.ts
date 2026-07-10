@@ -111,7 +111,8 @@ export class DatabaseStorage implements IStorage {
     }
 
     const existingMath = await this.getAllMathActivities();
-    if (existingMath.length === 0) {
+    if (existingMath.length < 50) {
+      await db.delete(mathActivities);
       await this.seedMathActivities();
     }
 
@@ -716,6 +717,36 @@ export class DatabaseStorage implements IStorage {
       { type: "addition", level: 6, question: "8 + 3 = ?", answer: 11, objects: ["8", "+", "3"] },
       { type: "addition", level: 6, question: "9 + 2 = ?", answer: 11, objects: ["9", "+", "2"] },
       { type: "addition", level: 6, question: "5 + 6 = ?", answer: 11, objects: ["5", "+", "6"] },
+      // Subtraction level 1
+      { type: "subtraction", level: 1, question: "3 - 1 = ?", answer: 2, objects: ["3", "-", "1"] },
+      { type: "subtraction", level: 1, question: "4 - 2 = ?", answer: 2, objects: ["4", "-", "2"] },
+      { type: "subtraction", level: 1, question: "5 - 1 = ?", answer: 4, objects: ["5", "-", "1"] },
+      { type: "subtraction", level: 1, question: "2 - 1 = ?", answer: 1, objects: ["2", "-", "1"] },
+      { type: "subtraction", level: 1, question: "4 - 1 = ?", answer: 3, objects: ["4", "-", "1"] },
+      // Subtraction level 2
+      { type: "subtraction", level: 2, question: "6 - 3 = ?", answer: 3, objects: ["6", "-", "3"] },
+      { type: "subtraction", level: 2, question: "7 - 2 = ?", answer: 5, objects: ["7", "-", "2"] },
+      { type: "subtraction", level: 2, question: "5 - 3 = ?", answer: 2, objects: ["5", "-", "3"] },
+      { type: "subtraction", level: 2, question: "8 - 4 = ?", answer: 4, objects: ["8", "-", "4"] },
+      { type: "subtraction", level: 2, question: "9 - 5 = ?", answer: 4, objects: ["9", "-", "5"] },
+      // Subtraction level 3
+      { type: "subtraction", level: 3, question: "10 - 4 = ?", answer: 6, objects: ["10", "-", "4"] },
+      { type: "subtraction", level: 3, question: "12 - 5 = ?", answer: 7, objects: ["12", "-", "5"] },
+      { type: "subtraction", level: 3, question: "11 - 3 = ?", answer: 8, objects: ["11", "-", "3"] },
+      { type: "subtraction", level: 3, question: "9 - 7 = ?", answer: 2, objects: ["9", "-", "7"] },
+      { type: "subtraction", level: 3, question: "10 - 6 = ?", answer: 4, objects: ["10", "-", "6"] },
+      // Mixed level 1 (Progressively harder)
+      { type: "mixed", level: 1, question: "2 + 2 = ?", answer: 4, objects: ["2", "+", "2"] },
+      { type: "mixed", level: 1, question: "4 - 1 = ?", answer: 3, objects: ["4", "-", "1"] },
+      { type: "mixed", level: 1, question: "5 + 3 = ?", answer: 8, objects: ["5", "+", "3"] },
+      { type: "mixed", level: 1, question: "7 - 4 = ?", answer: 3, objects: ["7", "-", "4"] },
+      { type: "mixed", level: 1, question: "6 + 5 = ?", answer: 11, objects: ["6", "+", "5"] },
+      // Mixed level 2 (Progressively harder)
+      { type: "mixed", level: 2, question: "8 - 3 = ?", answer: 5, objects: ["8", "-", "3"] },
+      { type: "mixed", level: 2, question: "7 + 6 = ?", answer: 13, objects: ["7", "+", "6"] },
+      { type: "mixed", level: 2, question: "12 - 5 = ?", answer: 7, objects: ["12", "-", "5"] },
+      { type: "mixed", level: 2, question: "9 + 4 = ?", answer: 13, objects: ["9", "+", "4"] },
+      { type: "mixed", level: 2, question: "15 - 6 = ?", answer: 9, objects: ["15", "-", "6"] },
     ];
 
     for (const activity of activities) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { MathActivity, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -17,12 +17,13 @@ type MathPhase = "setup" | "play";
 export default function MathPage() {
   const [phase, setPhase] = useState<MathPhase>("setup");
   const [currentLevel, setCurrentLevel] = useState(1);
-  const [activityType, setActivityType] = useState<"counting" | "addition">("counting");
+  const [activityType, setActivityType] = useState<"counting" | "addition" | "subtraction" | "mixed">("counting");
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [playSessionId, setPlaySessionId] = useState(0);
   const { toast } = useToast();
 
   const currentUserId = localStorage.getItem("currentUserId");
@@ -36,11 +37,16 @@ export default function MathPage() {
     }
   }, [currentUserId]);
 
-  const { data: activities, isLoading: activitiesLoading } = useQuery<MathActivity[]>({
+  const { data: rawActivities, isLoading: activitiesLoading } = useQuery<MathActivity[]>({
     queryKey: ["/api/math/activities", activityType, currentLevel],
     queryFn: () => fetch(`/api/math/activities?type=${activityType}&level=${currentLevel}`).then(res => res.json()),
     enabled: !!currentUserId,
   });
+
+  const activities = useMemo(() => {
+    if (!rawActivities) return [];
+    return [...rawActivities].sort(() => Math.random() - 0.5);
+  }, [rawActivities, playSessionId]);
 
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/math", currentUserId],
@@ -62,7 +68,9 @@ export default function MathPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/progress/math"] });
       toast({
-        title: activityType === "counting" ? "Great counting!" : "Awesome addition!",
+        title: activityType === "counting" ? "Great counting!" : 
+               activityType === "addition" ? "Awesome addition!" : 
+               activityType === "subtraction" ? "Super subtraction!" : "Marvelous math!",
         description: "Your progress has been saved!",
       });
     }
@@ -127,6 +135,7 @@ export default function MathPage() {
   const startChallenge = () => {
     resetPlayState();
     setPhase("play");
+    setPlaySessionId(id => id + 1);
   };
 
   const backToSetup = () => {
@@ -181,7 +190,9 @@ export default function MathPage() {
       return (
         <div className="min-h-screen pb-28">
           <KidPageHeader
-            title={activityType === "counting" ? "Counting" : "Adding"}
+            title={activityType === "counting" ? "Counting" : 
+                   activityType === "addition" ? "Adding" : 
+                   activityType === "subtraction" ? "Subtracting" : "Mixed Math"}
             emoji="🔢"
             stars={setupStars}
             helpText={HELP_MATH_PLAY}
@@ -286,7 +297,9 @@ export default function MathPage() {
             transition={{ duration: 0.25 }}
           >
             <KidPageHeader
-              title={activityType === "counting" ? "Counting" : "Adding"}
+              title={activityType === "counting" ? "Counting" : 
+                     activityType === "addition" ? "Adding" : 
+                     activityType === "subtraction" ? "Subtracting" : "Mixed Math"}
               emoji="🔢"
               stars={currentProgress?.stars || 0}
               helpText={HELP_MATH_PLAY}
@@ -453,6 +466,7 @@ export default function MathPage() {
                           setCurrentActivityIndex(0);
                           setSelectedAnswer(null);
                           setShowFeedback(false);
+                          setPlaySessionId(id => id + 1);
                         }}
                         className="bg-coral border-coral/80 text-white px-8 py-6 rounded-[2rem] font-bold text-xl hover:bg-red-500 transition-colors touch-friendly kid-shadow"
                       >
@@ -504,7 +518,7 @@ export default function MathPage() {
           >
             <h3 className="text-xl font-fredoka text-gray-800 mb-4 text-center">Choose Your Challenge</h3>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <Button
                 onClick={() => {
                   setActivityType("counting");
@@ -533,27 +547,46 @@ export default function MathPage() {
               >
                 ➕ Addition
               </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("subtraction");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "subtraction"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                ➖ Subtraction
+              </Button>
+              <Button
+                onClick={() => {
+                  setActivityType("mixed");
+                  setCurrentLevel(1);
+                  resetPlayState();
+                  queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
+                }}
+                className={`py-6 rounded-2xl font-bold text-lg transition-colors touch-friendly ${activityType === "mixed"
+                  ? "bg-turquoise text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                🔀 Mixed
+              </Button>
             </div>
 
             <div className="text-center">
               <h4 className="text-lg font-bold text-gray-700 mb-3">Level</h4>
-              <div className={`grid gap-3 max-w-md mx-auto ${activityType === "counting" ? "grid-cols-2" : "grid-cols-4"}`}>
-                {activityType === "counting" ? [1, 2].map((level) => (
-                  <Button
-                    key={level}
-                    onClick={() => {
-                      setCurrentLevel(level);
-                      resetPlayState();
-                      queryClient.invalidateQueries({ queryKey: ["/api/math/activities"] });
-                    }}
-                    className={`py-4 rounded-2xl font-bold text-lg transition-colors touch-friendly ${currentLevel === level
-                      ? "bg-coral text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                  >
-                    Level {level}
-                  </Button>
-                )) : [3, 4, 5, 6].map((level) => (
+              <div className={`grid gap-3 max-w-md mx-auto ${
+                activityType === "addition" ? "grid-cols-4" : 
+                activityType === "subtraction" ? "grid-cols-3" : "grid-cols-2"
+              }`}>
+                {(activityType === "counting" ? [1, 2] : 
+                  activityType === "addition" ? [3, 4, 5, 6] : 
+                  activityType === "subtraction" ? [1, 2, 3] : [1, 2]
+                ).map((level) => (
                   <Button
                     key={level}
                     onClick={() => {
@@ -576,12 +609,23 @@ export default function MathPage() {
                     <span>Count 1-5</span>
                     <span>Count 6-10</span>
                   </div>
+                ) : activityType === "addition" ? (
+                  <div className="grid grid-cols-4 gap-2 text-xs">
+                    <span>Level 3</span>
+                    <span>Level 4</span>
+                    <span>Level 5</span>
+                    <span>Level 6</span>
+                  </div>
+                ) : activityType === "subtraction" ? (
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <span>Level 1</span>
+                    <span>Level 2</span>
+                    <span>Level 3</span>
+                  </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <span>Level 3: Basic</span>
-                    <span>Level 4: Medium</span>
-                    <span>Level 5: Hard</span>
-                    <span>Level 6: Expert</span>
+                    <span>Level 1</span>
+                    <span>Level 2</span>
                   </div>
                 )}
               </div>

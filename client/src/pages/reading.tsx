@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ReadingWord, UserProgress } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -69,6 +69,7 @@ export default function Reading() {
   const [showMoreLevels, setShowMoreLevels] = useState(false);
   const [showLevelComplete, setShowLevelComplete] = useState(false);
   const [activeChunkIndex, setActiveChunkIndex] = useState(-1);
+  const [playSessionId, setPlaySessionId] = useState(0);
   const { toast } = useToast();
 
   const currentUserId = localStorage.getItem("currentUserId");
@@ -89,11 +90,16 @@ export default function Reading() {
     }
   }, [currentUserId]);
 
-  const { data: words, isLoading: wordsLoading } = useQuery<ReadingWord[]>({
+  const { data: rawWords, isLoading: wordsLoading } = useQuery<ReadingWord[]>({
     queryKey: ["/api/reading/words", currentLevel],
     queryFn: () => fetch(`/api/reading/words?level=${currentLevel}`).then(res => res.json()),
     enabled: !!currentUserId,
   });
+
+  const words = useMemo(() => {
+    if (!rawWords) return [];
+    return [...rawWords].sort(() => Math.random() - 0.5);
+  }, [rawWords, playSessionId]);
 
   const { data: progress } = useQuery<UserProgress[]>({
     queryKey: ["/api/user/progress/reading", currentUserId, currentLevel],
@@ -149,6 +155,7 @@ export default function Reading() {
   const startChallenge = () => {
     resetPlayState();
     setPhase("play");
+    setPlaySessionId(id => id + 1);
   };
 
   const backToSetup = () => {
@@ -379,6 +386,7 @@ export default function Reading() {
                     onClick={() => {
                       setCurrentWordIndex(0);
                       setShowLevelComplete(false);
+                      setPlaySessionId(id => id + 1);
                     }}
                     className="bg-coral text-white px-8 py-6 rounded-[2rem] font-fredoka font-bold text-xl kid-shadow"
                   >
