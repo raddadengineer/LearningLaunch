@@ -48,8 +48,8 @@ export const MATH_OVERVIEWS: Record<string, Record<number, string>> = {
     2: "Now let's learn about hundreds! If you put ten ten-blocks together, they make a giant hundred block! Every number has a place for hundreds, tens, and ones. Let's find out what digit lives in each place."
   },
   geometry: {
-    1: "Let's learn geometry! Geometry is all about shapes and lines. Let's count sides, right angles, and see how shapes are put together.",
-    2: "Let's look at 3D shapes! These are shapes you can hold, like a box or a ball. Let's count their flat faces, pointy corners, and straight edges."
+    1: "Let's learn geometry! Geometry is about angles and lines. A right angle is a perfect corner like on a square. Parallel lines are lines that never cross. Let's look at right angles, parallel sides, and lines of symmetry!",
+    2: "Let's look at 3D shapes! These are shapes you can hold, like a box or a ball. Let's count their flat faces, pointy corners called vertices, and straight edges."
   },
   measurement: {
     1: "Let's learn how to measure! We use inches and feet to see how long things are. We also use days and months to measure time! Let's answer some measurement questions.",

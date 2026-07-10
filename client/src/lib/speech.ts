@@ -313,7 +313,7 @@ export async function speakLetters(
   try {
     for (let i = 0; i < letters.length; i++) {
       onChunkIndex?.(i);
-      await playChunkSound(letters[i], options, useCoach);
+      await playChunkSound(letters[i], options, true);
       await sleep(pauseMs);
     }
 
@@ -344,7 +344,7 @@ export async function speakPhonics(
 
     for (let i = 0; i < chunks.length; i++) {
       onChunkIndex?.(i);
-      await playChunkSound(chunks[i], options, useCoach);
+      await playChunkSound(chunks[i], options, true);
       await sleep(pauseMs);
     }
 
@@ -355,7 +355,7 @@ export async function speakPhonics(
 
         onChunkIndex?.(-1);
         for (let i = 0; i < chunks.length; i++) {
-          await playChunkSound(chunks[i], { ...options, rate: 1.2 }, useCoach);
+          await playChunkSound(chunks[i], { ...options, rate: 1.2 }, true);
           await sleep(50);
         }
 
@@ -376,11 +376,11 @@ export async function speakLetterCoach(letter: string, options: SpeechOptions = 
     await speak("This sound is", { ...options, rate: 0.85 });
     await sleep(150);
   }
-  await playChunkSound(letter, options, isAiCoachEnabled());
+  await playChunkSound(letter, options, true);
 }
 
 export async function speakChunkCoach(chunk: string, options: SpeechOptions = {}) {
-  await playChunkSound(chunk, options, isAiCoachEnabled());
+  await playChunkSound(chunk, options, true);
 }
 
 export function speakFeedback(isCorrect: boolean) {

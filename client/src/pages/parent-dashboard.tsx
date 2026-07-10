@@ -1,18 +1,76 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { User, UserProgress, Achievement, ReadingBookSummary } from "@shared/schema";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
+
+function StatCard({
+  label,
+  value,
+  icon,
+  gradient,
+}: {
+  label: string;
+  value: string | number;
+  icon: string;
+  gradient: string;
+}) {
+  return (
+    <div className={`rounded-2xl p-4 bg-gradient-to-br ${gradient} text-white shadow-md`}>
+      <div className="text-2xl mb-1">{icon}</div>
+      <div className="text-2xl font-fredoka font-bold leading-none">{value}</div>
+      <div className="text-xs font-bold opacity-80 mt-0.5">{label}</div>
+    </div>
+  );
+}
+
+function ProgressRow({
+  label,
+  completed,
+  total,
+  barColor,
+  stars,
+  updatedAt,
+}: {
+  label: string;
+  completed: number;
+  total: number;
+  barColor: string;
+  stars: number;
+  updatedAt?: string | null;
+}) {
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  return (
+    <div className="space-y-1.5">
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-semibold text-gray-700">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-amber-500 font-bold">⭐ {stars}</span>
+          <span className="text-xs text-gray-400 font-bold">{completed}/{total}</span>
+        </div>
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+        <motion.div
+          className={`${barColor} h-3 rounded-full`}
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        />
+      </div>
+      {updatedAt && (
+        <p className="text-xs text-gray-400">{new Date(updatedAt).toLocaleDateString()}</p>
+      )}
+    </div>
+  );
+}
 
 export default function ParentDashboard() {
   const currentUserId = localStorage.getItem("currentUserId");
 
   useEffect(() => {
     if (!currentUserId) {
-      const t = setTimeout(() => {
-        window.location.href = "/select-user";
-      }, 3000);
+      const t = setTimeout(() => { window.location.href = "/select-user"; }, 3000);
       return () => clearTimeout(t);
     }
   }, [currentUserId]);
@@ -43,20 +101,17 @@ export default function ParentDashboard() {
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
-        <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
-          <div className="text-center">
-            <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-2xl font-fredoka text-gray-800 mb-4">User not found</h2>
-            <p className="text-gray-600 mb-6">Please select a user first.</p>
-            <p className="text-sm text-gray-500 mb-4">Redirecting in 3 seconds...</p>
-            <Link href="/select-user">
-              <Button className="bg-coral hover:bg-coral/90 text-white px-6 py-3 rounded-2xl">
-                Select User Now
-              </Button>
-            </Link>
-          </div>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-blue-50 to-pink-100">
+        <div className="bg-white rounded-3xl p-8 max-w-sm mx-auto shadow-xl text-center">
+          <div className="text-5xl mb-4">🔒</div>
+          <h2 className="text-2xl font-fredoka text-gray-800 mb-3">No user selected</h2>
+          <p className="text-gray-500 mb-5">Please select a user first.</p>
+          <Link href="/select-user">
+            <Button className="bg-gradient-to-r from-violet-500 to-purple-600 text-white px-6 py-3 rounded-2xl font-bold">
+              Select User
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -64,7 +119,13 @@ export default function ParentDashboard() {
   if (userLoading || progressLoading || achievementsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-2xl font-fredoka text-gray-800">Loading dashboard...</div>
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ repeat: Infinity, duration: 1.4 }}
+          className="text-5xl"
+        >
+          🦉
+        </motion.div>
       </div>
     );
   }
@@ -74,199 +135,173 @@ export default function ParentDashboard() {
   const booksProgress = progress?.filter(p => p.activityType === "books") || [];
   const sightWordsProgress = progress?.filter(p => p.activityType === "sight-words") || [];
 
-  // Generate complete reading progress (levels 1-6)
   const completeReadingProgress = Array.from({ length: 6 }, (_, i) => {
     const level = i + 1;
     const existing = readingProgress.find(p => p.level === level);
-    return existing || {
-      id: `reading-${level}`,
-      level,
-      activityType: "reading",
-      completedItems: [],
-      totalItems: level === 6 ? 24 : 30,
-      stars: 0,
-      updatedAt: null
-    };
+    return existing || { id: `reading-${level}`, level, activityType: "reading", completedItems: [], totalItems: level === 6 ? 24 : 30, stars: 0, updatedAt: null };
   });
 
-  // Generate complete math progress (levels 1-6)
   const completeMathProgress = Array.from({ length: 6 }, (_, i) => {
     const level = i + 1;
     const existing = mathProgress.find(p => p.level === level);
-    return existing || {
-      id: `math-${level}`,
-      level,
-      activityType: "math",
-      completedItems: [],
-      totalItems: 5, // Standard math activity count per level
-      stars: 0,
-      updatedAt: null
-    };
+    return existing || { id: `math-${level}`, level, activityType: "math", completedItems: [], totalItems: 5, stars: 0, updatedAt: null };
   });
 
-  // Calculate real weekly activity data based on user progress
   const calculateWeeklyActivity = () => {
     const today = new Date();
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const colors = ['bg-red-400', 'bg-green-400', 'bg-blue-400', 'bg-yellow-400', 'bg-purple-400', 'bg-pink-400', 'bg-indigo-400'];
-
-    // Start from Monday of current week
     const monday = new Date(today);
     monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
 
     return Array.from({ length: 7 }, (_, i) => {
       const day = new Date(monday);
       day.setDate(monday.getDate() + i);
-      const dayName = weekDays[(day.getDay())];
-
-      // Calculate activity minutes based on progress data for this day
+      const dayName = weekDays[day.getDay()];
       const dayProgress = progress?.filter(p => {
         if (!p.updatedAt) return false;
-        const progressDate = new Date(p.updatedAt);
-        return progressDate.toDateString() === day.toDateString();
+        return new Date(p.updatedAt).toDateString() === day.toDateString();
       }) || [];
-
-      // Estimate minutes based on completed items (roughly 2-3 minutes per completed item)
       const totalItems = dayProgress.reduce((sum, p) => {
-        const completedCount = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
-        return sum + completedCount;
+        const count = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
+        return sum + count;
       }, 0);
-
-      const minutes = Math.min(60, totalItems * 2.5); // Cap at 60 minutes per day
-
-      return {
-        day: dayName,
-        minutes,
-        color: minutes > 0 ? colors[i % colors.length] : 'bg-gray-200'
-      };
+      return { day: dayName, minutes: Math.min(60, totalItems * 2.5), isToday: day.toDateString() === today.toDateString() };
     });
   };
 
-  // Calculate total session time
   const calculateTotalSessionTime = () => {
     if (!progress) return 0;
-    const totalCompleted = progress.reduce((sum, p) => {
+    const total = progress.reduce((sum, p) => {
       const count = Array.isArray(p.completedItems) ? p.completedItems.length : 0;
       return sum + count;
     }, 0);
-    return Math.round(totalCompleted * 2.5); // 2.5 minutes per activity
+    return Math.round(total * 2.5);
   };
 
   const weeklyActivity = calculateWeeklyActivity();
-  const maxMinutes = Math.max(10, ...weeklyActivity.map(d => d.minutes)); // Minimum 10 for scale
+  const maxMinutes = Math.max(10, ...weeklyActivity.map(d => d.minutes));
   const totalSessionTime = calculateTotalSessionTime();
+  const totalWeekMinutes = weeklyActivity.reduce((sum, d) => sum + d.minutes, 0);
+
+  const BAR_COLORS = [
+    "bg-gradient-to-t from-red-400 to-red-500",
+    "bg-gradient-to-t from-emerald-400 to-emerald-500",
+    "bg-gradient-to-t from-blue-400 to-blue-500",
+    "bg-gradient-to-t from-yellow-400 to-amber-500",
+    "bg-gradient-to-t from-violet-400 to-purple-500",
+    "bg-gradient-to-t from-pink-400 to-rose-500",
+    "bg-gradient-to-t from-indigo-400 to-indigo-500",
+  ];
 
   return (
-    <div className="min-h-screen pb-24">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-white kid-shadow">
-        <h2 className="text-3xl font-fredoka text-gray-800">Parent Dashboard</h2>
+    <div className="min-h-screen pb-24 bg-gradient-to-br from-slate-50 via-violet-50 to-blue-50">
+      {/* ── Header ── */}
+      <div className="glass-header px-5 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div>
+          <h2 className="text-2xl font-fredoka gradient-text-purple">Parent Dashboard</h2>
+          <p className="text-xs text-gray-400 font-bold">{user?.name}'s progress</p>
+        </div>
         <Link href="/">
-          <Button variant="outline" size="sm" className="rounded-full touch-friendly">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <Button variant="outline" size="sm" className="rounded-full w-10 h-10 p-0 border-2 bg-white/70 hover:bg-white">
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </Button>
         </Link>
       </div>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* User Info */}
-        <Card className="rounded-3xl p-6 kid-shadow mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-coral rounded-full flex items-center justify-center text-3xl">
-                👧
-              </div>
-              <div>
-                <h3 className="text-2xl font-fredoka text-gray-800">{user?.name}</h3>
-                <p className="text-gray-600">Age: {user?.age} years old</p>
-                <p className="text-gray-600">Total Stars: ⭐ {user?.totalStars}</p>
-              </div>
+      <main className="container mx-auto px-4 py-6 max-w-4xl space-y-6">
+
+        {/* ── User profile card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-3xl p-5 kid-shadow flex items-center justify-between"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-coral to-peach flex items-center justify-center text-3xl shadow-md">
+              👧
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-turquoise">{totalSessionTime}m</div>
-              <div className="text-sm text-gray-600">Total Learning Time</div>
+            <div>
+              <h3 className="text-2xl font-fredoka text-gray-800">{user?.name}</h3>
+              <p className="text-sm text-gray-500">Age {user?.age} years old</p>
               {user?.lastActive && (
-                <div className="text-xs text-gray-500 mt-1">
-                  Last active: {new Date(user.lastActive).toLocaleDateString()}
-                </div>
+                <p className="text-xs text-gray-400">Last active: {new Date(user.lastActive).toLocaleDateString()}</p>
               )}
             </div>
           </div>
-        </Card>
+          <div className="text-right">
+            <div className="text-3xl font-fredoka font-bold gradient-text-ocean">{totalSessionTime}m</div>
+            <div className="text-xs text-gray-500 font-bold">Total Learning</div>
+          </div>
+        </motion.div>
 
-        {/* Progress Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-          <Card className="rounded-3xl p-6 kid-shadow">
-            <h3 className="text-xl font-bold text-coral mb-4">Reading Progress</h3>
+        {/* ── Stat summary row ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="grid grid-cols-3 gap-3"
+        >
+          <StatCard label="Total Stars" value={`⭐ ${user?.totalStars ?? 0}`} icon="🏆" gradient="from-yellow-400 to-amber-500" />
+          <StatCard label="This Week" value={`${Math.round(totalWeekMinutes)}m`} icon="📅" gradient="from-violet-500 to-purple-600" />
+          <StatCard label="Achievements" value={achievements?.length ?? 0} icon="🎖️" gradient="from-emerald-400 to-teal-500" />
+        </motion.div>
+
+        {/* ── Progress Section ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.14 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          {/* Reading */}
+          <div className="bg-white rounded-3xl p-5 kid-shadow">
+            <h3 className="text-lg font-fredoka font-bold text-coral mb-4 flex items-center gap-2">
+              🔤 Reading Progress
+            </h3>
             <div className="space-y-4">
-              {completeReadingProgress.map((progress) => (
-                <div key={progress.id}>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-semibold">
-                      Level {progress.level} {progress.level === 6 ? 'Sentences' : 'Words'}
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      {Array.isArray(progress.completedItems) ? progress.completedItems.length : 0}/{progress.totalItems}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className="bg-coral h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${((Array.isArray(progress.completedItems) ? progress.completedItems.length : 0) / progress.totalItems) * 100}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-1 text-xs text-gray-500">
-                    <span>⭐ {progress.stars} stars</span>
-                    {progress.updatedAt && (
-                      <span>Updated: {new Date(progress.updatedAt).toLocaleDateString()}</span>
-                    )}
-                  </div>
-                </div>
+              {completeReadingProgress.map((prog) => (
+                <ProgressRow
+                  key={prog.id}
+                  label={`Level ${prog.level} ${prog.level === 6 ? "Sentences" : "Words"}`}
+                  completed={Array.isArray(prog.completedItems) ? prog.completedItems.length : 0}
+                  total={prog.totalItems}
+                  barColor="bg-gradient-to-r from-red-400 to-orange-400"
+                  stars={prog.stars}
+                  updatedAt={prog.updatedAt ? String(prog.updatedAt) : null}
+                />
               ))}
-              <div className="text-xs text-gray-500 text-center mt-4">
-                Levels 1-5: Individual words • Level 6: Simple sentences
-              </div>
+              <p className="text-xs text-gray-400 text-center pt-1">Levels 1–5: Words • Level 6: Sentences</p>
             </div>
-          </Card>
+          </div>
 
-          <Card className="rounded-3xl p-6 kid-shadow">
-            <h3 className="text-xl font-bold text-indigo-600 mb-4">Story Books</h3>
+          {/* Math */}
+          <div className="bg-white rounded-3xl p-5 kid-shadow">
+            <h3 className="text-lg font-fredoka font-bold text-skyblue mb-4 flex items-center gap-2">
+              🔢 Math Progress
+            </h3>
             <div className="space-y-4">
-              {books?.map((book) => {
-                const bookProg = booksProgress.find(p => p.level === book.id);
-                const completed = Array.isArray(bookProg?.completedItems) ? bookProg.completedItems.length : 0;
-                const total = book.pageCount || bookProg?.totalItems || 1;
-                return (
-                  <div key={book.id}>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-semibold">{book.title}</span>
-                      <span className="text-sm text-gray-600">{completed}/{total}</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className="bg-indigo-500 h-3 rounded-full transition-all duration-300"
-                        style={{ width: `${(completed / total) * 100}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between mt-1 text-xs text-gray-500">
-                      <span>⭐ {bookProg?.stars ?? 0} stars</span>
-                      {bookProg?.updatedAt && (
-                        <span>Updated: {new Date(bookProg.updatedAt).toLocaleDateString()}</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-              {(!books || books.length === 0) && (
-                <p className="text-sm text-gray-500 text-center">No books available yet.</p>
-              )}
+              {completeMathProgress.map((prog) => (
+                <ProgressRow
+                  key={prog.id}
+                  label={`Level ${prog.level} – ${prog.level <= 2 ? "Counting" : "Addition"}`}
+                  completed={Array.isArray(prog.completedItems) ? prog.completedItems.length : 0}
+                  total={prog.totalItems}
+                  barColor="bg-gradient-to-r from-sky-400 to-blue-500"
+                  stars={prog.stars}
+                  updatedAt={prog.updatedAt ? String(prog.updatedAt) : null}
+                />
+              ))}
+              <p className="text-xs text-gray-400 text-center pt-1">Levels 1–2: Counting • Levels 3–6: Addition</p>
             </div>
-          </Card>
+          </div>
 
-          <Card className="rounded-3xl p-6 kid-shadow">
-            <h3 className="text-xl font-bold text-purple-600 mb-4">Sight Words</h3>
+          {/* Sight Words */}
+          <div className="bg-white rounded-3xl p-5 kid-shadow">
+            <h3 className="text-lg font-fredoka font-bold text-lavender mb-4 flex items-center gap-2">
+              👁️ Sight Words
+            </h3>
             <div className="space-y-4">
               {Array.from({ length: 3 }, (_, i) => {
                 const level = i + 1;
@@ -275,143 +310,147 @@ export default function ParentDashboard() {
                 const total = prog?.totalItems ?? 12;
                 const labels = ["First Words", "Common Words", "More Words"];
                 return (
-                  <div key={level}>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-semibold">Level {level}: {labels[i]}</span>
-                      <span className="text-sm text-gray-600">{completed}/{total}</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className="bg-purple-500 h-3 rounded-full transition-all duration-300"
-                        style={{ width: `${(completed / total) * 100}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between mt-1 text-xs text-gray-500">
-                      <span>⭐ {prog?.stars ?? 0} stars</span>
-                      {prog?.updatedAt && (
-                        <span>Updated: {new Date(prog.updatedAt).toLocaleDateString()}</span>
-                      )}
-                    </div>
-                  </div>
+                  <ProgressRow
+                    key={level}
+                    label={`Level ${level}: ${labels[i]}`}
+                    completed={completed}
+                    total={total}
+                    barColor="bg-gradient-to-r from-violet-400 to-purple-500"
+                    stars={prog?.stars ?? 0}
+                    updatedAt={prog?.updatedAt ? String(prog.updatedAt) : null}
+                  />
                 );
               })}
             </div>
-          </Card>
+          </div>
 
-          <Card className="rounded-3xl p-6 kid-shadow">
-            <h3 className="text-xl font-bold text-turquoise mb-4">Math Progress</h3>
+          {/* Story Books */}
+          <div className="bg-white rounded-3xl p-5 kid-shadow">
+            <h3 className="text-lg font-fredoka font-bold text-indigo-600 mb-4 flex items-center gap-2">
+              📖 Story Books
+            </h3>
             <div className="space-y-4">
-              {completeMathProgress.map((progress) => (
-                <div key={progress.id}>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-semibold">
-                      Level {progress.level} - {progress.level <= 2 ? 'Counting' : 'Addition'}
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      {Array.isArray(progress.completedItems) ? progress.completedItems.length : 0}/{progress.totalItems}
-                    </span>
+              {books?.map((book) => {
+                const bookProg = booksProgress.find(p => p.level === book.id);
+                const completed = Array.isArray(bookProg?.completedItems) ? bookProg.completedItems.length : 0;
+                const total = book.pageCount || bookProg?.totalItems || 1;
+                return (
+                  <ProgressRow
+                    key={book.id}
+                    label={book.title}
+                    completed={completed}
+                    total={total}
+                    barColor="bg-gradient-to-r from-indigo-400 to-blue-500"
+                    stars={bookProg?.stars ?? 0}
+                    updatedAt={bookProg?.updatedAt ? String(bookProg.updatedAt) : null}
+                  />
+                );
+              })}
+              {(!books || books.length === 0) && (
+                <p className="text-sm text-gray-400 text-center">No books available yet.</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Weekly Activity Chart ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-3xl p-5 kid-shadow"
+        >
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-lg font-fredoka font-bold text-gray-800">📅 This Week's Activity</h3>
+            <span className="text-sm font-bold text-violet-600 bg-violet-50 px-3 py-1 rounded-full">
+              {Math.round(totalWeekMinutes)} min total
+            </span>
+          </div>
+          <div className="grid grid-cols-7 gap-2 items-end">
+            {weeklyActivity.map((day, i) => (
+              <div key={day.day} className="flex flex-col items-center gap-1.5">
+                <span className="text-[10px] font-bold text-gray-500">
+                  {day.minutes > 0 ? `${Math.round(day.minutes)}m` : ""}
+                </span>
+                <div className="w-full flex flex-col items-center">
+                  <motion.div
+                    className={`w-full rounded-xl ${day.minutes > 0 ? BAR_COLORS[i] : "bg-gray-100"} ${day.isToday ? "ring-2 ring-violet-400 ring-offset-1" : ""}`}
+                    initial={{ height: 8 }}
+                    animate={{ height: Math.max(12, (day.minutes / maxMinutes) * 96) }}
+                    transition={{ duration: 0.6, delay: i * 0.05, ease: "easeOut" }}
+                  />
+                </div>
+                <span className={`text-[11px] font-bold ${day.isToday ? "text-violet-600" : "text-gray-400"}`}>
+                  {day.day}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 text-center mt-3">
+            Based on completed activities
+          </p>
+        </motion.div>
+
+        {/* ── Achievements ── */}
+        {achievements && achievements.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.26 }}
+            className="bg-white rounded-3xl p-5 kid-shadow"
+          >
+            <h3 className="text-lg font-fredoka font-bold text-gray-800 mb-4">🎖️ Achievements</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {achievements.map((achievement) => (
+                <div key={achievement.id} className="flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl border border-amber-100">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-2xl shadow-sm shrink-0">
+                    {achievement.icon}
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className="bg-turquoise h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${((Array.isArray(progress.completedItems) ? progress.completedItems.length : 0) / progress.totalItems) * 100}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-1 text-xs text-gray-500">
-                    <span>⭐ {progress.stars} stars</span>
-                    {progress.updatedAt && (
-                      <span>Updated: {new Date(progress.updatedAt).toLocaleDateString()}</span>
-                    )}
+                  <div className="min-w-0">
+                    <div className="font-bold text-gray-800 truncate">{achievement.title}</div>
+                    <div className="text-xs text-gray-500 truncate">{achievement.description}</div>
+                    <div className="text-xs text-amber-400 font-bold">
+                      {new Date(achievement.earnedAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ))}
-              <div className="text-xs text-gray-500 text-center mt-4">
-                Levels 1-2: Counting • Levels 3-6: Addition (Basic to Expert)
-              </div>
             </div>
-          </Card>
-        </div>
+          </motion.div>
+        )}
 
-        {/* Time Spent This Week */}
-        <Card className="rounded-3xl p-6 kid-shadow mb-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">This Week's Activity</h3>
-          <div className="grid grid-cols-7 gap-2">
-            {weeklyActivity.map((day) => (
-              <div key={day.day} className="text-center">
-                <div className="text-xs font-semibold text-gray-600 mb-2">{day.day}</div>
-                <div
-                  className={`${day.color} rounded-lg flex items-end justify-center relative`}
-                  style={{ height: `${Math.max(24, (day.minutes / maxMinutes) * 80)}px` }}
-                >
-                  {day.minutes > 0 && (
-                    <span className="text-xs text-white font-bold pb-1">{day.minutes}m</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 text-center text-sm text-gray-600">
-            Total this week: {weeklyActivity.reduce((sum, day) => sum + day.minutes, 0)} minutes
-          </div>
-          <div className="mt-2 text-center text-xs text-gray-500">
-            Based on completed activities and estimated engagement time
-          </div>
-        </Card>
-
-        {/* Achievements */}
-        <Card className="rounded-3xl p-6 kid-shadow mb-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Recent Achievements</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {achievements?.map((achievement) => (
-              <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                <div className="text-2xl">{achievement.icon}</div>
-                <div>
-                  <div className="font-bold text-gray-800">{achievement.title}</div>
-                  <div className="text-sm text-gray-600">{achievement.description}</div>
-                  <div className="text-xs text-gray-500">
-                    {new Date(achievement.earnedAt).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* ── Quick Actions ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="space-y-3"
+        >
           <Link href="/parent-settings">
-            <Button variant="outline" className="w-full py-4 rounded-2xl font-bold text-lg border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+            <Button variant="outline" className="w-full py-4 rounded-2xl font-bold text-base border-2 border-violet-200 text-violet-700 hover:bg-violet-50 bg-white">
               ⚙️ Grown-ups Settings
             </Button>
           </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <Link href="/reading">
-            <Button className="w-full bg-coral text-white py-4 rounded-2xl font-bold text-lg hover:bg-red-500 transition-colors">
-              Start Reading Session
-            </Button>
-          </Link>
-          <Link href="/sight-words">
-            <Button className="w-full bg-purple-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-purple-700 transition-colors">
-              Sight Words
-            </Button>
-          </Link>
-          <Link href="/books">
-            <Button className="w-full bg-indigo-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-indigo-600 transition-colors">
-              Story Books
-            </Button>
-          </Link>
-          <Link href="/math">
-            <Button className="w-full bg-turquoise text-white py-4 rounded-2xl font-bold text-lg hover:bg-teal-500 transition-colors">
-              Start Math Session
-            </Button>
-          </Link>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { href: "/reading", label: "📖 Reading", gradient: "from-red-400 to-orange-500" },
+              { href: "/sight-words", label: "👁️ Sight Words", gradient: "from-violet-500 to-purple-600" },
+              { href: "/books", label: "📚 Books", gradient: "from-indigo-400 to-blue-500" },
+              { href: "/math", label: "🔢 Math", gradient: "from-teal-400 to-emerald-500" },
+            ].map((action) => (
+              <Link key={action.href} href={action.href}>
+                <Button className={`w-full bg-gradient-to-br ${action.gradient} text-white py-4 rounded-2xl font-bold text-sm shadow-md hover:opacity-90 transition-opacity`}>
+                  {action.label}
+                </Button>
+              </Link>
+            ))}
+          </div>
           <Link href="/">
-            <Button variant="outline" className="w-full py-4 rounded-2xl font-bold text-lg">
-              Back to Home
+            <Button variant="outline" className="w-full py-3 rounded-2xl font-bold text-sm bg-white/70 hover:bg-white">
+              ← Back to Home
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </main>
     </div>
   );

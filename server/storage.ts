@@ -797,22 +797,22 @@ export class DatabaseStorage implements IStorage {
       { type: "shapes", level: 1, question: "How many sides does a diamond have?", answer: 4, objects: ["🔶"] },
       // Shapes level 2
       { type: "shapes", level: 2, question: "How many points does a star have?", answer: 5, objects: ["⭐"] },
-      { type: "shapes", level: 2, question: "How many sides does a stop sign have?", answer: 8, objects: ["🛑"] },
-      { type: "shapes", level: 2, question: "How many faces does a block have?", answer: 6, objects: ["🧊"] },
+      { type: "shapes", level: 2, question: "How many sides does a stop sign shape have?", answer: 8, objects: ["🛑"] },
+      { type: "shapes", level: 2, question: "How many sides does a pentagon have?", answer: 5, objects: ["⬟"] },
       { type: "shapes", level: 2, question: "How many corners does a star have?", answer: 5, objects: ["⭐"] },
       { type: "shapes", level: 2, question: "How many sides do 2 triangles have together?", answer: 6, objects: ["🔺", "🔺"] },
       // Shapes level 3 (Kindergarten)
       { type: "shapes", level: 3, question: "How many sides does a hexagon have?", answer: 6, objects: ["⬡"] },
       { type: "shapes", level: 3, question: "How many sides does an octagon have?", answer: 8, objects: ["🛑"] },
       { type: "shapes", level: 3, question: "How many corners does a hexagon have?", answer: 6, objects: ["⬡"] },
-      { type: "shapes", level: 3, question: "How many faces does a box have?", answer: 6, objects: ["📦"] },
+      { type: "shapes", level: 3, question: "How many sides does a rectangle have?", answer: 4, objects: ["🟧"] },
       { type: "shapes", level: 3, question: "How many points does a 6-pointed star have?", answer: 6, objects: ["✡️"] },
       // Shapes level 4 (1st Grade)
       { type: "shapes", level: 4, question: "How many sides do 2 squares have together?", answer: 8, objects: ["🟩", "🟩"] },
       { type: "shapes", level: 4, question: "How many corners do a square and a triangle have in total?", answer: 7, objects: ["🟩", "🔺"] },
       { type: "shapes", level: 4, question: "How many sides do 3 triangles have together?", answer: 9, objects: ["🔺", "🔺", "🔺"] },
-      { type: "shapes", level: 4, question: "How many faces do 2 blocks have in total?", answer: 12, objects: ["🧊", "🧊"] },
-      { type: "shapes", level: 4, question: "How many points on a star and corners on a square together?", answer: 9, objects: ["⭐", "🟩"] },
+      { type: "shapes", level: 4, question: "How many sides do 2 hexagons have together?", answer: 12, objects: ["⬡", "⬡"] },
+      { type: "shapes", level: 4, question: "How many corners does a pentagon have?", answer: 5, objects: ["⬟"] },
       // Story Problems Level 1 (Kindergarten)
       { type: "story", level: 1, question: "1 dog is playing. 1 more dog joins. How many dogs?", answer: 2, objects: ["🐶", "🐶"] },
       { type: "story", level: 1, question: "2 cats are sleeping. 1 more cat sleeps. How many cats?", answer: 3, objects: ["🐱", "🐱", "🐱"] },
@@ -897,14 +897,14 @@ export class DatabaseStorage implements IStorage {
       { type: "place_value", level: 2, question: "What digit is in the ones place of 199?", answer: 9, objects: ["199"] },
       { type: "place_value", level: 2, question: "What is 5 hundreds and 5 ones?", answer: 505, objects: ["500", "+", "5"] },
       { type: "place_value", level: 2, question: "What digit is in the hundreds place of 900?", answer: 9, objects: ["900"] },
-      // Geometry Level 1
-      { type: "geometry", level: 1, question: "How many sides does a pentagon have?", answer: 5, objects: ["⬟"] },
-      { type: "geometry", level: 1, question: "How many sides does a hexagon have?", answer: 6, objects: ["⬡"] },
+      // Geometry Level 1 (angles, symmetry, parallel lines — not basic sides counting)
       { type: "geometry", level: 1, question: "How many right angles does a square have?", answer: 4, objects: ["🟩"] },
-      { type: "geometry", level: 1, question: "How many sides does an octagon have?", answer: 8, objects: ["🛑"] },
-      { type: "geometry", level: 1, question: "How many pairs of parallel sides on a rectangle?", answer: 2, objects: ["🟧"] },
-      { type: "geometry", level: 1, question: "How many corners does a triangle have?", answer: 3, objects: ["🔺"] },
-      // Geometry Level 2
+      { type: "geometry", level: 1, question: "How many right angles does a rectangle have?", answer: 4, objects: ["🟧"] },
+      { type: "geometry", level: 1, question: "How many pairs of parallel sides does a rectangle have?", answer: 2, objects: ["🟧"] },
+      { type: "geometry", level: 1, question: "How many lines of symmetry does a square have?", answer: 4, objects: ["🟩"] },
+      { type: "geometry", level: 1, question: "How many lines of symmetry does a circle have?", answer: 4, objects: ["⭕"] },
+      { type: "geometry", level: 1, question: "How many pairs of equal sides does a square have?", answer: 2, objects: ["🟩"] },
+      // Geometry Level 2 (3D shapes — faces, edges, vertices)
       { type: "geometry", level: 2, question: "How many faces does a cube have?", answer: 6, objects: ["🧊"] },
       { type: "geometry", level: 2, question: "How many edges does a cube have?", answer: 12, objects: ["🧊"] },
       { type: "geometry", level: 2, question: "How many corners (vertices) does a cube have?", answer: 8, objects: ["🧊"] },

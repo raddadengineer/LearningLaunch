@@ -14,11 +14,11 @@ export function KidBackButton({ href = "/", label = "Home" }: KidBackButtonProps
     <Link href={href}>
       <Button
         variant="outline"
-        className="rounded-2xl kid-tap border-2 border-gray-200 bg-white hover:bg-gray-50 px-4"
+        className="rounded-2xl kid-tap border-2 border-white/80 bg-white/70 hover:bg-white shadow-sm backdrop-blur-sm px-4 gap-1.5"
         onTouchStart={() => speak(label, { rate: 0.85, pitch: 1.2 })}
       >
-        <span className="text-2xl mr-1">🏠</span>
-        <span className="font-fredoka text-lg font-bold text-gray-700">{label}</span>
+        <span className="text-xl leading-none">🏠</span>
+        <span className="font-fredoka text-base font-bold text-gray-700">{label}</span>
       </Button>
     </Link>
   );
@@ -45,15 +45,25 @@ export function KidActivityTile({
   return (
     <motion.button
       type="button"
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ scale: 0.93 }}
+      whileHover={{ scale: 1.03, y: -2 }}
       onClick={onClick}
       onTouchStart={() => speak(label, { rate: 0.85, pitch: 1.2 })}
-      className={`${colorClass} kid-tile rounded-[2rem] p-6 kid-shadow text-center w-full transition-transform hover:scale-[1.02] active:scale-95`}
+      className={`${colorClass} kid-tile rounded-[1.75rem] p-5 kid-shadow-strong text-center w-full transition-colors duration-200 relative overflow-hidden`}
     >
-      <div className="text-6xl mb-3">{emoji}</div>
-      <h3 className="text-2xl font-fredoka font-bold text-gray-800">{title}</h3>
+      {/* Soft inner highlight */}
+      <div className="absolute inset-0 rounded-[1.75rem] bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
+
+      <motion.div
+        className="text-5xl mb-2.5 relative z-10"
+        whileHover={{ rotate: [0, -8, 8, 0], scale: 1.1 }}
+        transition={{ duration: 0.4 }}
+      >
+        {emoji}
+      </motion.div>
+      <h3 className="text-2xl font-fredoka font-bold text-gray-800 relative z-10 leading-tight">{title}</h3>
       {subtitle && (
-        <p className="text-sm font-bold text-gray-600 mt-1">{subtitle}</p>
+        <p className="text-xs font-bold text-gray-600/80 mt-1 relative z-10">{subtitle}</p>
       )}
     </motion.button>
   );
@@ -66,15 +76,22 @@ type KidHelpButtonProps = {
 
 export function KidHelpButton({ helpText, className = "" }: KidHelpButtonProps) {
   return (
-    <button
+    <motion.button
       type="button"
       aria-label="Help"
+      whileTap={{ scale: 0.9 }}
       onClick={() => speak(helpText, { rate: 0.85, pitch: 1.2 })}
       onTouchStart={() => speak("Help", { rate: 0.85, pitch: 1.2 })}
-      className={`kid-tap rounded-2xl kid-shadow bg-white border-2 border-gray-200 hover:bg-gray-50 w-12 h-12 flex items-center justify-center shrink-0 ${className}`}
+      className={`kid-tap rounded-2xl glass-card hover:bg-white/90 w-12 h-12 flex items-center justify-center shrink-0 transition-all duration-200 ${className}`}
     >
-      <span className="text-2xl leading-none">🦉</span>
-    </button>
+      <motion.span
+        className="text-2xl leading-none"
+        animate={{ rotate: [0, -8, 8, 0] }}
+        transition={{ repeat: Infinity, duration: 3, repeatDelay: 2 }}
+      >
+        🦉
+      </motion.span>
+    </motion.button>
   );
 }
 
@@ -100,11 +117,11 @@ export function KidPageHeader({
   const hasRightContent = helpText || stars !== undefined;
 
   return (
-    <div className="flex items-center justify-between p-3 sm:p-4 bg-white kid-shadow sticky top-0 z-50 gap-2">
+    <div className="flex items-center justify-between p-3 sm:p-4 glass-header sticky top-0 z-50 gap-2">
       <KidBackButton href={backHref} label={backLabel} />
       <div className="text-center flex-1 min-w-0">
         <h2 className="text-xl sm:text-2xl font-fredoka text-gray-800 truncate">
-          {emoji && <span className="mr-1">{emoji}</span>}
+          {emoji && <span className="mr-1.5">{emoji}</span>}
           {title}
         </h2>
         {children}
@@ -113,8 +130,8 @@ export function KidPageHeader({
         <div className="flex items-center gap-2 shrink-0">
           {helpText && <KidHelpButton helpText={helpText} />}
           {stars !== undefined && (
-            <div className="bg-sunnyellow px-3 py-2 rounded-2xl kid-shadow shrink-0">
-              <span className="text-lg font-bold">⭐ {stars}</span>
+            <div className="bg-gradient-to-br from-yellow-400 to-amber-500 px-3 py-2 rounded-2xl shadow-md shrink-0">
+              <span className="text-base font-bold text-white drop-shadow-sm">⭐ {stars}</span>
             </div>
           )}
         </div>
@@ -132,16 +149,18 @@ type KidBigActionProps = {
   className?: string;
 };
 
-export function KidBigAction({ emoji, label, onClick, className = "bg-coral text-white" }: KidBigActionProps) {
+export function KidBigAction({ emoji, label, onClick, className = "bg-gradient-to-r from-coral to-peach text-white" }: KidBigActionProps) {
   return (
-    <Button
-      onClick={onClick}
-      onTouchStart={() => speak(label, { rate: 0.85, pitch: 1.2 })}
-      className={`${className} kid-tap rounded-2xl font-fredoka text-xl font-bold w-full py-6 btn-pressable`}
-    >
-      <span className="text-2xl mr-2">{emoji}</span>
-      {label}
-    </Button>
+    <motion.div whileTap={{ scale: 0.97 }}>
+      <Button
+        onClick={onClick}
+        onTouchStart={() => speak(label, { rate: 0.85, pitch: 1.2 })}
+        className={`${className} kid-tap rounded-2xl font-fredoka text-xl font-bold w-full py-6 btn-pressable shine-sweep shadow-lg`}
+      >
+        <span className="text-2xl mr-2">{emoji}</span>
+        {label}
+      </Button>
+    </motion.div>
   );
 }
 
@@ -150,7 +169,7 @@ export function ParentLink() {
     <Link href="/parent-settings">
       <button
         type="button"
-        className="text-xs font-bold text-gray-400 hover:text-gray-600 underline underline-offset-2"
+        className="text-xs font-bold text-gray-500 hover:text-gray-700 bg-white/60 hover:bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-white/70 shadow-sm transition-all duration-200"
       >
         Grown-ups 👨‍👩‍👧 Settings
       </button>

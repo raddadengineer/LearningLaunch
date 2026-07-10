@@ -13,6 +13,15 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // Custom kid-friendly palette (usable in gradient/bg/text utilities)
+        coral:      "hsl(6, 85%, 65%)",
+        peach:      "hsl(25, 95%, 72%)",
+        turquoise:  "hsl(177, 55%, 48%)",
+        skyblue:    "hsl(207, 80%, 58%)",
+        mintgreen:  "hsl(146, 52%, 60%)",
+        sunnyellow: "hsl(42, 100%, 62%)",
+        funpink:    "hsl(301, 85%, 76%)",
+        lavender:   "hsl(262, 75%, 70%)",
         card: {
           DEFAULT: "var(--card)",
           foreground: "var(--card-foreground)",
