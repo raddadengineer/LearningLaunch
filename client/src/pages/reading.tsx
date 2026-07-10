@@ -502,7 +502,7 @@ export default function Reading() {
                     )}
 
                     {activityMode !== "spell" && (
-                      <div className={`grid grid-cols-1 ${currentLevel === 6 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3 mb-6`}>
+                      <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6`}>
                         {currentLevel === 6 ? (
                         <>
                           <KidBigAction emoji="🔊" label="Hear Sentence" onClick={() => speak(currentWord.word, { rate: 0.7, pitch: 1.1 })} className="bg-blue-500 text-white hover:bg-blue-600" />
@@ -520,7 +520,6 @@ export default function Reading() {
                       ) : (
                         <>
                           <KidBigAction emoji="📢" label="Say it!" onClick={handleSayWord} className="bg-coral text-white hover:bg-coral/90" />
-                          <KidBigAction emoji="🔤" label="Sound it out!" onClick={handleSpellWord} className="bg-turquoise text-white hover:bg-turquoise/90" />
                           <KidBigAction emoji="🧩" label="Spell it!" onClick={() => setActivityMode("spell")} className="bg-sunnyellow text-gray-800 hover:bg-sunnyellow/90" />
                         </>
                       )}

@@ -3,7 +3,8 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { ThemeProvider, useTheme } from "@/lib/theme";
 import NotFound from "@/pages/not-found";
 import Welcome from "@/pages/welcome";
 import Home from "@/pages/home";
@@ -33,19 +34,14 @@ function PreferencesHydrator() {
 }
 
 function Router() {
-  // Simplify the user selection logic to avoid React state issues
   const currentUserId = localStorage.getItem("currentUserId");
-  
+  const { theme } = useTheme();
+
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative" data-theme={theme}>
       <Switch>
-        {/* Admin route always available */}
         <Route path="/admin" component={Admin} />
-        
-        {/* User management always available */}
         <Route path="/users" component={UserManagement} />
-        
-        {/* Routes based on user selection */}
         {!currentUserId ? (
           <>
             <Route path="/" component={Welcome} />
@@ -78,9 +74,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <PreferencesHydrator />
-        <Router />
+        <ThemeProvider>
+          <Toaster />
+          <PreferencesHydrator />
+          <Router />
+        </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
