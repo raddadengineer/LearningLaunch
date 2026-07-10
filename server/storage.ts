@@ -110,12 +110,9 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
-    const existingMath = await this.getAllMathActivities();
-    // Threshold set to 205 (below the 206 seeded records) — forces one-time reseed after question corrections
-    if (existingMath.length < 205) {
-      await db.delete(mathActivities);
-      await this.seedMathActivities();
-    }
+    // Always reseed math activities to ensure question corrections are applied
+    await db.delete(mathActivities);
+    await this.seedMathActivities();
 
     await this.backfillPhonics();
 

@@ -178,11 +178,6 @@ export function getPhonemeAudioUrls(sound: string): string[] {
     return [];
   }
   const urls: string[] = [];
-  if (isHumanCorePhoneme(sound)) {
-    for (const ext of PHONEME_AUDIO_EXTENSIONS) {
-      urls.push(`/audio/phonemes/${HUMAN_PHONEME_SUBDIR}/${sound}${ext}`);
-    }
-  }
   for (const ext of PHONEME_AUDIO_EXTENSIONS) {
     urls.push(`/audio/phonemes/${sound}${ext}`);
   }

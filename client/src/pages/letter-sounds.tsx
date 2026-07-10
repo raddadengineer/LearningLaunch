@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 
 export default function LetterSounds() {
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <KidPageHeader title="Letter Sounds" emoji="🎵" stars={0} helpText="Watch the videos to learn letter sounds!" />
       <div className="container mx-auto px-4 pt-8 max-w-4xl text-center">
         <div className="space-y-8 mb-8">
-          <Card className="rounded-[2.5rem] p-6 kid-shadow bg-white/90 backdrop-blur">
+          <Card className="rounded-[2.5rem] p-6 kid-shadow theme-card">
             <div className="relative overflow-hidden rounded-2xl" style={{ paddingBottom: "56.25%", height: 0 }}>
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
@@ -20,7 +20,7 @@ export default function LetterSounds() {
               ></iframe>
             </div>
           </Card>
-          <Card className="rounded-[2.5rem] p-6 kid-shadow bg-white/90 backdrop-blur">
+          <Card className="rounded-[2.5rem] p-6 kid-shadow theme-card">
             <div className="relative overflow-hidden rounded-2xl" style={{ paddingBottom: "56.25%", height: 0 }}>
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
@@ -31,7 +31,7 @@ export default function LetterSounds() {
               ></iframe>
             </div>
           </Card>
-          <Card className="rounded-[2.5rem] p-6 kid-shadow bg-white/90 backdrop-blur">
+          <Card className="rounded-[2.5rem] p-6 kid-shadow theme-card">
             <div className="relative overflow-hidden rounded-2xl" style={{ paddingBottom: "56.25%", height: 0 }}>
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
@@ -42,7 +42,7 @@ export default function LetterSounds() {
               ></iframe>
             </div>
           </Card>
-          <Card className="rounded-[2.5rem] p-6 kid-shadow bg-white/90 backdrop-blur">
+          <Card className="rounded-[2.5rem] p-6 kid-shadow theme-card">
             <div className="relative overflow-hidden rounded-2xl" style={{ paddingBottom: "56.25%", height: 0 }}>
               <iframe
                 className="absolute top-0 left-0 w-full h-full"

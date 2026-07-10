@@ -187,7 +187,7 @@ export default function MathPage() {
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
+      <div className="theme-page min-h-screen flex items-center justify-center">
         <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
           <div className="text-center">
             <div className="text-6xl mb-4">❌</div>
@@ -222,7 +222,7 @@ export default function MathPage() {
     };
     
     return (
-      <div className="min-h-screen pb-28">
+      <div className="theme-page min-h-screen pb-28">
         <KidPageHeader title={titleMap[activityType]} emoji="🔢" stars={setupStars} helpText={HELP_MATH_PLAY} />
         <motion.div
           key="overview"
@@ -232,7 +232,7 @@ export default function MathPage() {
           exit="exit"
           className="container mx-auto px-4 mt-8 flex flex-col items-center max-w-2xl"
         >
-          <Card className="p-8 rounded-[2.5rem] kid-shadow w-full text-center bg-white/90 backdrop-blur mb-8">
+          <Card className="p-8 rounded-[2.5rem] kid-shadow w-full text-center theme-card mb-8">
             <div className="text-6xl mb-6">👩‍🏫</div>
             <h2 className="text-3xl font-fredoka text-gray-800 mb-6">Lesson Time!</h2>
             <p className="text-xl text-gray-600 leading-relaxed">
@@ -287,7 +287,7 @@ export default function MathPage() {
   if (phase === "play") {
     if (activitiesLoading) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader
             title={activityType === "counting" ? "Counting" : 
                    activityType === "addition" ? "Adding" : 
@@ -310,7 +310,7 @@ export default function MathPage() {
 
     if (!activities || activities.length === 0) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader title="Math" emoji="🔢" stars={setupStars} helpText={HELP_MATH_PLAY} />
           <div className="min-h-[50vh] flex flex-col items-center justify-center gap-6 px-4">
             <div className="text-2xl font-fredoka text-red-500 text-center">
@@ -330,7 +330,7 @@ export default function MathPage() {
     const currentActivity = activities[currentActivityIndex];
     if (!currentActivity) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader title="Math" emoji="🔢" stars={setupStars} helpText={HELP_MATH_PLAY} />
           <div className="min-h-[50vh] flex flex-col items-center justify-center gap-6 px-4">
             <div className="text-2xl font-fredoka text-red-500 text-center">
@@ -390,7 +390,7 @@ export default function MathPage() {
     };
 
     return (
-      <div className="min-h-screen pb-28">
+      <div className="theme-page min-h-screen pb-28">
         <AnimatePresence mode="wait">
           <motion.div
             key="play"
@@ -448,7 +448,7 @@ export default function MathPage() {
                   </Button>
                 </div>
 
-                <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto mb-8 bg-white/90 backdrop-blur">
+                <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto mb-8 theme-card">
                   <div className={`grid gap-4 mb-8 justify-items-center ${activityObjects.length <= 5 ? "grid-cols-5" :
                     activityObjects.length <= 8 ? "grid-cols-4" : "grid-cols-5"
                     }`}>
@@ -608,7 +608,7 @@ export default function MathPage() {
   }
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <AnimatePresence mode="wait">
         <motion.div
           key="setup"
@@ -852,7 +852,6 @@ export default function MathPage() {
               emoji="🚀"
               label="Start"
               onClick={startChallenge}
-              className="bg-turquoise text-white hover:bg-teal-500 text-2xl py-8"
             />
           </div>
         </motion.div>

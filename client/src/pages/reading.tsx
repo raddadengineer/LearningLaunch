@@ -42,7 +42,7 @@ function getImageSrc(imageUrl: string | null | undefined): string {
 
 function UserNotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coral via-turquoise to-sunnyellow">
+    <div className="theme-page min-h-screen flex items-center justify-center">
       <Card className="p-8 max-w-md mx-auto rounded-3xl kid-shadow">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
@@ -243,7 +243,7 @@ export default function Reading() {
   if (phase === "play") {
     if (wordsLoading) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader title="Words" emoji="🔤" stars={setupStars} helpText={HELP_READING_PLAY} />
           <div className="min-h-[50vh] flex items-center justify-center">
             <div className="text-2xl font-fredoka text-coral">Loading words...</div>
@@ -254,7 +254,7 @@ export default function Reading() {
 
     if (!words || words.length === 0) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader title="Words" emoji="🔤" stars={setupStars} helpText={HELP_READING_PLAY} />
           <div className="min-h-[50vh] flex flex-col items-center justify-center gap-6 px-4">
             <Card className="p-8 max-w-md rounded-3xl kid-shadow text-center">
@@ -352,7 +352,7 @@ export default function Reading() {
     };
 
     return (
-      <div className="min-h-screen pb-28">
+      <div className="theme-page min-h-screen pb-28">
         <AnimatePresence mode="wait">
           <motion.div
             key="play"
@@ -426,7 +426,7 @@ export default function Reading() {
                     />
                   </AnimatePresence>
 
-                  <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto bg-white/90 backdrop-blur">
+                  <Card className="rounded-[2.5rem] p-8 kid-shadow max-w-4xl mx-auto theme-card">
                     {activityMode === "spell" && currentLevel !== 6 ? (
                       <div className="mb-8">
                         <div className="text-center mb-4">
@@ -563,7 +563,7 @@ export default function Reading() {
   }
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <AnimatePresence mode="wait">
         <motion.div
           key="setup"
@@ -580,7 +580,6 @@ export default function Reading() {
               emoji="🚀"
               label="Start"
               onClick={startChallenge}
-              className="bg-coral text-white hover:bg-coral/90 text-2xl py-8"
             />
           </div>
         </motion.div>

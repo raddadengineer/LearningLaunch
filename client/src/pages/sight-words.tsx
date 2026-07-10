@@ -130,7 +130,7 @@ export default function SightWords() {
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="theme-page min-h-screen flex items-center justify-center">
         <Card className="p-8 rounded-3xl kid-shadow text-center">
           <Link href="/select-user"><Button className="bg-coral text-white rounded-2xl">Select User</Button></Link>
         </Card>
@@ -144,7 +144,7 @@ export default function SightWords() {
   if (phase === "play") {
     if (isLoading) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader title="Sight Words" emoji="👁️" stars={setupStars} helpText={HELP_SIGHT_WORDS_PLAY} />
           <div className="min-h-[50vh] flex items-center justify-center">
             <div className="text-2xl font-fredoka text-purple-600">Loading sight words...</div>
@@ -155,7 +155,7 @@ export default function SightWords() {
 
     if (!words || words.length === 0) {
       return (
-        <div className="min-h-screen pb-28">
+        <div className="theme-page min-h-screen pb-28">
           <KidPageHeader title="Sight Words" emoji="👁️" stars={setupStars} helpText={HELP_SIGHT_WORDS_PLAY} />
           <div className="min-h-[50vh] flex flex-col items-center justify-center gap-6 px-4">
             <Card className="p-8 rounded-3xl kid-shadow text-center">
@@ -193,7 +193,7 @@ export default function SightWords() {
     };
 
     return (
-      <div className="min-h-screen pb-28">
+      <div className="theme-page min-h-screen pb-28">
         <AnimatePresence mode="wait">
           <motion.div
             key="play"
@@ -263,7 +263,7 @@ export default function SightWords() {
                       />
                     )}
 
-                    <Card className="rounded-[2.5rem] p-10 kid-shadow bg-gradient-to-br from-purple-50 to-pink-50 mb-6">
+                    <Card className="rounded-[2.5rem] p-10 kid-shadow theme-card mb-6">
                       {activityMode === "spell" ? (
                         <div className="mb-8">
                           <div className="text-center mb-4">
@@ -363,7 +363,7 @@ export default function SightWords() {
   }
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <AnimatePresence mode="wait">
         <motion.div
           key="setup"
@@ -409,7 +409,6 @@ export default function SightWords() {
               emoji="🚀"
               label="Start"
               onClick={startChallenge}
-              className="bg-purple-600 text-white hover:bg-purple-700 text-2xl py-8"
             />
           </div>
         </motion.div>

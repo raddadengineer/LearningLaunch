@@ -117,7 +117,7 @@ export default function BookReader() {
 
   if (!currentUserId || !bookId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="theme-page min-h-screen flex items-center justify-center">
         <Card className="p-8 rounded-3xl kid-shadow text-center">
           <Link href="/books">
             <Button className="bg-coral text-white rounded-2xl">Back to Books</Button>
@@ -129,7 +129,7 @@ export default function BookReader() {
 
   if (isLoading || !book) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="theme-page min-h-screen flex items-center justify-center">
         <div className="text-2xl font-fredoka text-coral">Loading book...</div>
       </div>
     );
@@ -251,7 +251,7 @@ export default function BookReader() {
   };
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <KidPageHeader
         backHref="/books"
         backLabel="Stories"
@@ -265,7 +265,7 @@ export default function BookReader() {
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         {showComprehension ? (
-          <Card className="rounded-[2.5rem] p-8 kid-shadow bg-gradient-to-br from-green-50 to-blue-50">
+          <Card className="rounded-[2.5rem] p-8 kid-shadow theme-card">
             <h3 className="text-2xl font-fredoka text-gray-800 mb-2 text-center">📖 Story Questions</h3>
             <p className="text-sm text-gray-600 font-bold text-center mb-6">
               Talk about the story together!
@@ -290,7 +290,7 @@ export default function BookReader() {
               ))}
             </div>
             {readingActivity && (
-              <Card className="mt-6 rounded-2xl p-5 bg-orange-50 border-2 border-orange-200">
+              <Card className="mt-6 rounded-2xl p-5 theme-card">
                 <h4 className="text-lg font-fredoka text-orange-800 mb-2 text-center">
                   🎨 {readingActivity.title}
                 </h4>
@@ -360,7 +360,7 @@ export default function BookReader() {
               className="w-full h-56 object-cover rounded-[2rem] mb-6 kid-shadow"
             />
 
-            <Card className="rounded-[2.5rem] p-8 kid-shadow bg-white/90 backdrop-blur mb-4">
+            <Card className="rounded-[2.5rem] p-8 kid-shadow theme-card mb-4">
               <div className="text-4xl sm:text-5xl font-bold text-gray-800 leading-relaxed mb-4">
                 {sentenceWords.map((token, i) => {
                   if (/^[.,!?]$/.test(token)) {
@@ -472,7 +472,7 @@ export default function BookReader() {
             </Card>
 
             {meta?.parentNote && (
-              <Card className="rounded-2xl p-4 mb-4 bg-blue-50 border border-blue-100">
+              <Card className="rounded-2xl p-4 mb-4 theme-card">
                 <button
                   type="button"
                   onClick={() => setShowParentTips(!showParentTips)}

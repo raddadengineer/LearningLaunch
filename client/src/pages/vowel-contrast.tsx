@@ -72,7 +72,7 @@ function MagicWandGame({ content }: { content: VowelContrastContent }) {
   };
 
   return (
-    <Card className="rounded-2xl p-5 bg-purple-50 border-2 border-purple-200">
+    <Card className="rounded-2xl p-5 theme-card">
       <h4 className="text-lg font-fredoka text-purple-800 mb-1 text-center">✨ Game A: Magic Wand</h4>
       <p className="text-xs font-bold text-gray-600 text-center mb-4">
         Zap the word with your wand — then tap to add the silent E!
@@ -145,7 +145,7 @@ function SoundSortGame({ content }: { content: VowelContrastContent }) {
   };
 
   return (
-    <Card className="rounded-2xl p-5 bg-blue-50 border-2 border-blue-200">
+    <Card className="rounded-2xl p-5 theme-card">
       {isSpelling ? (
         <div className="mb-4">
           <div className="text-center mb-4">
@@ -242,7 +242,7 @@ function StretchTestGame({ content }: { content: VowelContrastContent }) {
   };
 
   return (
-    <Card className="rounded-2xl p-5 bg-orange-50 border-2 border-orange-200">
+    <Card className="rounded-2xl p-5 theme-card">
       <h4 className="text-lg font-fredoka text-orange-800 mb-1 text-center">😁 Game C: Sound Stretch</h4>
       <p className="text-xs font-bold text-gray-600 text-center mb-4">{content.stretchIntro}</p>
       <div className="text-center mb-4">
@@ -341,7 +341,7 @@ export default function VowelContrast() {
 
   if (phase === "play") {
     return (
-      <div className="min-h-screen pb-28">
+      <div className="theme-page min-h-screen pb-28">
         <AnimatePresence mode="wait">
           <motion.div
             key="play"
@@ -372,7 +372,7 @@ export default function VowelContrast() {
                 <GamesContent content={content} />
               )}
 
-              <Card className="mt-8 rounded-2xl p-4 bg-white kid-shadow text-center">
+              <Card className="mt-8 rounded-2xl p-4 theme-card kid-shadow text-center">
                 <p className="text-sm font-bold text-gray-600 mb-3">{content.storyHint}</p>
                 <Link href="/books">
                   <Button className="bg-coral text-white rounded-2xl font-bold">Go to Story Books 📖</Button>
@@ -386,7 +386,7 @@ export default function VowelContrast() {
   }
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <AnimatePresence mode="wait">
         <motion.div
           key="setup"
@@ -439,7 +439,7 @@ export default function VowelContrast() {
               </div>
             </motion.div>
 
-            <Card className="rounded-2xl p-4 mb-6 bg-gradient-to-br from-yellow-50 to-green-50 border-2 border-yellow-200 kid-shadow">
+            <Card className="rounded-2xl p-4 mb-6 theme-card kid-shadow">
               <p className="text-sm font-bold text-gray-700 text-center">
                 💡 <span className="text-orange-700">Name Rule:</span> {content.nameRuleTip}
               </p>
@@ -448,8 +448,9 @@ export default function VowelContrast() {
             <KidBigAction
               emoji="🚀"
               label="Start"
-              onClick={startChallenge}
-              className="bg-coral text-white hover:bg-coral/90 text-2xl py-8"
+              onClick={() => {
+                setPhase("play");
+              }}
             />
           </main>
         </motion.div>

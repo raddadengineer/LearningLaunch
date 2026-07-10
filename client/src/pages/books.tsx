@@ -32,7 +32,7 @@ export default function Books() {
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="theme-page min-h-screen flex items-center justify-center">
         <Card className="p-8 rounded-3xl kid-shadow text-center">
           <p className="text-xl font-bold text-gray-600 mb-4">Please select a user first.</p>
           <Link href="/select-user">
@@ -45,14 +45,14 @@ export default function Books() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="theme-page min-h-screen flex items-center justify-center">
         <div className="text-2xl font-fredoka text-coral">Loading books...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="theme-page min-h-screen pb-28">
       <KidPageHeader title="Stories" emoji="📖" helpText={HELP_BOOKS} />
 
       <main className="container mx-auto px-4 py-6">
@@ -75,7 +75,7 @@ export default function Books() {
                 transition={{ delay: index * 0.08 }}
               >
                 <Link href={`/books/${book.id}`}>
-                  <Card className="rounded-[2rem] overflow-hidden kid-shadow cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform bg-white kid-tap">
+                  <Card className="rounded-[2rem] overflow-hidden kid-shadow cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform theme-card kid-tap">
                     <img
                       src={getImageSrc(book.coverImageUrl)}
                       alt={book.title}
@@ -97,7 +97,7 @@ export default function Books() {
         </div>
 
         {(!books || books.length === 0) && (
-          <Card className="p-8 rounded-3xl kid-shadow text-center max-w-md mx-auto">
+          <Card className="p-8 rounded-3xl kid-shadow text-center max-w-md mx-auto theme-card">
             <div className="text-4xl mb-4">📚</div>
             <p className="text-gray-600 font-bold">No books available yet. Check back soon!</p>
           </Card>
